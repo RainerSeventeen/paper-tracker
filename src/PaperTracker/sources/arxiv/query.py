@@ -1,6 +1,7 @@
-"""arXiv 查询构造。
+"""arXiv query builder.
 
-把 `SearchQuery` 中的关键词/分类/排除词转为 arXiv API 的 `search_query` 字符串。
+Converts the internal `SearchQuery` (keywords/categories/exclusions) into the
+arXiv API `search_query` string.
 """
 
 from __future__ import annotations

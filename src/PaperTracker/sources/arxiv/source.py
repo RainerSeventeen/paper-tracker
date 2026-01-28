@@ -1,6 +1,7 @@
-"""arXiv 数据源适配。
+"""arXiv data source adapter.
 
-将 query 构造、HTTP 拉取与 XML 解析组装为 `PaperSource` 的实现。
+Composes query building, HTTP fetching, and XML parsing into a `PaperSource`
+implementation.
 """
 
 from __future__ import annotations
@@ -17,6 +18,12 @@ from PaperTracker.sources.arxiv.query import build_search_query
 
 @dataclass(slots=True)
 class ArxivSource(PaperSource):
+    """`PaperSource` implementation backed by arXiv.
+
+    Translates `SearchQuery` into arXiv query syntax, fetches the Atom feed, and
+    parses it into internal `Paper` objects.
+    """
+
     client: ArxivApiClient
     name: str = "arxiv"
 

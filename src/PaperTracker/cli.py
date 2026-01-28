@@ -1,6 +1,7 @@
-"""PaperTracker 的命令行入口。
+"""PaperTracker command-line entry.
 
-负责解析 CLI 参数、初始化日志系统、调用搜索服务并打印结果。
+Parses CLI options, configures logging, calls the search service, and prints
+results.
 """
 
 from __future__ import annotations

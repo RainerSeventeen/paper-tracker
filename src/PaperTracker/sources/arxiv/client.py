@@ -1,6 +1,6 @@
-"""arXiv API 客户端。
+"""arXiv API client.
 
-负责通过 HTTP 调用 arXiv Atom API，并提供重试/退避及 HTTPS→HTTP 回退。
+Calls the arXiv Atom API over HTTP, with retry/backoff and HTTPS→HTTP fallback.
 """
 
 from __future__ import annotations
@@ -33,6 +33,12 @@ HEADERS = {
 
 
 class ArxivApiClient:
+    """Low-level HTTP client for the arXiv Atom API.
+
+    Responsible only for making network requests and returning the raw feed XML.
+    Parsing and domain mapping are handled elsewhere.
+    """
+
     def __init__(self) -> None:
         """Create an arXiv API client backed by a requests session."""
         self._session = requests.Session()

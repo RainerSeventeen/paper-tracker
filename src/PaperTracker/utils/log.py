@@ -1,6 +1,7 @@
-"""PaperTracker 统一日志封装。
+"""PaperTracker logging utilities.
 
-提供带时间与级别前缀的日志格式，并集中管理 logger 初始化。
+Provides a simple logger with a timestamp + abbreviated level prefix, and
+centralizes logger initialization.
 """
 
 from __future__ import annotations

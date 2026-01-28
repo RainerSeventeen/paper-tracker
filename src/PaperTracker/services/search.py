@@ -1,6 +1,7 @@
-"""搜索服务层。
+"""Search service layer.
 
-向上为 CLI 提供稳定的用例接口，向下通过 `PaperSource` 协议对接不同数据源。
+Provides a stable use-case API to the CLI and integrates different data sources
+via the `PaperSource` protocol.
 """
 
 from __future__ import annotations
@@ -13,6 +14,12 @@ from PaperTracker.core.query import SearchQuery
 
 
 class PaperSource(Protocol):
+    """Protocol for an external paper data source.
+
+    Implementations adapt a provider (arXiv, Semantic Scholar, etc.) into the
+    internal `Paper` model.
+    """
+
     name: str
 
     def search(
@@ -39,6 +46,8 @@ class PaperSource(Protocol):
 
 @dataclass(slots=True)
 class PaperSearchService:
+    """Application service that searches papers via a configured source."""
+
     source: PaperSource
 
     def search(

@@ -1,6 +1,6 @@
-"""arXiv Atom feed 解析。
+"""arXiv Atom feed parser.
 
-将 arXiv 返回的 Atom XML 解析为统一的 `Paper` 列表。
+Parses arXiv Atom XML into the unified internal `Paper` list.
 """
 
 from __future__ import annotations

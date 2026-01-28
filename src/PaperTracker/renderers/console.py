@@ -1,6 +1,6 @@
-"""控制台输出渲染。
+"""Console output renderers.
 
-将 `Paper` 列表渲染为面向人类阅读的文本或 JSON 结构。
+Renders a list of `Paper` into human-friendly text or JSON-serializable objects.
 """
 
 from __future__ import annotations
