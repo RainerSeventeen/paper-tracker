@@ -15,10 +15,13 @@
 ```bash
 python -m pip install -e .
 ```
-命令行检索：
+准备配置文件（参考 `config/default.yml`），然后运行：
 
-- `paper-tracker search --keyword "diffusion" --category cs.CV --max-results 20`
-- `paper-tracker search --keyword "large language model" --exclude survey --format json`
+- `paper-tracker --config config/default.yml search`
+
+配置文件写法与字段说明见：`docs/configuration.md`
+
+测试说明见：`docs/testing.md`
 
 ## 来源与说明
 

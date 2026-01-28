@@ -33,7 +33,7 @@ class PaperSource(Protocol):
         """Search papers using this source.
 
         Args:
-            query: SearchQuery including keywords/categories/exclusions.
+            query: Source-agnostic structured query.
             max_results: Maximum number of results to return.
             sort_by: arXiv sorting field (source-specific).
             sort_order: Sorting order (source-specific).
@@ -61,7 +61,7 @@ class PaperSearchService:
         """Search papers via the configured PaperSource.
 
         Args:
-            query: SearchQuery including keywords/categories/exclusions.
+            query: Source-agnostic structured query.
             max_results: Maximum number of results to return.
             sort_by: Sorting field.
             sort_order: Sorting order.

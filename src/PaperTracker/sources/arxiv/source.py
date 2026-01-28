@@ -13,7 +13,7 @@ from PaperTracker.core.query import SearchQuery
 from PaperTracker.services.search import PaperSource
 from PaperTracker.sources.arxiv.client import ArxivApiClient
 from PaperTracker.sources.arxiv.parser import parse_arxiv_feed
-from PaperTracker.sources.arxiv.query import build_search_query
+from PaperTracker.sources.arxiv.query import compile_search_query
 
 
 @dataclass(slots=True)
@@ -26,6 +26,7 @@ class ArxivSource(PaperSource):
 
     client: ArxivApiClient
     name: str = "arxiv"
+    scope: SearchQuery | None = None
 
     def search(
         self,
@@ -38,7 +39,7 @@ class ArxivSource(PaperSource):
         """Search papers from arXiv.
 
         Args:
-            query: SearchQuery including keywords/categories/exclusions.
+            query: Structured query (field -> AND/OR/NOT terms).
             max_results: Maximum number of results to return.
             sort_by: Sort field (submittedDate/lastUpdatedDate).
             sort_order: Sort order (ascending/descending).
@@ -46,12 +47,7 @@ class ArxivSource(PaperSource):
         Returns:
             A list of Paper.
         """
-        search_query = build_search_query(
-            categories=query.categories,
-            keywords=query.keywords,
-            exclude_keywords=query.exclude_keywords,
-            logic=query.logic,
-        )
+        search_query = compile_search_query(query=query, scope=self.scope)
         xml = self.client.fetch_feed(
             search_query=search_query,
             start=0,

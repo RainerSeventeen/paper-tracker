@@ -2,7 +2,7 @@
 
 本文描述当前 `PaperTracker` 的最小可用核心功能：
 
-- 输入：关键词（可选分类、排除词、排序参数）
+- 输入：结构化 query 列表（字段 + AND/OR/NOT 关键词），以及可选 scope 与排序参数
 - 行为：调用 arXiv API 抓取 Atom feed
 - 输出：通过日志系统打印到命令行（`text` / `json`）
 
@@ -23,7 +23,7 @@
   - `PaperSearchService`：用例层（application/service），负责调用 `PaperSource`。
   - `PaperSource`：数据源协议（可替换/可扩展）。
 - `PaperTracker/sources/arxiv/*`
-  - `query.py`：把 `SearchQuery` 转换为 arXiv `search_query` 字符串。
+  - `query.py`：将结构化 query 编译为 arXiv `search_query`。
   - `client.py`：HTTP 拉取 arXiv Atom XML（HTTPS→HTTP fallback，带 retry/backoff）。
   - `parser.py`：解析 Atom XML → `Paper` 列表。
   - `source.py`：组装 query/client/parser，对外提供 `ArxivSource.search()`。
@@ -42,31 +42,31 @@
 
 安装后运行：
 
-- `paper-tracker search --keyword "diffusion" --category cs.CV --max-results 5`
+- `paper-tracker --config config/default.yml search`
 
 ### 方式 2：模块运行
 
-- `python -m PaperTracker search --keyword diffusion --max-results 5`
+- `python -m PaperTracker --config config/default.yml search`
 
 ---
 
 ## 核心调用链（search 命令）
 
-以 `paper-tracker search ...` 为例，调用链如下：
+以 `paper-tracker --config ... search` 为例，调用链如下：
 
 1. `PaperTracker.cli:main()`
 2. `PaperTracker.cli:cli()`
-   - 解析全局参数（如 `--log-level`）
+   - 读取 `--config` 指定的 YAML 配置
    - 调用 `PaperTracker.utils.log:configure_logging()` 初始化 logger
 3. `PaperTracker.cli:search_cmd()`
-   - 解析并清洗参数（`_split_multi`）
-   - 构造 `PaperTracker.core.query:SearchQuery`
+   - 读取 `queries` 列表（每条包含 TITLE/ABSTRACT/AUTHOR/JOURNAL 等字段的 AND/OR/NOT）
+   - 可选读取 `scope` 并对所有 query 生效
    - 初始化 `PaperSearchService(source=ArxivSource(client=ArxivApiClient()))`
    - 调用 `PaperSearchService.search()`
 4. `PaperTracker.services.search:PaperSearchService.search()`
    - 委托给 `source.search(...)`
 5. `PaperTracker.sources.arxiv.source:ArxivSource.search()`
-   - `PaperTracker.sources.arxiv.query:build_search_query(...)`
+   - `PaperTracker.sources.arxiv.query:compile_search_query(query, scope)`
    - `PaperTracker.sources.arxiv.client:ArxivApiClient.fetch_feed(...)` 拉取 Atom XML
    - `PaperTracker.sources.arxiv.parser:parse_arxiv_feed(xml)` 解析为 `list[Paper]`
 6. 回到 `PaperTracker.cli:search_cmd()`
@@ -80,7 +80,7 @@
 ```text
 User
   |
-  |  paper-tracker search --keyword ...
+  |  paper-tracker --config ... search
   v
 cli.py (click)
   |
@@ -95,7 +95,7 @@ PaperSearchService
   | ArxivSource.search(query)
   v
 ArxivSource
-  |  build_search_query()
+  |  compile_search_query()
   |  ArxivApiClient.fetch_feed()  --->  arXiv API (network)
   |  parse_arxiv_feed()
   v
@@ -118,4 +118,3 @@ log.info(...) (逐行输出)
 - 新增输出形式
   - 在 `PaperTracker/renderers/` 增加新的 renderer（例如 Markdown/CSV）
   - CLI 增加 `--format md/csv` 并调用对应 renderer
-
