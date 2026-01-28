@@ -1,0 +1,71 @@
+"""控制台输出渲染。
+
+将 `Paper` 列表渲染为面向人类阅读的文本或 JSON 结构。
+"""
+
+from __future__ import annotations
+
+from dataclasses import asdict
+from datetime import datetime
+from typing import Iterable
+
+from PaperTracker.core.models import Paper
+
+
+def _fmt_dt(dt: datetime | None) -> str:
+    """Format datetime for console output.
+
+    Args:
+        dt: A datetime object or None.
+
+    Returns:
+        A short date string (YYYY-mm-dd) or "-" when dt is None.
+    """
+    if not dt:
+        return "-"
+    return dt.strftime("%Y-%m-%d")
+
+
+def render_text(papers: Iterable[Paper]) -> str:
+    """Render papers into a human-readable text block.
+
+    Args:
+        papers: Iterable of papers.
+
+    Returns:
+        A formatted string ready to be printed.
+    """
+    lines: list[str] = []
+    for idx, paper in enumerate(papers, start=1):
+        authors = ", ".join(paper.authors)
+        lines.append(f"{idx}. {paper.title}")
+        lines.append(f"   Authors: {authors}")
+        if paper.primary_category:
+            lines.append(f"   Category: {paper.primary_category}")
+        lines.append(f"   Published: {_fmt_dt(paper.published)}  Updated: {_fmt_dt(paper.updated)}")
+        if paper.links.abstract:
+            lines.append(f"   Abs: {paper.links.abstract}")
+        if paper.links.pdf:
+            lines.append(f"   PDF: {paper.links.pdf}")
+        lines.append("")
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def render_json(papers: Iterable[Paper]) -> list[dict]:
+    """Render papers into JSON-serializable Python objects.
+
+    Args:
+        papers: Iterable of papers.
+
+    Returns:
+        A list of dicts (datetime fields are converted to ISO strings).
+    """
+    out: list[dict] = []
+    for paper in papers:
+        d = asdict(paper)
+        # datetime -> isoformat
+        for k in ("published", "updated"):
+            if d.get(k) is not None:
+                d[k] = d[k].isoformat()
+        out.append(d)
+    return out

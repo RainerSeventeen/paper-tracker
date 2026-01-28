@@ -4,6 +4,22 @@
 
 本仓库从零重新整理，仅保留核心功能与配置，来源如下：
 
+## 核心功能（当前已实现）
+
+- 根据关键词（可选分类/排除词）调用 arXiv API 抓取论文列表
+- 在命令行输出（支持 `text` / `json`）
+
+### 快速开始
+
+安装（推荐用虚拟环境）：
+```bash
+python -m pip install -e .
+```
+命令行检索：
+
+- `paper-tracker search --keyword "diffusion" --category cs.CV --max-results 20`
+- `paper-tracker search --keyword "large language model" --exclude survey --format json`
+
 ## 来源与说明
 
 本项目基于原仓库改造与裁剪，功能与实现细节参考原项目
