@@ -49,7 +49,7 @@ htmlcov/
 .ipynb_checkpoints/
 
 # ---- App outputs / runtime state ----
-outputs/
+output/
 .state/
 
 # ---- Secrets / local config overrides ----
