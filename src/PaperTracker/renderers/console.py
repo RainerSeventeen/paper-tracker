@@ -1,11 +1,10 @@
-"""Console output renderers.
+"""Console text output renderers.
 
-Renders a list of `Paper` into human-friendly text or JSON-serializable objects.
+Renders a list of `Paper` into human-friendly text.
 """
 
 from __future__ import annotations
 
-from dataclasses import asdict
 from datetime import datetime
 from typing import Iterable
 
@@ -50,22 +49,3 @@ def render_text(papers: Iterable[Paper]) -> str:
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 
-
-def render_json(papers: Iterable[Paper]) -> list[dict]:
-    """Render papers into JSON-serializable Python objects.
-
-    Args:
-        papers: Iterable of papers.
-
-    Returns:
-        A list of dicts (datetime fields are converted to ISO strings).
-    """
-    out: list[dict] = []
-    for paper in papers:
-        d = asdict(paper)
-        # datetime -> isoformat
-        for k in ("published", "updated"):
-            if d.get(k) is not None:
-                d[k] = d[k].isoformat()
-        out.append(d)
-    return out

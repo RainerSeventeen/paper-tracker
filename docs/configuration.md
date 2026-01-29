@@ -76,6 +76,7 @@ scope:
 ### 2.5 `output`
 
 - `format`: `text` / `json`
+  - When `json`, results are saved to `output/` as a timestamped JSON file.
 
 ---
 
@@ -147,4 +148,3 @@ queries:
 本项目会把结构化 query 编译为 arXiv Atom API `search_query`。
 
 - 更详细的 arXiv `search_query` 字段与语法说明见：`docs/arxiv-api-query.md`
-

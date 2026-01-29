@@ -14,7 +14,8 @@ import click
 
 from PaperTracker.config import AppConfig, load_config
 from PaperTracker.core.query import SearchQuery
-from PaperTracker.renderers.console import render_json, render_text
+from PaperTracker.renderers.console import render_text
+from PaperTracker.renderers.json import render_json
 from PaperTracker.services.search import PaperSearchService
 from PaperTracker.sources.arxiv.client import ArxivApiClient
 from PaperTracker.sources.arxiv.source import ArxivSource
@@ -40,7 +41,6 @@ def cli(ctx: click.Context, config_path: Path) -> None:
     """
     cfg = load_config(config_path)
     ctx.obj = cfg
-    configure_logging(level=cfg.log_level)
 
 
 @cli.command("search")
@@ -112,8 +112,12 @@ def search_cmd(ctx: click.Context) -> None:
 
         if cfg.output_format == "json":
             payload = json.dumps(all_results, ensure_ascii=False, indent=2)
-            for line in payload.splitlines():
-                log.info(line)
+            output_dir = Path("output")
+            output_dir.mkdir(parents=True, exist_ok=True)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            output_path = output_dir / f"{ctx.command.name}_{timestamp}.json"
+            output_path.write_text(payload, encoding="utf-8")
+            log.info("JSON saved to %s", output_path)
     except Exception as e:  # noqa: BLE001 - cli boundary
         log.error("Search failed: %s", e)
         raise click.Abort from e
