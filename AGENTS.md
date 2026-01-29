@@ -13,13 +13,14 @@
   - `python -m pip install -e .`
 - Run a search with the sample config:
   - `paper-tracker --config config/default.yml search`
-- There is no documented test command in this repository; if you add tests, document the command in this file and the README.
+- Run tests:
+  - `python -m unittest discover -s test -p "test_*.py"`
 
 ## Coding Style & Naming Conventions
 
 - Follow standard Python style (PEP 8): 4-space indentation, `snake_case` for functions/variables, `CapWords` for classes, `lowercase` module names.
 - Keep CLI flags and configuration keys consistent with existing conventions in `config/default.yml` and `src/PaperTracker/config.py`.
-- Add annotation (Google style docstring) for every function in English. Same as the new files, at the top of the `*,py`
+- Add annotation (Google style docstring) for every function under `src/` in English. Same as all the files, at the top of the `*,py`
 - Do not add new parameter into the cli command unless it was required. New parameters will be set in the yaml files like `default.yml`.
 
 ## Testing Guidelines

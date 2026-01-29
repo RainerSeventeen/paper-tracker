@@ -5,6 +5,10 @@ queries:
     OR:
       - machine learning
       - deep learning
+    AND:
+      - neural network
+    NOT:
+      - survey
 
 search:
   max_results: 5

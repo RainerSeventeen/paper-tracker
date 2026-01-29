@@ -1,3 +1,5 @@
+"""Tests for basic query configuration parsing."""
+
 import sys
 import unittest
 from pathlib import Path
@@ -26,8 +28,8 @@ class TestBasicQueryConfig(unittest.TestCase):
         self.assertIn("TEXT", query.fields)
         text_field = query.fields["TEXT"]
         self.assertEqual(text_field.OR, ("machine learning", "deep learning"))
-        self.assertEqual(text_field.AND, ())
-        self.assertEqual(text_field.NOT, ())
+        self.assertEqual(text_field.AND, ("neural network",))
+        self.assertEqual(text_field.NOT, ("survey",))
 
 
 if __name__ == "__main__":
