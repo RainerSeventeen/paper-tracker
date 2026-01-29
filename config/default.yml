@@ -2,7 +2,10 @@
 # PaperTracker example config.
 # Run: paper-tracker --config config/default.yml search
 
-log_level: INFO
+log:
+  level: INFO
+  to_file: true
+  dir: log
 
 # Optional global scope applied to every query.
 # Field keys must be uppercase: TITLE/ABSTRACT/AUTHOR/JOURNAL/CATEGORY
@@ -33,7 +36,7 @@ queries:
       - Video Restoration
 
 search:
-  max_results: 3
+  max_results: 5
   sort_by: submittedDate
   sort_order: descending
 

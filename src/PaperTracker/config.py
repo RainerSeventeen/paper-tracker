@@ -20,6 +20,8 @@ class AppConfig:
 
     Attributes:
         log_level: Logging level for the CLI.
+        log_to_file: Whether to mirror logs to a file.
+        log_dir: Base directory for log files.
         scope: Optional global scope applied to every query.
         queries: Independent queries.
         max_results: Maximum number of papers.
@@ -29,6 +31,8 @@ class AppConfig:
     """
 
     log_level: str = "INFO"
+    log_to_file: bool = True
+    log_dir: str = "log"
     scope: SearchQuery | None = None
     queries: tuple[SearchQuery, ...] = ()
     max_results: int = 20
@@ -274,7 +278,9 @@ def load_config(path: Path) -> AppConfig:
 
     Supported YAML structure (both flat and nested keys are accepted):
 
-    - `log_level`
+    - `log_level` / `log.level`
+    - `log_to_file` / `log.to_file`
+    - `log_dir` / `log.dir`
     - `scope` (optional)
       - Field mapping applied to every query.
     - `queries`
@@ -290,7 +296,9 @@ def load_config(path: Path) -> AppConfig:
     if not isinstance(raw, Mapping):
         raise TypeError("Config root must be a mapping/object")
 
-    log_level = str(_get(raw, "log_level", "INFO") or "INFO").upper()
+    log_level = str(_get(raw, "log.level", _get(raw, "log_level", "INFO")) or "INFO").upper()
+    log_to_file = bool(_get(raw, "log.to_file", _get(raw, "log_to_file", True)))
+    log_dir = str(_get(raw, "log.dir", _get(raw, "log_dir", "log")) or "log")
 
     scope_obj = raw.get("scope")
     scope = _parse_search_query(scope_obj) if scope_obj is not None else None
@@ -313,6 +321,8 @@ def load_config(path: Path) -> AppConfig:
 
     return AppConfig(
         log_level=log_level,
+        log_to_file=log_to_file,
+        log_dir=log_dir,
         scope=scope,
         queries=queries,
         max_results=max_results,

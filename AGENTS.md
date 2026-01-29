@@ -20,6 +20,7 @@
 - Follow standard Python style (PEP 8): 4-space indentation, `snake_case` for functions/variables, `CapWords` for classes, `lowercase` module names.
 - Keep CLI flags and configuration keys consistent with existing conventions in `config/default.yml` and `src/PaperTracker/config.py`.
 - Add annotation (Google style docstring) for every function in English. Same as the new files, at the top of the `*,py`
+- Do not add new parameter into the cli command unless it was required. New parameters will be set in the yaml files like `default.yml`.
 
 ## Testing Guidelines
 

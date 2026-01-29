@@ -7,6 +7,8 @@ centralizes logger initialization.
 from __future__ import annotations
 
 import logging
+from datetime import datetime
+from pathlib import Path
 from typing import Final
 
 
@@ -36,23 +38,51 @@ class _AbbrevLevelFormatter(logging.Formatter):
 log = logging.getLogger("PaperTracker")
 
 
-def configure_logging(*, level: str = "INFO") -> None:
+def configure_logging(
+    *,
+    level: str = "INFO",
+    action: str | None = None,
+    log_to_file: bool = True,
+    log_dir: str = "log",
+) -> None:
     """Configure PaperTracker logger.
 
     Uses format: mm-dd HH:MM:SS [<LVL>] <message>
     where LVL is one of: DEBG/INFO/WARN/ERRO.
+
+    Args:
+        level: Logging level (e.g., INFO, DEBUG).
+        action: CLI action name used to create the log file path.
+        log_to_file: Whether to mirror logs to a file.
+        log_dir: Base directory for log files.
     """
     resolved_level = getattr(logging, (level or "INFO").upper(), logging.INFO)
 
-    handler = logging.StreamHandler()
-    handler.setFormatter(
-        _AbbrevLevelFormatter(
-            fmt="%(asctime)s [%(levelabbr)s] %(message)s",
-            datefmt="%m-%d %H:%M:%S",
-        )
+    formatter = _AbbrevLevelFormatter(
+        fmt="%(asctime)s [%(levelabbr)s] %(message)s",
+        datefmt="%m-%d %H:%M:%S",
     )
 
+    handlers: list[logging.Handler] = []
+
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.INFO)
+    stream_handler.setFormatter(formatter)
+    handlers.append(stream_handler)
+
+    if log_to_file and action:
+        timestamp = datetime.now().strftime("%m%d%H%M%S")
+        log_root = Path(log_dir or "log")
+        action_dir = log_root / action
+        action_dir.mkdir(parents=True, exist_ok=True)
+        log_path = action_dir / f"{action}_{timestamp}.log"
+        file_handler = logging.FileHandler(log_path, encoding="utf-8")
+        file_handler.setLevel(logging.DEBUG)
+        file_handler.setFormatter(formatter)
+        handlers.append(file_handler)
+
     log.handlers.clear()
-    log.addHandler(handler)
-    log.setLevel(resolved_level)
+    for handler in handlers:
+        log.addHandler(handler)
+    log.setLevel(min(logging.DEBUG, resolved_level))
     log.propagate = False
