@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "paper-tracker"
+version = "0.1.0"
+description = "Minimal paper tracker (arXiv search + CLI output)"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "click>=8.1.7",
+  "feedparser>=6.0.11",
+  "python-dateutil>=2.9.0.post0",
+  "requests>=2.32.0",
+]
+
+[project.scripts]
+paper-tracker = "PaperTracker.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,44 @@
+
+# PaperTracker example config.
+# Run: paper-tracker --config config/default.yml search
+
+log:
+  level: INFO
+  to_file: true
+  dir: log
+
+# Optional global scope applied to every query.
+# Field keys must be uppercase: TITLE/ABSTRACT/AUTHOR/JOURNAL/CATEGORY
+# Operator keys must be uppercase: AND/OR/NOT
+#
+# scope:
+#   CATEGORY:
+#     OR: [cs.CV]
+
+queries:
+  - NAME: compression
+    OR:
+      - Image Compression
+      - Video Compression
+  - NAME: neural_video_compression
+    OR:
+      - Neural Video Compression
+      - Learned Video Compression
+      - End-to-end Video
+  - NAME: vqa
+    OR:
+      - Video Quality Assessment
+      - Perceptual Quality Assessment
+  - NAME: vsr
+    OR:
+      - Video Super Resolution
+      - VSR
+      - Video Restoration
+
+search:
+  max_results: 5
+  sort_by: submittedDate
+  sort_order: descending
+
+output:
+  format: json
