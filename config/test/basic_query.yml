@@ -1,0 +1,15 @@
+log_level: INFO
+
+queries:
+  - NAME: basic
+    OR:
+      - machine learning
+      - deep learning
+
+search:
+  max_results: 5
+  sort_by: submittedDate
+  sort_order: descending
+
+output:
+  format: json
