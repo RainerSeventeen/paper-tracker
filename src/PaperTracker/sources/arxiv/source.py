@@ -14,6 +14,7 @@ from PaperTracker.services.search import PaperSource
 from PaperTracker.sources.arxiv.client import ArxivApiClient
 from PaperTracker.sources.arxiv.parser import parse_arxiv_feed
 from PaperTracker.sources.arxiv.query import compile_search_query
+from PaperTracker.utils.log import log
 
 
 @dataclass(slots=True)
@@ -48,6 +49,13 @@ class ArxivSource(PaperSource):
             A list of Paper.
         """
         search_query = compile_search_query(query=query, scope=self.scope)
+        log.debug(
+            "arXiv query compiled: %s (max_results=%s sort_by=%s sort_order=%s)",
+            search_query,
+            max_results,
+            sort_by,
+            sort_order,
+        )
         xml = self.client.fetch_feed(
             search_query=search_query,
             start=0,
@@ -55,4 +63,6 @@ class ArxivSource(PaperSource):
             sort_by=sort_by,
             sort_order=sort_order,
         )
-        return list(parse_arxiv_feed(xml))
+        items = list(parse_arxiv_feed(xml))
+        log.debug("arXiv parsed %d entries", len(items))
+        return items

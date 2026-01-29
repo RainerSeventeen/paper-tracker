@@ -7,6 +7,7 @@ results.
 from __future__ import annotations
 
 import json
+from datetime import datetime
 from pathlib import Path
 
 import click
@@ -43,18 +44,25 @@ def cli(ctx: click.Context, config_path: Path) -> None:
 
 
 @cli.command("search")
-@click.pass_obj
-def search_cmd(cfg: AppConfig) -> None:
+@click.pass_context
+def search_cmd(ctx: click.Context) -> None:
     """Search papers and print to console via logging.
 
     All parameters are read from the YAML config passed to the root command.
 
     Args:
-        cfg: Normalized `AppConfig` from YAML.
+        ctx: Click context.
 
     Raises:
         click.Abort: When the search fails.
     """
+    cfg = ctx.obj
+    configure_logging(
+        level=cfg.log_level,
+        action=ctx.command.name,
+        log_to_file=cfg.log_to_file,
+        log_dir=cfg.log_dir,
+    )
     try:
         service = PaperSearchService(source=ArxivSource(client=ArxivApiClient(), scope=cfg.scope))
 
@@ -72,6 +80,7 @@ def search_cmd(cfg: AppConfig) -> None:
         multiple = len(cfg.queries) > 1
 
         for idx, query in enumerate(cfg.queries, start=1):
+            log.debug("Running query %d/%d name=%s fields=%s", idx, len(cfg.queries), query.name, query.fields)
             if multiple:
                 log.info("=== Query %d/%d ===", idx, len(cfg.queries))
             if cfg.scope:

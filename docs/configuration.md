@@ -9,7 +9,10 @@
 ## 1. 最小可用示例
 
 ```yml
-log_level: INFO
+log:
+  level: INFO
+  to_file: true
+  dir: log
 
 queries:
   - NAME: example
@@ -33,10 +36,20 @@ paper-tracker --config config.yml search
 
 ## 2. 顶层字段
 
-### 2.1 `log_level`
+### 2.1 `log`
 
-- 可选，默认 `INFO`
-- 示例：`log_level: DEBUG`
+- `level`：可选，默认 `INFO`（目前为兼容保留，命令行输出固定为 INFO）
+- `to_file`：可选，默认 `true`，写入 `log/<action>/<action>_<MMDDHHMMSS>.log`
+- `dir`：可选，默认 `log`
+
+示例：
+
+```yml
+log:
+  level: DEBUG
+  to_file: true
+  dir: log
+```
 
 ### 2.2 `scope`（可选）
 

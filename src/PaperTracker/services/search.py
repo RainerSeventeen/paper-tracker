@@ -11,6 +11,7 @@ from typing import Protocol, Sequence
 
 from PaperTracker.core.models import Paper
 from PaperTracker.core.query import SearchQuery
+from PaperTracker.utils.log import log
 
 
 class PaperSource(Protocol):
@@ -69,6 +70,13 @@ class PaperSearchService:
         Returns:
             A sequence of Paper.
         """
+        log.debug(
+            "Search service start: source=%s max_results=%s sort_by=%s sort_order=%s",
+            getattr(self.source, "name", "unknown"),
+            max_results,
+            sort_by,
+            sort_order,
+        )
         return self.source.search(
             query,
             max_results=max_results,

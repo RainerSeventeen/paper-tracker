@@ -12,6 +12,7 @@ from typing import Optional
 
 import requests
 
+from PaperTracker.utils.log import log
 
 ARXIV_HTTPS = "https://export.arxiv.org/api/query"
 ARXIV_HTTP = "http://export.arxiv.org/api/query"
@@ -80,11 +81,21 @@ class ArxivApiClient:
         last_err: Exception | None = None
         for base_url in (ARXIV_HTTPS, ARXIV_HTTP):
             try:
+                log.debug(
+                    "arXiv fetch feed: base_url=%s start=%s max_results=%s sort_by=%s sort_order=%s",
+                    base_url,
+                    start,
+                    max_results,
+                    sort_by,
+                    sort_order,
+                )
                 resp = self._get_with_retry(base_url, params=params, timeout=timeout)
                 resp.raise_for_status()
+                log.debug("arXiv response ok: status=%s bytes=%s", resp.status_code, len(resp.text))
                 return resp.text
             except Exception as e:  # noqa: BLE001 - keep last error for fallback
                 last_err = e
+                log.debug("arXiv fetch failed for %s: %s", base_url, e)
                 continue
 
         assert last_err is not None
@@ -117,6 +128,7 @@ class ArxivApiClient:
 
         for attempt in range(1, MAX_ATTEMPTS + 1):
             try:
+                log.debug("arXiv request attempt %d/%d to %s", attempt, MAX_ATTEMPTS, base_url)
                 resp = self._session.get(base_url, params=params, headers=HEADERS, timeout=timeout)
                 if resp.status_code in RETRYABLE_STATUS:
                     raise requests.exceptions.HTTPError(
@@ -137,6 +149,7 @@ class ArxivApiClient:
                     break
 
             if attempt < MAX_ATTEMPTS:
+                log.debug("arXiv retrying after attempt %d (error=%s)", attempt, last_err)
                 self._sleep_backoff(attempt)
 
         assert last_err is not None
