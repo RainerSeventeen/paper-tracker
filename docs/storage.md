@@ -22,7 +22,7 @@ state:
 
 - **db_path**（字符串，默认：`database/state.db`）：SQLite 数据库文件的绝对路径或项目相对路径
   - 若目录不存在会自动创建
-  - 若设置为 `null`，则使用 `database/state.sqlite`
+  - 若设置为 `null`，则使用 `database/state.db`
 
 ## 工作原理
 
@@ -31,6 +31,7 @@ state:
 1. **首次运行**：所有论文都视为新论文并输出
 2. **后续运行**：论文会与数据库进行过滤比对
    - `source` 与 `source_id` 相同的论文视为重复
+   - 对 arXiv 而言，`source_id` 是否包含版本号由 `arxiv.keep_version` 决定
    - 仅输出新的论文
    - 所有抓取到的论文（新论文与重复论文）都会被标记为已见
 
@@ -39,7 +40,7 @@ state:
 系统使用单表 [`seen_papers`](../src/PaperTracker/storage/db.py)，结构如下：
 
 - **source**：数据源标识（例如 "arxiv"）
-- **source_id**：数据源内的唯一 ID
+- **source_id**：数据源内的唯一 ID（arXiv 版本号保留由 `arxiv.keep_version` 控制）
 - **doi**：数字对象标识符（可选）
 - **doi_norm**：规范化 DOI，用于跨来源匹配（自动生成）
 - **title**：论文标题

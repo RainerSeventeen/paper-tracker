@@ -12,6 +12,10 @@ state:
   enabled: ture
   db_path: null   # use `database/state.db` if null, else a absolute path
 
+# arXiv behavior
+arxiv:
+  keep_version: false  # false: 2601.21922, true: 2601.21922v1
+
 # Optional global scope applied to every query.
 # Field keys must be uppercase: TITLE/ABSTRACT/AUTHOR/JOURNAL/CATEGORY
 # Operator keys must be uppercase: AND/OR/NOT

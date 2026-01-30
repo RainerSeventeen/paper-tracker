@@ -28,6 +28,9 @@ class AppConfig:
         sort_by: Sort field.
         sort_order: Sort order.
         output_format: Output format (text/json).
+        state_enabled: Whether to enable state management.
+        state_db_path: Database path for state management.
+        arxiv_keep_version: Whether to keep arXiv version suffix in the paper id.
     """
 
     log_level: str = "INFO"
@@ -39,6 +42,9 @@ class AppConfig:
     sort_by: str = "submittedDate"
     sort_order: str = "descending"
     output_format: str = "text"
+    state_enabled: bool = False
+    state_db_path: str = "database/state.db"
+    arxiv_keep_version: bool = False
 
 
 _ALLOWED_FIELDS = {"TITLE", "ABSTRACT", "AUTHOR", "JOURNAL", "CATEGORY"}
@@ -290,6 +296,7 @@ def load_config(path: Path) -> AppConfig:
     - `search.sort_by` / `sort_by`
     - `search.sort_order` / `sort_order`
     - `output.format` / `format`
+    - `arxiv.keep_version`
     """
 
     raw = _parse_yaml_minimal(path.read_text(encoding="utf-8"))
@@ -314,6 +321,15 @@ def load_config(path: Path) -> AppConfig:
 
     output_format = str(_get(raw, "output.format", _get(raw, "format", "text")) or "text").lower()
 
+    state_obj = raw.get("state", )
+    state_enabled = bool(_get(state_obj, "enabled", False))
+    state_db_path_raw = _get(state_obj, "db_path", None)
+    if state_db_path_raw is None:
+        state_db_path = "database/state.db"
+    else:
+        state_db_path = str(state_db_path_raw)
+    arxiv_keep_version = bool(_get(raw, "arxiv.keep_version", False))
+
     if not queries:
         raise ValueError("Missing required config: queries")
     if output_format not in {"text", "json"}:
@@ -329,4 +345,7 @@ def load_config(path: Path) -> AppConfig:
         sort_by=sort_by,
         sort_order=sort_order,
         output_format=output_format,
+        state_enabled=state_enabled,
+        state_db_path=state_db_path,
+        arxiv_keep_version=arxiv_keep_version,
     )
