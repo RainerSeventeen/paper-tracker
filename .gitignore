@@ -58,3 +58,8 @@ database/
 .env.*
 *.env
 !.env.example
+
+# ---- Agents ----
+.claude/
+CLAUDE.md
+AGENTS.md
