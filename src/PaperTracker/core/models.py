@@ -37,6 +37,7 @@ class Paper:
         primary_category: Primary category/field if provided by the source.
         categories: Additional categories/tags.
         links: Common link URLs.
+        doi: Digital Object Identifier if available.
         extra: Extension point for provider-specific fields.
     """
 
@@ -50,6 +51,7 @@ class Paper:
     primary_category: Optional[str] = None
     categories: Sequence[str] = ()
     links: PaperLinks = PaperLinks()
+    doi: Optional[str] = None
     extra: Mapping[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:

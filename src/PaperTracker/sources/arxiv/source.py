@@ -28,6 +28,7 @@ class ArxivSource(PaperSource):
     client: ArxivApiClient
     name: str = "arxiv"
     scope: SearchQuery | None = None
+    keep_version: bool = False
 
     def search(
         self,
@@ -63,6 +64,6 @@ class ArxivSource(PaperSource):
             sort_by=sort_by,
             sort_order=sort_order,
         )
-        items = list(parse_arxiv_feed(xml))
+        items = list(parse_arxiv_feed(xml, keep_version=self.keep_version))
         log.debug("arXiv parsed %d entries", len(items))
         return items

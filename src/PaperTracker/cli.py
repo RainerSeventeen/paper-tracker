@@ -19,6 +19,7 @@ from PaperTracker.renderers.json import render_json
 from PaperTracker.services.search import PaperSearchService
 from PaperTracker.sources.arxiv.client import ArxivApiClient
 from PaperTracker.sources.arxiv.source import ArxivSource
+from PaperTracker.storage.state import SqliteStateStore
 from PaperTracker.utils.log import configure_logging, log
 
 
@@ -64,7 +65,19 @@ def search_cmd(ctx: click.Context) -> None:
         log_dir=cfg.log_dir,
     )
     try:
-        service = PaperSearchService(source=ArxivSource(client=ArxivApiClient(), scope=cfg.scope))
+        state_store = None
+        if cfg.state_enabled:
+            db_path = Path(cfg.state_db_path)
+            state_store = SqliteStateStore(db_path)
+            log.info("State management enabled: %s", db_path)
+
+        service = PaperSearchService(
+            source=ArxivSource(
+                client=ArxivApiClient(),
+                scope=cfg.scope,
+                keep_version=cfg.arxiv_keep_version,
+            )
+        )
 
         def _fields_payload(q: SearchQuery) -> dict[str, dict[str, list[str]]]:
             return {
@@ -79,6 +92,7 @@ def search_cmd(ctx: click.Context) -> None:
         all_results: list[dict] = []
         multiple = len(cfg.queries) > 1
 
+        # TODO: move the output module to renderers/ in future 
         for idx, query in enumerate(cfg.queries, start=1):
             log.debug("Running query %d/%d name=%s fields=%s", idx, len(cfg.queries), query.name, query.fields)
             if multiple:
@@ -97,6 +111,12 @@ def search_cmd(ctx: click.Context) -> None:
             )
             log.info("Fetched %d papers", len(papers))
 
+            if state_store:
+                new_papers = state_store.filter_new(papers)
+                log.info("New papers: %d (filtered %d duplicates)", len(new_papers), len(papers) - len(new_papers))
+                state_store.mark_seen(papers)
+                papers = new_papers
+
             if cfg.output_format == "json":
                 all_results.append(
                     {
@@ -112,12 +132,15 @@ def search_cmd(ctx: click.Context) -> None:
 
         if cfg.output_format == "json":
             payload = json.dumps(all_results, ensure_ascii=False, indent=2)
-            output_dir = Path("output")
+            output_dir = Path("output") # TODO: self defined output path 
             output_dir.mkdir(parents=True, exist_ok=True)
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             output_path = output_dir / f"{ctx.command.name}_{timestamp}.json"
             output_path.write_text(payload, encoding="utf-8")
             log.info("JSON saved to %s", output_path)
+
+        if state_store:
+            state_store.close()
     except Exception as e:  # noqa: BLE001 - cli boundary
         log.error("Search failed: %s", e)
         raise click.Abort from e

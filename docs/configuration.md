@@ -78,6 +78,14 @@ scope:
 - `format`: `text` / `json`
   - When `json`, results are saved to `output/` as a timestamped JSON file.
 
+### 2.6 `arxiv`
+
+arXiv 专用选项。
+
+- `keep_version`：是否保留 arXiv 版本号作为 `id`
+  - `false`（默认）：`2601.21922v1` -> `2601.21922`
+  - `true`：保留版本后缀（`2601.21922v1`）
+
 ---
 
 ## 3. Query 结构（重点）
