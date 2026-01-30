@@ -51,6 +51,7 @@ htmlcov/
 # ---- App outputs / runtime state ----
 output/
 .state/
+database/
 
 # ---- Secrets / local config overrides ----
 .env
