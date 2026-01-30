@@ -1,4 +1,4 @@
-"""State store implementation."""
+"""Deduplication store implementation."""
 
 from __future__ import annotations
 
@@ -10,11 +10,11 @@ from PaperTracker.storage.db import ensure_db, init_schema
 from PaperTracker.utils.log import log
 
 
-class SqliteStateStore:
-    """SQLite-based state store for tracking seen papers."""
+class SqliteDeduplicateStore:
+    """SQLite-based deduplication store for tracking seen papers."""
     
     def __init__(self, db_path: Path):
-        """Initialize state store.
+        """Initialize deduplication store.
         
         Args:
             db_path: Absolute path or project-relative path to database file.
@@ -23,7 +23,7 @@ class SqliteStateStore:
             OSError: If directory creation fails.
             sqlite3.Error: If database initialization fails.
         """
-        log.debug("Initializing SqliteStateStore at %s", db_path)
+        log.debug("Initializing SqliteDeduplicateStore at %s", db_path)
         self.conn = ensure_db(db_path)
         init_schema(self.conn)
     

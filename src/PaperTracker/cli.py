@@ -19,7 +19,7 @@ from PaperTracker.renderers.json import render_json
 from PaperTracker.services.search import PaperSearchService
 from PaperTracker.sources.arxiv.client import ArxivApiClient
 from PaperTracker.sources.arxiv.source import ArxivSource
-from PaperTracker.storage.state import SqliteStateStore
+from PaperTracker.storage.deduplicate import SqliteDeduplicateStore
 from PaperTracker.utils.log import configure_logging, log
 
 
@@ -68,7 +68,7 @@ def search_cmd(ctx: click.Context) -> None:
         state_store = None
         if cfg.state_enabled:
             db_path = Path(cfg.state_db_path)
-            state_store = SqliteStateStore(db_path)
+            state_store = SqliteDeduplicateStore(db_path)
             log.info("State management enabled: %s", db_path)
 
         service = PaperSearchService(

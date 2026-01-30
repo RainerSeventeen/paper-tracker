@@ -44,7 +44,7 @@ class AppConfig:
     sort_order: str = "descending"
     output_format: str = "text"
     state_enabled: bool = False
-    state_db_path: str = "database/state.db"
+    state_db_path: str = "state/papers.db"
     arxiv_keep_version: bool = False
 
 
@@ -247,7 +247,7 @@ def load_config(path: Path) -> AppConfig:
     state_enabled = bool(_get(state_obj, "enabled", False))
     state_db_path_raw = _get(state_obj, "db_path", None)
     if state_db_path_raw is None:
-        state_db_path = "database/state.db"
+        state_db_path = "state/papers.db"
     else:
         state_db_path = str(state_db_path_raw)
     arxiv_keep_version = bool(_get(raw, "arxiv.keep_version", False))
