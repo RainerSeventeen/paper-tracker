@@ -9,7 +9,7 @@ log:
 
 # State management (deduplication)
 state:
-  enabled: ture
+  enabled: true
   db_path: null   # use `database/state.db` if null, else a absolute path
 
 # arXiv behavior

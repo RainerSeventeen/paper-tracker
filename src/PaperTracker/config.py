@@ -8,8 +8,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-import re
 from typing import Any, Mapping
+
+import yaml
 
 from PaperTracker.core.query import FieldQuery, SearchQuery
 
@@ -52,6 +53,17 @@ _ALLOWED_OPS = {"AND", "OR", "NOT"}
 
 
 def _as_str_list(value: Any) -> list[str]:
+    """Normalize a term list into a list of stripped strings.
+
+    Args:
+        value: A string, list of strings, or None.
+
+    Returns:
+        A list of non-empty, stripped strings.
+
+    Raises:
+        TypeError: If the input is not a string, list of strings, or None.
+    """
     if value is None:
         return []
     if isinstance(value, str):
@@ -70,6 +82,18 @@ def _as_str_list(value: Any) -> list[str]:
 
 
 def _parse_field_query(value: Any) -> FieldQuery:
+    """Parse a field query mapping into a FieldQuery object.
+
+    Args:
+        value: Mapping containing AND/OR/NOT keys.
+
+    Returns:
+        A FieldQuery with normalized term lists.
+
+    Raises:
+        TypeError: If the value is not a mapping.
+        ValueError: If unknown operators are provided.
+    """
     if value is None:
         return FieldQuery()
     if not isinstance(value, Mapping):
@@ -85,6 +109,18 @@ def _parse_field_query(value: Any) -> FieldQuery:
 
 
 def _parse_search_query(value: Any) -> SearchQuery:
+    """Parse a query mapping into a SearchQuery object.
+
+    Args:
+        value: Mapping containing query fields and optional NAME.
+
+    Returns:
+        A SearchQuery with normalized fields.
+
+    Raises:
+        TypeError: If the value is not a mapping or fields are invalid.
+        ValueError: If required fields are missing or invalid.
+    """
     if not isinstance(value, Mapping):
         raise TypeError("Each query must be an object")
 
@@ -118,159 +154,36 @@ def _parse_search_query(value: Any) -> SearchQuery:
     return SearchQuery(name=name, fields=fields)
 
 
-_RE_INT = re.compile(r"^[+-]?\d+$")
-_RE_FLOAT = re.compile(r"^[+-]?(?:\d+\.\d*|\d*\.\d+)$")
+def _parse_yaml(text: str) -> dict[str, Any]:
+    """Parse YAML configuration text using PyYAML.
 
+    Args:
+        text: Raw YAML string.
 
-def _strip_comment(line: str) -> str:
-    """Remove trailing YAML-style comments.
+    Returns:
+        Parsed YAML data as a mapping.
 
-    This is a minimal implementation intended for simple config files.
+    Raises:
+        ValueError: If the YAML root is not a mapping.
+        yaml.YAMLError: If the YAML is invalid.
     """
-    if "#" not in line:
-        return line
-    return line.split("#", 1)[0]
-
-
-def _parse_scalar(text: str) -> Any:
-    """Parse a scalar value from the minimal YAML subset."""
-    s = text.strip()
-    if s in {"", "null", "~"}:
-        return None
-    sl = s.lower()
-    if sl == "true":
-        return True
-    if sl == "false":
-        return False
-    if (s.startswith('"') and s.endswith('"')) or (s.startswith("'") and s.endswith("'")):
-        return s[1:-1]
-    if _RE_INT.match(s):
-        try:
-            return int(s)
-        except ValueError:
-            return s
-    if _RE_FLOAT.match(s):
-        try:
-            return float(s)
-        except ValueError:
-            return s
-    return s
-
-
-def _parse_inline_list(text: str) -> list[Any]:
-    """Parse an inline list like `[a, b, "c d"]`."""
-    inner = text.strip()[1:-1].strip()
-    if not inner:
-        return []
-    parts = [p.strip() for p in inner.split(",")]
-    return [_parse_value(p) for p in parts if p]
-
-
-def _parse_value(text: str) -> Any:
-    """Parse either a scalar or an inline list from the minimal YAML subset."""
-    s = text.strip()
-    if s.startswith("[") and s.endswith("]"):
-        return _parse_inline_list(s)
-    return _parse_scalar(s)
-
-
-def _parse_yaml_minimal(text: str) -> dict[str, Any]:
-    """Parse a small, YAML-like subset used by this project.
-
-    Supported constructs:
-    - Mappings: `key: value` and nested mappings via indentation
-    - Lists: `key: [a, b]` and block lists with `- item`
-    - Scalars: strings, ints, floats, booleans, null
-
-    This is intentionally limited to avoid extra dependencies.
-    """
-
-    raw_lines = []
-    for ln in text.splitlines():
-        ln = _strip_comment(ln).rstrip("\n")
-        if ln.strip() == "":
-            continue
-        if "\t" in ln:
-            raise ValueError("Tabs are not supported in config indentation")
-        raw_lines.append(ln.rstrip())
-
-    root: dict[str, Any] = {}
-    stack: list[tuple[int, Any]] = [(0, root)]
-
-    def indent_of(s: str) -> int:
-        return len(s) - len(s.lstrip(" "))
-
-    i = 0
-    while i < len(raw_lines):
-        line = raw_lines[i]
-        indent = indent_of(line)
-        content = line.strip()
-
-        while len(stack) > 1 and indent < stack[-1][0]:
-            stack.pop()
-        container = stack[-1][1]
-
-        if content.startswith("- "):
-            if not isinstance(container, list):
-                raise ValueError(f"List item found where mapping was expected: {line!r}")
-
-            item_text = content[2:].strip()
-            # Support list-of-mappings with inline first key, e.g. `- NAME: q1`.
-            if ":" in item_text:
-                k, sep, rest = item_text.partition(":")
-                if sep != ":":
-                    raise ValueError(f"Invalid list mapping item: {line!r}")
-                d: dict[str, Any] = {}
-                if rest.strip():
-                    d[k.strip()] = _parse_value(rest.strip())
-                else:
-                    d[k.strip()] = {}
-                container.append(d)
-                stack.append((indent + 2, d))
-                i += 1
-                continue
-
-            container.append(_parse_value(item_text))
-            i += 1
-            continue
-
-        key, sep, rest = content.partition(":")
-        if sep != ":":
-            raise ValueError(f"Invalid config line (missing ':'): {line!r}")
-        key = key.strip()
-        rest = rest.strip()
-        if not isinstance(container, Mapping):
-            raise ValueError(f"Mapping entry found where list was expected: {line!r}")
-
-        if rest:
-            container[key] = _parse_value(rest)
-            i += 1
-            continue
-
-        # `key:` with a nested block. Decide dict vs list by looking ahead.
-        j = i + 1
-        while j < len(raw_lines) and raw_lines[j].strip() == "":
-            j += 1
-        if j >= len(raw_lines) or indent_of(raw_lines[j]) <= indent:
-            container[key] = {}
-            i += 1
-            continue
-
-        next_content = raw_lines[j].strip()
-        nested: Any
-        if next_content.startswith("- "):
-            nested = []
-        else:
-            nested = {}
-        container[key] = nested
-        stack.append((indent_of(raw_lines[j]), nested))
-        i += 1
-
-    return root
+    data = yaml.safe_load(text) or {}
+    if not isinstance(data, Mapping):
+        raise ValueError("Config root must be a mapping/object")
+    return dict(data)
 
 
 def _get(d: Mapping[str, Any], path: str, default: Any = None) -> Any:
-    """Get nested key from mapping by dotted path."""
+    """Get nested key from mapping by dotted path.
+
+    Args:
+        d: Mapping to search.
+        path: Dotted key path (e.g., "log.level").
+        default: Default value if missing.
+
+    Returns:
+        Value found at the path or the default.
+    """
     cur: Any = d
     for key in path.split("."):
         if not isinstance(cur, Mapping) or key not in cur:
@@ -297,11 +210,20 @@ def load_config(path: Path) -> AppConfig:
     - `search.sort_order` / `sort_order`
     - `output.format` / `format`
     - `arxiv.keep_version`
+    
+    Args:
+        path: Path to the YAML config file.
+
+    Returns:
+        Normalized application configuration.
+
+    Raises:
+        OSError: If the file cannot be read.
+        ValueError: If the YAML is invalid or the config is malformed.
+        TypeError: If required fields are missing or have wrong types.
     """
 
-    raw = _parse_yaml_minimal(path.read_text(encoding="utf-8"))
-    if not isinstance(raw, Mapping):
-        raise TypeError("Config root must be a mapping/object")
+    raw = _parse_yaml(path.read_text(encoding="utf-8"))
 
     log_level = str(_get(raw, "log.level", _get(raw, "log_level", "INFO")) or "INFO").upper()
     log_to_file = bool(_get(raw, "log.to_file", _get(raw, "log_to_file", True)))
