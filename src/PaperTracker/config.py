@@ -29,6 +29,7 @@ class AppConfig:
         sort_by: Sort field.
         sort_order: Sort order.
         output_format: Output format (text/json).
+        output_dir: Directory for JSON output files.
         state_enabled: Whether to enable state management.
         state_db_path: Database path for state management.
         content_storage_enabled: Whether to enable content storage for full paper data.
@@ -44,6 +45,7 @@ class AppConfig:
     sort_by: str = "submittedDate"
     sort_order: str = "descending"
     output_format: str = "text"
+    output_dir: str = "output"
     state_enabled: bool = False
     state_db_path: str = "database/papers.db"
     content_storage_enabled: bool = False
@@ -211,6 +213,7 @@ def load_config(path: Path) -> AppConfig:
     - `search.sort_by` / `sort_by`
     - `search.sort_order` / `sort_order`
     - `output.format` / `format`
+    - `output.dir` - Output directory for JSON files
     - `state.enabled` - Enable state management (deduplication)
     - `state.db_path` - Database path (default: database/papers.db)
     - `state.content_storage_enabled` - Enable full content storage (default: false)
@@ -247,6 +250,7 @@ def load_config(path: Path) -> AppConfig:
     sort_order = str(_get(raw, "search.sort_order", _get(raw, "sort_order", "descending")) or "descending")
 
     output_format = str(_get(raw, "output.format", _get(raw, "format", "text")) or "text").lower()
+    output_dir = str(_get(raw, "output.dir", "output") or "output")
 
     state_obj = raw.get("state", )
     state_enabled = bool(_get(state_obj, "enabled", False))
@@ -273,6 +277,7 @@ def load_config(path: Path) -> AppConfig:
         sort_by=sort_by,
         sort_order=sort_order,
         output_format=output_format,
+        output_dir=output_dir,
         state_enabled=state_enabled,
         state_db_path=state_db_path,
         content_storage_enabled=content_storage_enabled,

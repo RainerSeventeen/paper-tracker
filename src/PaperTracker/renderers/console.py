@@ -1,6 +1,7 @@
 """Console text output renderers.
 
 Renders a list of `Paper` into human-friendly text.
+Provides ConsoleOutputWriter implementation for command output.
 """
 
 from __future__ import annotations
@@ -9,6 +10,9 @@ from datetime import datetime
 from typing import Iterable
 
 from PaperTracker.core.models import Paper
+from PaperTracker.core.query import SearchQuery
+from PaperTracker.renderers.base import OutputWriter
+from PaperTracker.utils.log import log
 
 
 def _fmt_dt(dt: datetime | None) -> str:
@@ -48,4 +52,27 @@ def render_text(papers: Iterable[Paper]) -> str:
             lines.append(f"   PDF: {paper.links.pdf}")
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
+
+
+class ConsoleOutputWriter(OutputWriter):
+    """Write results to console via logging."""
+
+    def write_query_result(
+        self,
+        papers: list[Paper],
+        query: SearchQuery,
+        scope: SearchQuery | None,
+    ) -> None:
+        """Write query result to console.
+
+        Args:
+            papers: List of papers found.
+            query: The query that produced these results.
+            scope: Optional global scope applied to the query.
+        """
+        for line in render_text(papers).splitlines():
+            log.info(line)
+
+    def finalize(self, action: str) -> None:
+        """No-op for console output."""
 

@@ -76,7 +76,17 @@ scope:
 ### 2.5 `output`
 
 - `format`: `text` / `json`
-  - When `json`, results are saved to `output/` as a timestamped JSON file.
+  - `text`: 将结果通过日志输出到控制台
+  - `json`: 将结果保存为时间戳 JSON 文件
+- `dir`: 可选，默认 `output`，指定 JSON 文件的输出目录
+
+示例：
+
+```yml
+output:
+  format: json
+  dir: custom_output  # 输出文件到 custom_output/ 目录
+```
 
 ### 2.6 `arxiv`
 
