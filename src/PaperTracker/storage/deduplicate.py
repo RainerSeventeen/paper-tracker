@@ -1,31 +1,27 @@
-"""State store implementation."""
+"""Deduplication store implementation."""
 
 from __future__ import annotations
 
-from pathlib import Path
-from typing import Sequence
+from typing import TYPE_CHECKING, Sequence
 
 from PaperTracker.core.models import Paper
-from PaperTracker.storage.db import ensure_db, init_schema
 from PaperTracker.utils.log import log
 
+if TYPE_CHECKING:
+    from PaperTracker.storage.db import DatabaseManager
 
-class SqliteStateStore:
-    """SQLite-based state store for tracking seen papers."""
-    
-    def __init__(self, db_path: Path):
-        """Initialize state store.
-        
+
+class SqliteDeduplicateStore:
+    """SQLite-based deduplication store for tracking seen papers."""
+
+    def __init__(self, db_manager: DatabaseManager):
+        """Initialize deduplication store.
+
         Args:
-            db_path: Absolute path or project-relative path to database file.
-            
-        Raises:
-            OSError: If directory creation fails.
-            sqlite3.Error: If database initialization fails.
+            db_manager: Shared database manager instance.
         """
-        log.debug("Initializing SqliteStateStore at %s", db_path)
-        self.conn = ensure_db(db_path)
-        init_schema(self.conn)
+        log.debug("Initializing SqliteDeduplicateStore")
+        self.conn = db_manager.get_connection()
     
     def filter_new(self, papers: Sequence[Paper]) -> list[Paper]:
         """Filter papers to only new ones not seen before.
@@ -83,8 +79,3 @@ class SqliteStateStore:
         
         self.conn.commit()
         log.debug("Marked %d papers as seen", len(papers))
-    
-    def close(self) -> None:
-        """Close database connection."""
-        if self.conn:
-            self.conn.close()

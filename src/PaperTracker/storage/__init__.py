@@ -2,6 +2,6 @@
 
 from __future__ import annotations
 
-from PaperTracker.storage.state import SqliteStateStore
+from PaperTracker.storage.deduplicate import SqliteDeduplicateStore
 
 __all__ = ["SqliteStateStore"]

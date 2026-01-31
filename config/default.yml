@@ -10,7 +10,8 @@ log:
 # State management (deduplication)
 state:
   enabled: true
-  db_path: null   # use `database/state.db` if null, else a absolute path
+  db_path: null   # use `database/papers.db` if null, else a absolute path
+  content_storage_enabled: false  # save full paper content (default: false)
 
 # arXiv behavior
 arxiv:
