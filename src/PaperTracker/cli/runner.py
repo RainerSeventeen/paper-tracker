@@ -9,9 +9,10 @@ from __future__ import annotations
 import click
 
 from PaperTracker.cli.commands import SearchCommand
-from PaperTracker.cli.factories import ServiceFactory, StorageFactory
 from PaperTracker.config import AppConfig
 from PaperTracker.renderers import create_output_writer
+from PaperTracker.services import create_search_service
+from PaperTracker.storage import create_storage
 from PaperTracker.utils.log import configure_logging, log
 
 
@@ -50,10 +51,10 @@ class CommandRunner:
         )
         try:
             # Create storage components
-            db_manager, dedup_store, content_store = StorageFactory.create_storage(self.config)
+            db_manager, dedup_store, content_store = create_storage(self.config)
 
             # Create service and output writer
-            search_service = ServiceFactory.create_arxiv_service(self.config)
+            search_service = create_search_service(self.config)
             output_writer = create_output_writer(self.config)
 
             # Create command with dependencies injected

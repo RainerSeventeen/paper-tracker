@@ -16,10 +16,17 @@ src/PaperTracker/
 │   ├── __init__.py       # 包导出 + main() 入口点
 │   ├── ui.py             # Click 命令行定义
 │   ├── commands.py       # SearchCommand 业务逻辑
-│   ├── factories.py      # 工厂函数（ServiceFactory, StorageFactory）
 │   └── runner.py         # CommandRunner 运行协调
+├── services/
+│   ├── __init__.py       # 导出 PaperSearchService + create_search_service() 工厂
+│   └── search.py         # PaperSearchService 实现
+├── storage/
+│   ├── __init__.py       # 导出存储类 + create_storage() 工厂
+│   ├── db.py             # DatabaseManager
+│   ├── deduplicate.py    # SqliteDeduplicateStore
+│   └── content.py        # PaperContentStore
 └── renderers/
-    ├── __init__.py       # 导出 OutputWriter 协议 + 工厂函数
+    ├── __init__.py       # 导出 OutputWriter 协议 + create_output_writer() 工厂
     ├── base.py           # OutputWriter 协议定义
     ├── console.py        # render_text + ConsoleOutputWriter 实现
     └── json.py           # render_json + JsonFileWriter 实现
@@ -36,9 +43,11 @@ search_cmd() [Click Command]
   ↓
 CommandRunner.run_search()
   ├─ 配置日志
-  ├─ ServiceFactory.create_arxiv_service() → PaperSearchService
-  ├─ StorageFactory.create_storage() → (DatabaseManager, DeduplicateStore, ContentStore)
-  ├─ create_output_writer() → OutputWriter
+  ├─ create_search_service(config) → PaperSearchService
+  │  └─ 在 services/__init__.py 中创建
+  ├─ create_storage(config) → (DatabaseManager, DeduplicateStore, ContentStore)
+  │  └─ 在 storage/__init__.py 中创建
+  ├─ create_output_writer(config) → OutputWriter
   │  └─ 在 renderers/__init__.py 中根据 config.output_format 决定实现
   ├─ SearchCommand(config, service, dedup, content, writer)
   └─ command.execute() + writer.finalize()
@@ -156,38 +165,51 @@ class CommandRunner:
 - 管理数据库上下文（使用 `with` 语句）
 - 捕获并报告异常
 
-### 4. Factories (`factories.py`)
+### 4. 工厂函数 (Factory Functions)
 
-集中管理组件创建，解耦 CLI 与具体实现：
+各模块在各自的 `__init__.py` 中提供工厂函数，解耦创建逻辑与使用：
 
+**服务层** (`services/__init__.py`)：
 ```python
-class ServiceFactory:
-    @staticmethod
-    def create_arxiv_service(config: AppConfig) -> PaperSearchService:
-        """创建带 ArxivSource 的搜索服务。"""
+def create_search_service(config: AppConfig) -> PaperSearchService:
+    """Create search service with configured source."""
+    return PaperSearchService(
+        source=ArxivSource(
+            client=ArxivApiClient(),
+            scope=config.scope,
+            keep_version=config.arxiv_keep_version,
+        )
+    )
+```
 
-class StorageFactory:
-    @staticmethod
-    def create_storage(config: AppConfig) -> tuple[...]:
-        """创建数据库管理器和存储组件。"""
+**存储层** (`storage/__init__.py`)：
+```python
+def create_storage(config: AppConfig) -> tuple[...]:
+    """Create database manager and storage components."""
+    # 根据配置返回相应的组件
+```
 
-class OutputFactory:
-    @staticmethod
-    def create_writer(config: AppConfig) -> OutputWriter:
-        """根据配置创建输出写入器。"""
+**输出层** (`renderers/__init__.py`)：
+```python
+def create_output_writer(config: AppConfig) -> OutputWriter:
+    """Create output writer based on config."""
+    if config.output_format == "json":
+        return JsonFileWriter(config.output_dir)
+    return ConsoleOutputWriter()
 ```
 
 **扩展**：
-要添加新的数据源（如 Google Scholar），添加新的工厂方法：
+要添加新的数据源（如 Google Scholar），在 `services/__init__.py` 中扩展工厂：
 
 ```python
-class ServiceFactory:
-    @staticmethod
-    def create_scholar_service(config: AppConfig) -> PaperSearchService:
-        """创建带 ScholarSource 的搜索服务。"""
+def create_search_service(config: AppConfig) -> PaperSearchService:
+    if config.source_type == "scholar":
+        return PaperSearchService(source=ScholarSource(...))
+    # 默认使用 ArxivSource
+    return PaperSearchService(source=ArxivSource(...))
 ```
 
-然后在 `CommandRunner` 或 `cli/ui.py` 中根据配置选择。
+这样保持了模块独立性，各层可以在自己的 `__init__.py` 中完整地管理创建逻辑。
 
 ### 5. Click UI (`ui.py`)
 
@@ -288,19 +310,27 @@ output:
 
 1. 创建 `sources/scholar/` 包，实现 Scholar API 客户端和源
 
-2. 在 `factories.py` 中添加工厂方法：
+2. 在 `services/__init__.py` 中扩展工厂函数：
 ```python
-@staticmethod
-def create_scholar_service(config: AppConfig) -> PaperSearchService:
+def create_search_service(config: AppConfig) -> PaperSearchService:
+    if config.source_type == "scholar":
+        return PaperSearchService(
+            source=ScholarSource(
+                client=ScholarApiClient(),
+                # ...
+            )
+        )
+    # 默认使用 ArxivSource
     return PaperSearchService(
-        source=ScholarSource(
-            client=ScholarApiClient(),
-            # ...
+        source=ArxivSource(
+            client=ArxivApiClient(),
+            scope=config.scope,
+            keep_version=config.arxiv_keep_version,
         )
     )
 ```
 
-3. 根据配置选择数据源（例如通过 `config.source_type` 字段）
+3. 在配置文件中指定数据源（需要添加 `source_type` 字段到 `AppConfig`）
 
 ---
 
