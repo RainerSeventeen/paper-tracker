@@ -31,6 +31,7 @@ class AppConfig:
         output_format: Output format (text/json).
         state_enabled: Whether to enable state management.
         state_db_path: Database path for state management.
+        content_storage_enabled: Whether to enable content storage for full paper data.
         arxiv_keep_version: Whether to keep arXiv version suffix in the paper id.
     """
 
@@ -44,7 +45,8 @@ class AppConfig:
     sort_order: str = "descending"
     output_format: str = "text"
     state_enabled: bool = False
-    state_db_path: str = "state/papers.db"
+    state_db_path: str = "database/papers.db"
+    content_storage_enabled: bool = False
     arxiv_keep_version: bool = False
 
 
@@ -209,8 +211,11 @@ def load_config(path: Path) -> AppConfig:
     - `search.sort_by` / `sort_by`
     - `search.sort_order` / `sort_order`
     - `output.format` / `format`
+    - `state.enabled` - Enable state management (deduplication)
+    - `state.db_path` - Database path (default: database/papers.db)
+    - `state.content_storage_enabled` - Enable full content storage (default: false)
     - `arxiv.keep_version`
-    
+
     Args:
         path: Path to the YAML config file.
 
@@ -247,9 +252,10 @@ def load_config(path: Path) -> AppConfig:
     state_enabled = bool(_get(state_obj, "enabled", False))
     state_db_path_raw = _get(state_obj, "db_path", None)
     if state_db_path_raw is None:
-        state_db_path = "state/papers.db"
+        state_db_path = "database/papers.db"
     else:
         state_db_path = str(state_db_path_raw)
+    content_storage_enabled = bool(_get(state_obj, "content_storage_enabled", False))
     arxiv_keep_version = bool(_get(raw, "arxiv.keep_version", False))
 
     if not queries:
@@ -269,5 +275,6 @@ def load_config(path: Path) -> AppConfig:
         output_format=output_format,
         state_enabled=state_enabled,
         state_db_path=state_db_path,
+        content_storage_enabled=content_storage_enabled,
         arxiv_keep_version=arxiv_keep_version,
     )

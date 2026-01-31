@@ -6,6 +6,70 @@ import sqlite3
 from pathlib import Path
 
 
+class DatabaseManager:
+    """Shared database connection manager.
+
+    Uses singleton pattern to ensure only one connection is created per database path.
+    This avoids connection resource waste, transaction isolation issues, and concurrent
+    write conflicts.
+
+    Supports context manager protocol for automatic connection cleanup.
+    """
+
+    _instance = None
+
+    def __new__(cls, db_path: Path):
+        """Create or return existing DatabaseManager instance.
+
+        Args:
+            db_path: Absolute path or project-relative path to database file.
+
+        Returns:
+            DatabaseManager singleton instance.
+        """
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.conn = ensure_db(db_path)
+            init_schema(cls._instance.conn)
+        return cls._instance
+
+    def get_connection(self) -> sqlite3.Connection:
+        """Get the shared database connection.
+
+        Returns:
+            SQLite connection.
+        """
+        return self.conn
+
+    def close(self) -> None:
+        """Close the database connection and reset singleton instance.
+
+        This ensures the connection is properly closed and allows creating
+        a new instance with a different database path if needed.
+        """
+        if hasattr(self, 'conn') and self.conn:
+            self.conn.close()
+            type(self)._instance = None
+
+    def __enter__(self) -> DatabaseManager:
+        """Enter context manager.
+
+        Returns:
+            Self for use in with statement.
+        """
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        """Exit context manager and close connection.
+
+        Args:
+            exc_type: Exception type if an exception occurred.
+            exc_val: Exception value if an exception occurred.
+            exc_tb: Exception traceback if an exception occurred.
+        """
+        self.close()
+
+
 def ensure_db(db_path: Path) -> sqlite3.Connection:
     """Ensure database file exists and return connection.
     
@@ -25,8 +89,8 @@ def ensure_db(db_path: Path) -> sqlite3.Connection:
 
 
 def init_schema(conn: sqlite3.Connection) -> None:
-    """Initialize database schema.
-    
+    """Initialize database schema for both deduplication and content storage.
+
     Args:
         conn: SQLite connection.
     """
@@ -37,7 +101,7 @@ def init_schema(conn: sqlite3.Connection) -> None:
           source_id TEXT NOT NULL,
           doi TEXT,
           doi_norm TEXT GENERATED ALWAYS AS (
-            CASE 
+            CASE
               WHEN doi IS NULL OR trim(doi) = '' THEN NULL
               ELSE lower(
                 trim(
@@ -60,12 +124,49 @@ def init_schema(conn: sqlite3.Connection) -> None:
           ),
           UNIQUE(source, source_id)
         );
-        
+
+        CREATE TABLE IF NOT EXISTS paper_content (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          seen_paper_id INTEGER NOT NULL,
+          source TEXT NOT NULL,
+          source_id TEXT NOT NULL,
+          title TEXT NOT NULL,
+          authors TEXT NOT NULL,
+          summary TEXT NOT NULL,
+          published_at INTEGER,
+          updated_at INTEGER,
+          fetched_at INTEGER NOT NULL DEFAULT (CAST(strftime('%s','now') AS INTEGER)),
+          primary_category TEXT,
+          categories TEXT,
+          abstract_url TEXT,
+          pdf_url TEXT,
+          code_urls TEXT,
+          project_urls TEXT,
+          doi TEXT,
+          translation TEXT,
+          language TEXT,
+          extra TEXT,
+          FOREIGN KEY (seen_paper_id) REFERENCES seen_papers(id) ON DELETE CASCADE,
+          UNIQUE(source, source_id, fetched_at)
+        );
+
         CREATE INDEX IF NOT EXISTS idx_seen_doi_norm
           ON seen_papers(doi_norm)
           WHERE doi_norm IS NOT NULL AND doi_norm <> '';
-        
+
         CREATE INDEX IF NOT EXISTS idx_seen_first_seen
           ON seen_papers(first_seen_at);
+
+        CREATE INDEX IF NOT EXISTS idx_content_seen_paper
+          ON paper_content(seen_paper_id);
+
+        CREATE INDEX IF NOT EXISTS idx_content_source_id
+          ON paper_content(source, source_id);
+
+        CREATE INDEX IF NOT EXISTS idx_content_fetched
+          ON paper_content(fetched_at);
+
+        CREATE INDEX IF NOT EXISTS idx_content_category
+          ON paper_content(primary_category);
     """)
     conn.commit()
