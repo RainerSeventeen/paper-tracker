@@ -87,7 +87,20 @@ def save_papers(self, papers: Sequence[Paper]) -> None:
 
 ## 功能扩展
 
-（暂无）
+### 接受更新推送
+
+**问题描述**：
+
+目前去重逻辑只按 `source_id` 判断，未记录论文上次 `updated_at` / 摘要变化，无法识别并区分“更新”与“新论文”。开启“接受老文章更新推送”的开关后，会漏报或误报。
+
+**优化方案**：
+
+- 在 `seen_papers` 增加 `last_updated_at`、`last_summary_hash`（或等价字段），用于判定是否发生有效更新。
+- 同一 `source_id` 再次出现时，若 `updated_at` 或摘要 hash 变更，则标记为 update 并推送；否则按已读过滤。
+- 渲染输出增加“更新”标记（例如在 `Paper.extra` 放入 `is_update` / `previous_updated_at`）。
+- 开启更新推送时建议将排序切换到 `lastUpdatedDate` 以避免更新被排后。
+
+**优先级**：中等（需要状态扩展；可先按 updated_at 判定，再逐步加入摘要 hash）
 
 ---
 
