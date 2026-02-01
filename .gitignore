@@ -61,5 +61,6 @@ database/
 
 # ---- Agents ----
 .claude/
+.ai_docs/
 CLAUDE.md
 AGENTS.md
