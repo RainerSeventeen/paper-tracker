@@ -34,6 +34,16 @@ class AppConfig:
         state_db_path: Database path for state management.
         content_storage_enabled: Whether to enable content storage for full paper data.
         arxiv_keep_version: Whether to keep arXiv version suffix in the paper id.
+        llm_enabled: Enable LLM translation features.
+        llm_provider: LLM provider type (currently only 'openai-compat').
+        llm_base_url: API base URL (supports partial URLs).
+        llm_model: Model identifier.
+        llm_api_key_env: Environment variable name for API key.
+        llm_timeout: Request timeout in seconds.
+        llm_target_lang: Target language for translation.
+        llm_temperature: Sampling temperature.
+        llm_max_tokens: Maximum response tokens.
+        llm_max_workers: Parallel translation workers.
     """
 
     log_level: str = "INFO"
@@ -50,6 +60,16 @@ class AppConfig:
     state_db_path: str = "database/papers.db"
     content_storage_enabled: bool = False
     arxiv_keep_version: bool = False
+    llm_enabled: bool = False
+    llm_provider: str = "openai-compat"
+    llm_base_url: str = "https://api.openai.com"
+    llm_model: str = "gpt-4o-mini"
+    llm_api_key_env: str = "LLM_API_KEY"
+    llm_timeout: int = 30
+    llm_target_lang: str = "zh"
+    llm_temperature: float = 0.0
+    llm_max_tokens: int = 800
+    llm_max_workers: int = 3
 
 
 _ALLOWED_FIELDS = {"TITLE", "ABSTRACT", "AUTHOR", "JOURNAL", "CATEGORY"}
@@ -262,6 +282,19 @@ def load_config(path: Path) -> AppConfig:
     content_storage_enabled = bool(_get(state_obj, "content_storage_enabled", False))
     arxiv_keep_version = bool(_get(raw, "arxiv.keep_version", False))
 
+    # LLM configuration
+    llm_obj = raw.get("llm", {})
+    llm_enabled = bool(_get(llm_obj, "enabled", False))
+    llm_provider = str(_get(llm_obj, "provider", "openai-compat") or "openai-compat")
+    llm_base_url = str(_get(llm_obj, "base_url", "https://api.openai.com") or "https://api.openai.com")
+    llm_model = str(_get(llm_obj, "model", "gpt-4o-mini") or "gpt-4o-mini")
+    llm_api_key_env = str(_get(llm_obj, "api_key_env", "LLM_API_KEY") or "LLM_API_KEY")
+    llm_timeout = int(_get(llm_obj, "timeout", 30) or 30)
+    llm_target_lang = str(_get(llm_obj, "target_lang", "zh") or "zh")
+    llm_temperature = float(_get(llm_obj, "temperature", 0.0) or 0.0)
+    llm_max_tokens = int(_get(llm_obj, "max_tokens", 800) or 800)
+    llm_max_workers = int(_get(llm_obj, "max_workers", 3) or 3)
+
     if not queries:
         raise ValueError("Missing required config: queries")
     if output_format not in {"text", "json"}:
@@ -282,4 +315,14 @@ def load_config(path: Path) -> AppConfig:
         state_db_path=state_db_path,
         content_storage_enabled=content_storage_enabled,
         arxiv_keep_version=arxiv_keep_version,
+        llm_enabled=llm_enabled,
+        llm_provider=llm_provider,
+        llm_base_url=llm_base_url,
+        llm_model=llm_model,
+        llm_api_key_env=llm_api_key_env,
+        llm_timeout=llm_timeout,
+        llm_target_lang=llm_target_lang,
+        llm_temperature=llm_temperature,
+        llm_max_tokens=llm_max_tokens,
+        llm_max_workers=llm_max_workers,
     )

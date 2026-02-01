@@ -10,6 +10,7 @@ import click
 
 from PaperTracker.cli.commands import SearchCommand
 from PaperTracker.config import AppConfig
+from PaperTracker.llm import create_llm_service
 from PaperTracker.renderers import create_output_writer
 from PaperTracker.services import create_search_service
 from PaperTracker.storage import create_storage
@@ -57,6 +58,9 @@ class CommandRunner:
             search_service = create_search_service(self.config)
             output_writer = create_output_writer(self.config)
 
+            # Create LLM service if enabled
+            llm_service = create_llm_service(self.config)
+
             # Create command with dependencies injected
             command = SearchCommand(
                 config=self.config,
@@ -64,6 +68,7 @@ class CommandRunner:
                 dedup_store=dedup_store,
                 content_store=content_store,
                 output_writer=output_writer,
+                llm_service=llm_service,
             )
 
             # Execute with proper resource cleanup
