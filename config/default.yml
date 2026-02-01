@@ -46,7 +46,7 @@ queries:
   #     - Video Restoration
 
 search:
-  max_results: 5
+  max_results: 3
   sort_by: submittedDate
   sort_order: descending
 
@@ -56,10 +56,8 @@ output:
 
 # LLM translation configuration
 llm:
-  enabled: false                          # Enable/disable LLM translation features
+  enabled: true                          # Enable/disable LLM translation features
   provider: openai-compat                 # Provider type (currently only this)
-  base_url: https://api.openai.com        # API base URL
-  model: gpt-4o-mini                      # Model identifier
   api_key_env: LLM_API_KEY                # Environment variable for API key
   timeout: 30                             # Request timeout (seconds)
   target_lang: zh                         # Target language (zh/en/ja/ko/fr/de/es)
@@ -67,6 +65,11 @@ llm:
   max_tokens: 800                         # Maximum response tokens
   max_workers: 3                          # Parallel translation workers
 
+  # base_url: https://api.openai.com        # API base URL
+  # model: gpt-4o-mini                      # Model identifier
+
+  base_url: https://api.deepseek.com
+  model: deepseek-chat
 # Provider-specific configuration examples:
 #
 # OpenAI GPT-4o-mini (recommended for cost):

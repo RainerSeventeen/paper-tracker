@@ -13,17 +13,28 @@
 
 ### 快速开始
 
-安装（推荐用虚拟环境）：
+**1. 安装依赖**（推荐用虚拟环境）：
 ```bash
 python -m pip install -e .
 ```
+
+**2. 配置环境变量**（如果使用 LLM 功能）：
+```bash
+cp .env.example .env
+# 编辑 .env 文件，填入你的 API 密钥
+```
+
+**3. 运行程序**：
+
 准备配置文件（参考 `config/default.yml`），然后运行：
+```bash
+paper-tracker --config config/default.yml search
+```
 
-- `paper-tracker --config config/default.yml search`
-
-配置文件写法与字段说明见：`docs/configuration.md`
-
-测试说明见：`docs/testing.md`
+**相关文档**：
+- 配置文件写法与字段说明：`docs/configuration.md`
+- 环境变量配置说明：`docs/environment-variables.md`
+- 测试说明见：`docs/testing.md`
 
 ## TODOs
 - 增加默认参数配置，手动写覆盖参数即可

@@ -9,6 +9,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import click
+from dotenv import load_dotenv
 
 from PaperTracker.cli.runner import CommandRunner
 from PaperTracker.config import load_config
@@ -27,10 +28,15 @@ from PaperTracker.config import load_config
 def cli(ctx: click.Context, config_path: Path) -> None:
     """CLI entry group.
 
+    Loads environment variables from .env file before processing config.
+
     Args:
         ctx: Click context.
         config_path: Path to YAML config file.
     """
+    # Load environment variables from .env file
+    load_dotenv()
+
     cfg = load_config(config_path)
     ctx.obj = cfg
 
