@@ -11,7 +11,7 @@ log:
 state:
   enabled: true
   db_path: null   # use `database/papers.db` if null, else a absolute path
-  content_storage_enabled: false  # save full paper content (default: false)
+  content_storage_enabled: true  # save full paper content (default: true)
 
 # arXiv behavior
 arxiv:
@@ -30,26 +30,62 @@ queries:
     OR:
       - Image Compression
       - Video Compression
-  - NAME: neural_video_compression
-    OR:
-      - Neural Video Compression
-      - Learned Video Compression
-      - End-to-end Video
-  - NAME: vqa
-    OR:
-      - Video Quality Assessment
-      - Perceptual Quality Assessment
-  - NAME: vsr
-    OR:
-      - Video Super Resolution
-      - VSR
-      - Video Restoration
+  # - NAME: neural_video_compression
+  #   OR:
+  #     - Neural Video Compression
+  #     - Learned Video Compression
+  #     - End-to-end Video
+  # - NAME: vqa
+  #   OR:
+  #     - Video Quality Assessment
+  #     - Perceptual Quality Assessment
+  # - NAME: vsr
+  #   OR:
+  #     - Video Super Resolution
+  #     - VSR
+  #     - Video Restoration
 
 search:
-  max_results: 5
+  max_results: 3
   sort_by: submittedDate
   sort_order: descending
 
 output:
   format: text # `text`, `json`
   dir: output/
+
+# LLM translation configuration
+llm:
+  enabled: true                          # Enable/disable LLM translation features
+  provider: openai-compat                 # Provider type (currently only this)
+  api_key_env: LLM_API_KEY                # Environment variable for API key
+  timeout: 30                             # Request timeout (seconds)
+  target_lang: zh                         # Target language (zh/en/ja/ko/fr/de/es)
+  temperature: 0.0                        # Sampling temperature (0.0 = deterministic)
+  max_tokens: 800                         # Maximum response tokens
+  max_workers: 3                          # Parallel translation workers
+
+  # base_url: https://api.openai.com        # API base URL
+  # model: gpt-4o-mini                      # Model identifier
+
+  base_url: https://api.deepseek.com
+  model: deepseek-chat
+# Provider-specific configuration examples:
+#
+# OpenAI GPT-4o-mini (recommended for cost):
+# llm:
+#   enabled: true
+#   base_url: https://api.openai.com
+#   model: gpt-4o-mini
+#
+# DeepSeek (very cost-effective):
+# llm:
+#   enabled: true
+#   base_url: https://api.deepseek.com
+#   model: deepseek-chat
+#
+# SiliconFlow (free tier available):
+# llm:
+#   enabled: true
+#   base_url: https://api.siliconflow.cn
+#   model: Qwen/Qwen2.5-7B-Instruct

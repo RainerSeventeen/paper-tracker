@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from PaperTracker.config import AppConfig
+from PaperTracker.llm import LLMService
 from PaperTracker.renderers import OutputWriter
 from PaperTracker.services.search import PaperSearchService
 from PaperTracker.storage.content import PaperContentStore
@@ -29,6 +30,7 @@ class SearchCommand:
     dedup_store: SqliteDeduplicateStore | None
     content_store: PaperContentStore | None
     output_writer: OutputWriter
+    llm_service: LLMService | None = None
 
     def execute(self) -> None:
         """Execute search for all configured queries.
@@ -79,5 +81,13 @@ class SearchCommand:
                     self.content_store.save_papers(papers)
 
                 papers = new_papers
+
+            # Translate papers if LLM is enabled
+            if self.llm_service and papers:
+                log.info("Generating LLM enrichment for %d papers", len(papers))
+                infos = self.llm_service.generate_batch(papers)
+
+                if self.content_store and infos:
+                    self.content_store.save_llm_generated(infos)
 
             self.output_writer.write_query_result(papers, query, self.config.scope)

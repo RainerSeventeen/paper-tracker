@@ -1,3 +1,9 @@
 [submodule "Arxiv-tracker"]
 	path = Arxiv-tracker
 	url = https://github.com/colorfulandcjy0806/Arxiv-tracker
+[submodule "libs/daily-arXiv-ai-enhanced"]
+	path = libs/daily-arXiv-ai-enhanced
+	url = https://github.com/dw-dengwei/daily-arXiv-ai-enhanced
+[submodule "libs/Arxiv-tracker"]
+	path = libs/Arxiv-tracker
+	url = https://github.com/colorfulandcjy0806/Arxiv-tracker

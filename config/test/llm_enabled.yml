@@ -1,0 +1,43 @@
+
+# Test configuration with LLM translation enabled
+# Run: paper-tracker --config config/test/llm_enabled.yml search
+
+log:
+  level: DEBUG
+  to_file: true
+  dir: log
+
+state:
+  enabled: true
+  content_storage_enabled: true
+
+arxiv:
+  keep_version: false
+
+queries:
+  - NAME: test_query
+    OR:
+      - Neural Network
+      - Deep Learning
+
+search:
+  max_results: 3
+  sort_by: submittedDate
+  sort_order: descending
+
+output:
+  format: text
+  dir: output/
+
+# LLM translation enabled for testing
+llm:
+  enabled: true
+  provider: openai-compat
+  base_url: https://api.openai.com
+  model: gpt-4o-mini
+  api_key_env: LLM_API_KEY
+  timeout: 30
+  target_lang: zh
+  temperature: 0.0
+  max_tokens: 800
+  max_workers: 3

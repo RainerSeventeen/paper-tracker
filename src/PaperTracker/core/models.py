@@ -31,7 +31,7 @@ class Paper:
         id: Source-specific unique identifier.
         title: Paper title.
         authors: Author names.
-        summary: Abstract/summary text.
+        abstract: Abstract text.
         published: First publication datetime if known.
         updated: Last update datetime if known.
         primary_category: Primary category/field if provided by the source.
@@ -45,7 +45,7 @@ class Paper:
     id: str
     title: str
     authors: Sequence[str]
-    summary: str
+    abstract: str
     published: Optional[datetime]
     updated: Optional[datetime]
     primary_category: Optional[str] = None
@@ -58,3 +58,17 @@ class Paper:
         # Keep a stable read-only mapping to support forward-compatible fields
         # without risking accidental mutation.
         object.__setattr__(self, "extra", MappingProxyType(dict(self.extra)))
+
+
+@dataclass(frozen=True, slots=True)
+class LLMGeneratedInfo:
+    """LLM-generated enrichment for a paper.
+
+    This data is stored separately from `Paper.extra` to avoid coupling the core
+    paper model to LLM concerns.
+    """
+
+    source: str
+    source_id: str
+    abstract_translation: str
+    language: str

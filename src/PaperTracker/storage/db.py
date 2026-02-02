@@ -132,7 +132,7 @@ def init_schema(conn: sqlite3.Connection) -> None:
           source_id TEXT NOT NULL,
           title TEXT NOT NULL,
           authors TEXT NOT NULL,
-          summary TEXT NOT NULL,
+          abstract TEXT NOT NULL,
           published_at INTEGER,
           updated_at INTEGER,
           fetched_at INTEGER NOT NULL DEFAULT (CAST(strftime('%s','now') AS INTEGER)),
