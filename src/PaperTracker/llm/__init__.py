@@ -41,11 +41,15 @@ def create_llm_service(config) -> LLMService | None:
             f"Set it in your .env file or shell environment."
         )
 
-    # Create HTTP client
+    # Create HTTP client with retry configuration
     client = LLMApiClient(
         base_url=config.llm_base_url,
         api_key=api_key,
         timeout=config.llm_timeout,
+        max_retries=config.llm_max_retries,
+        retry_base_delay=config.llm_retry_base_delay,
+        retry_max_delay=config.llm_retry_max_delay,
+        timeout_multiplier=config.llm_retry_timeout_multiplier,
     )
 
     # Create provider based on config
