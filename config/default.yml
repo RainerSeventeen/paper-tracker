@@ -65,6 +65,12 @@ llm:
   max_tokens: 800                         # Maximum response tokens
   max_workers: 3                          # Parallel translation workers
 
+  # Retry configuration (for handling timeouts and transient errors)
+  max_retries: 3                          # Maximum retry attempts (0 to disable)
+  retry_base_delay: 1.0                   # Base delay for exponential backoff (seconds)
+  retry_max_delay: 10.0                   # Maximum delay between retries (seconds)
+  retry_timeout_multiplier: 1.0           # Timeout multiplier per retry (1.0 = no change)
+
   # base_url: https://api.openai.com        # API base URL
   # model: gpt-4o-mini                      # Model identifier
 
