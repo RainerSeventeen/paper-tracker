@@ -84,11 +84,10 @@ class SearchCommand:
 
             # Translate papers if LLM is enabled
             if self.llm_service and papers:
-                log.info("Translating %d papers with LLM", len(papers))
-                papers = self.llm_service.translate_batch(papers)
+                log.info("Generating LLM enrichment for %d papers", len(papers))
+                infos = self.llm_service.generate_batch(papers)
 
-                # Update content store with translations if enabled
-                if self.content_store and papers:
-                    self.content_store.save_papers(papers)
+                if self.content_store and infos:
+                    self.content_store.save_llm_generated(infos)
 
             self.output_writer.write_query_result(papers, query, self.config.scope)

@@ -6,30 +6,26 @@ from typing import Protocol
 
 
 class LLMProvider(Protocol):
-    """Protocol for LLM translation providers.
+    """Protocol for LLM providers.
 
-    Implementations must support translating paper metadata to a target language.
+    Implementations must support generating enrichment fields, such as translation.
     """
 
     name: str
 
-    def translate_paper(
+    def translate_abstract(
         self,
-        title: str,
-        summary: str,
+        abstract: str,
         target_lang: str = "zh",
-    ) -> dict[str, str]:
-        """Translate paper title and summary.
+    ) -> str:
+        """Translate paper abstract.
 
         Args:
-            title: Paper title in English.
-            summary: Paper abstract in English.
+            abstract: Paper abstract in English.
             target_lang: Target language code (zh, en, ja, ko, fr, de, es).
 
         Returns:
-            Dictionary with translated fields:
-            - title_translated: Translated title
-            - summary_translated: Translated summary
+            Translated abstract text.
 
         Raises:
             Exception: If translation fails (caller should handle gracefully).

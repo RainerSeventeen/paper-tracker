@@ -18,7 +18,7 @@
 python -m pip install -e .
 ```
 
-**2. 配置环境变量**（如果使用 LLM 功能）：
+**2. 配置环境变量**（`config/default.yml` 默认启用 LLM 翻译，需要配置密钥；或在配置里关闭 `llm.enabled`）：
 ```bash
 cp .env.example .env
 # 编辑 .env 文件，填入你的 API 密钥
@@ -34,7 +34,7 @@ paper-tracker --config config/default.yml search
 **相关文档**：
 - 配置文件写法与字段说明：`docs/configuration.md`
 - 环境变量配置说明：`docs/environment-variables.md`
-- 测试说明见：`docs/testing.md`
+- 测试说明：`docs/testing.md`
 
 ## TODOs
 - 增加默认参数配置，手动写覆盖参数即可

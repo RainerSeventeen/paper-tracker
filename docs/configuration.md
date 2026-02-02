@@ -96,6 +96,35 @@ arXiv 专用选项。
   - `false`（默认）：`2601.21922v1` -> `2601.21922`
   - `true`：保留版本后缀（`2601.21922v1`）
 
+### 2.7 `state`（可选）
+
+状态管理（去重）与内容存储相关选项。
+
+- `enabled`：是否启用状态管理（去重）
+- `db_path`：SQLite 数据库路径；为 `null` 时使用默认 `database/papers.db`
+- `content_storage_enabled`：是否启用完整内容存储（将完整论文元数据写入 `paper_content` 表）
+
+说明：
+- `content_storage_enabled` 依赖 `enabled: true`
+- `config/default.yml` 中该选项目前为开启状态
+
+### 2.8 `llm`（可选）
+
+LLM 增强（当前实现：摘要翻译）相关选项。
+
+- `enabled`：是否启用 LLM 功能；启用后会对搜索结果进行翻译/增强
+- `provider`：提供商类型（当前为 `openai-compat`）
+- `api_key_env`：API Key 的环境变量名（默认 `LLM_API_KEY`）
+- `base_url`：OpenAI 兼容接口的 Base URL
+- `model`：模型名称（例如 `gpt-4o-mini`、`deepseek-chat`）
+- `timeout`：请求超时（秒）
+- `target_lang`：目标语言（例如 `zh`）
+- `temperature`、`max_tokens`：采样与输出长度控制
+- `max_workers`：并发 worker 数（用于并行翻译）
+
+说明：
+- 当 `llm.enabled: true` 时，必须设置对应的环境变量（默认 `LLM_API_KEY`），否则会报错并提示关闭或配置密钥。
+
 ---
 
 ## 3. Query 结构（重点）

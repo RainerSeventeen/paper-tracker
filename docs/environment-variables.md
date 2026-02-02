@@ -47,7 +47,7 @@ paper-tracker --config config/default.yml search
 
 **用途**：LLM 服务的 API 密钥
 
-**必需性**：当 `llm.enabled: true` 时必需
+**必需性**：当 `llm.enabled: true` 时必需（`config/default.yml` 默认启用）
 
 **说明**：
 - 适用于所有 OpenAI 兼容的 API 提供商（OpenAI、DeepSeek、SiliconFlow 等）
@@ -189,5 +189,4 @@ paper-tracker search
 ## 相关文档
 
 - [配置文件说明](configuration.md)
-- [LLM 翻译功能](../README.md#llm-翻译功能)
 - [python-dotenv 官方文档](https://github.com/theskumar/python-dotenv)

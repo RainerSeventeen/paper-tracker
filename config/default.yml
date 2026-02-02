@@ -11,7 +11,7 @@ log:
 state:
   enabled: true
   db_path: null   # use `database/papers.db` if null, else a absolute path
-  content_storage_enabled: false  # save full paper content (default: false)
+  content_storage_enabled: true  # save full paper content (default: true)
 
 # arXiv behavior
 arxiv:

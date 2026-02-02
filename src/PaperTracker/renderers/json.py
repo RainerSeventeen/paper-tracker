@@ -53,7 +53,7 @@ def render_json(papers: Iterable[Paper]) -> list[dict]:
             "id": paper.id,
             "title": paper.title,
             "authors": list(paper.authors),
-            "summary": paper.summary,
+            "abstract": paper.abstract,
             "published": paper.published.isoformat() if paper.published else None,
             "updated": paper.updated.isoformat() if paper.updated else None,
             "primary_category": paper.primary_category,

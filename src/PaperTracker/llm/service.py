@@ -1,4 +1,4 @@
-"""LLM service for batch paper translation."""
+"""LLM service for batch paper enrichment."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from typing import Sequence
 
-from PaperTracker.core.models import Paper
+from PaperTracker.core.models import LLMGeneratedInfo, Paper
 from PaperTracker.llm.provider import LLMProvider
 from PaperTracker.utils.log import log
 
@@ -23,102 +23,80 @@ class LLMService:
     max_workers: int = 3
     enabled: bool = True
 
-    def translate_batch(self, papers: Sequence[Paper]) -> Sequence[Paper]:
-        """Translate a batch of papers in parallel.
+    def generate_batch(self, papers: Sequence[Paper]) -> list[LLMGeneratedInfo]:
+        """Generate LLM enrichment for a batch of papers in parallel.
 
         Args:
-            papers: Papers to translate.
+            papers: Papers to enrich.
 
         Returns:
-            Papers with translations added to paper.extra['translation'].
-            Papers that fail translation are returned unchanged.
+            List of LLMGeneratedInfo objects for successful generations.
         """
         if not self.enabled or not papers:
-            return papers
+            return []
 
         log.info(
-            "Starting batch translation: papers=%d workers=%d lang=%s",
+            "Starting LLM batch: papers=%d workers=%d lang=%s",
             len(papers),
             self.max_workers,
             self.target_lang,
         )
 
-        # Create a list to preserve order
-        results = list(papers)
+        results: list[LLMGeneratedInfo] = []
 
         with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
-            # Submit all translation tasks
-            future_to_index = {
+            future_to_paper = {
                 executor.submit(
-                    self._translate_single,
+                    self._generate_single,
                     paper,
-                ): idx
-                for idx, paper in enumerate(papers)
+                ): paper
+                for paper in papers
             }
 
-            # Collect results as they complete
-            for future in as_completed(future_to_index):
-                idx = future_to_index[future]
+            for future in as_completed(future_to_paper):
+                paper = future_to_paper[future]
                 try:
-                    enhanced_paper = future.result()
-                    results[idx] = enhanced_paper
+                    info = future.result()
+                    if info is not None:
+                        results.append(info)
                 except Exception as e:  # noqa: BLE001
                     log.warning(
-                        "Translation failed for paper %s: %s",
-                        papers[idx].id,
+                        "LLM generation failed for paper %s: %s",
+                        paper.id,
                         e,
                     )
-                    # Keep original paper on failure
 
-        success_count = sum(
-            1 for p in results if "translation" in p.extra
-        )
         log.info(
-            "Batch translation complete: success=%d/%d",
-            success_count,
+            "LLM batch complete: success=%d/%d",
+            len(results),
             len(papers),
         )
 
         return results
 
-    def _translate_single(self, paper: Paper) -> Paper:
-        """Translate a single paper.
+    def _generate_single(self, paper: Paper) -> LLMGeneratedInfo | None:
+        """Generate LLM enrichment for a single paper.
 
         Args:
-            paper: Paper to translate.
+            paper: Paper to enrich.
 
         Returns:
-            Paper with translation added to extra field.
+            LLMGeneratedInfo on success, otherwise None.
 
         Raises:
             Exception: If translation fails.
         """
-        translation = self.provider.translate_paper(
-            title=paper.title,
-            summary=paper.summary,
+        abstract_translation = self.provider.translate_abstract(
+            abstract=paper.abstract,
             target_lang=self.target_lang,
         )
+        abstract_translation = abstract_translation.strip()
+        if not abstract_translation:
+            return None
 
-        # Add translation to paper.extra
-        updated_extra = dict(paper.extra)
-        updated_extra["translation"] = {
-            "title": translation["title_translated"],
-            "summary": translation["summary_translated"],
-            "language": self.target_lang,
-        }
-
-        # Create new Paper instance with updated extra
-        return Paper(
+        return LLMGeneratedInfo(
             source=paper.source,
-            id=paper.id,
-            title=paper.title,
-            authors=paper.authors,
-            summary=paper.summary,
-            published=paper.published,
-            updated=paper.updated,
-            primary_category=paper.primary_category,
-            categories=paper.categories,
-            links=paper.links,
-            doi=paper.doi,
-            extra=updated_extra,
+            source_id=paper.id,
+            abstract_translation=abstract_translation,
+            language=self.target_lang,
         )

@@ -25,23 +25,19 @@ class OpenAICompatProvider:
     temperature: float = 0.0
     max_tokens: int = 800
 
-    def translate_paper(
+    def translate_abstract(
         self,
-        title: str,
-        summary: str,
+        abstract: str,
         target_lang: str = "zh",
-    ) -> dict[str, str]:
-        """Translate paper title and summary.
+    ) -> str:
+        """Translate paper abstract.
 
         Args:
-            title: Paper title in English.
-            summary: Paper abstract in English.
+            abstract: Paper abstract in English.
             target_lang: Target language code.
 
         Returns:
-            Dictionary with translated fields:
-            - title_translated: Translated title
-            - summary_translated: Translated summary
+            Translated abstract text.
 
         Raises:
             requests.HTTPError: If API request fails.
@@ -63,15 +59,13 @@ class OpenAICompatProvider:
             "Preserve technical terms and proper nouns."
         )
 
-        user_prompt = f"""Translate the following paper metadata to {lang_name}.
-Return ONLY a JSON object with these exact keys:
-{{"title_translated": "...", "summary_translated": "..."}}
+        user_prompt = f"""Translate the following paper abstract to {lang_name}.
+Return ONLY a JSON object with this exact key:
+{{"summary_translated": "..."}}
 
 Do not include any other text outside the JSON.
 
-Title: {title}
-
-Abstract: {summary}
+Abstract: {abstract}
 """
 
         messages = [
@@ -79,7 +73,7 @@ Abstract: {summary}
             {"role": "user", "content": user_prompt},
         ]
 
-        log.debug("Translating paper to %s: title='%s...'", target_lang, title[:50])
+        log.debug("Translating abstract to %s", target_lang)
 
         response_text = self.client.chat_completion(
             messages=messages,
@@ -88,15 +82,12 @@ Abstract: {summary}
             max_tokens=self.max_tokens,
         )
 
+        log.debug(response_text)
+
         # Parse JSON response
         data = extract_json(response_text)
 
-        result = {
-            "title_translated": data.get("title_translated", "").strip(),
-            "summary_translated": data.get("summary_translated", "").strip(),
-        }
-
-        if not result["title_translated"] or not result["summary_translated"]:
-            log.warning("Translation incomplete: %s", result)
-
+        result = str(data.get("summary_translated", "") or "").strip()
+        if not result:
+            log.warning("Translation incomplete")
         return result

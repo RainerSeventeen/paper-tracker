@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, Sequence
 
-from PaperTracker.core.models import Paper
+from PaperTracker.core.models import LLMGeneratedInfo, Paper
 from PaperTracker.utils.log import log
 
 if TYPE_CHECKING:
@@ -62,7 +62,7 @@ class PaperContentStore:
             self.conn.execute(
                 """
                 INSERT INTO paper_content (
-                    seen_paper_id, source, source_id, title, authors, summary,
+                    seen_paper_id, source, source_id, title, authors, abstract,
                     published_at, updated_at, primary_category, categories,
                     abstract_url, pdf_url, code_urls, project_urls, doi, extra
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -73,7 +73,7 @@ class PaperContentStore:
                     paper.id,
                     paper.title,
                     json.dumps(list(paper.authors), ensure_ascii=False),
-                    paper.summary,
+                    paper.abstract,
                     int(paper.published.timestamp()) if paper.published else None,
                     int(paper.updated.timestamp()) if paper.updated else None,
                     paper.primary_category,
@@ -95,7 +95,7 @@ class PaperContentStore:
 
         Args:
             source_id: Paper source ID.
-            translation: Translated summary content.
+            translation: Translated abstract content.
             language: Target language code (e.g., 'zh', 'en').
         """
         self.conn.execute(
@@ -104,6 +104,40 @@ class PaperContentStore:
         )
         self.conn.commit()
         log.debug("Updated translation for paper %s to %s", source_id, language)
+
+    def save_llm_generated(self, infos: Sequence[LLMGeneratedInfo]) -> None:
+        """Persist LLM-generated enrichment to dedicated columns.
+
+        This intentionally avoids writing into `Paper.extra`.
+        """
+        if not infos:
+            return
+
+        for info in infos:
+            self.conn.execute(
+                """
+                UPDATE paper_content
+                SET
+                  translation = ?,
+                  language = ?
+                WHERE id = (
+                  SELECT id
+                  FROM paper_content
+                  WHERE source = ? AND source_id = ?
+                  ORDER BY fetched_at DESC
+                  LIMIT 1
+                )
+                """,
+                (
+                    info.abstract_translation,
+                    info.language,
+                    info.source,
+                    info.source_id,
+                ),
+            )
+
+        self.conn.commit()
+        log.debug("Saved LLM enrichment for %d papers", len(infos))
 
     def get_recent_papers(self, limit: int = 100, days: int | None = None) -> list[dict]:
         """Get recent papers from content store.
@@ -117,7 +151,7 @@ class PaperContentStore:
         """
         query = """
             SELECT
-                c.source_id, c.title, c.authors, c.summary,
+                c.source_id, c.title, c.authors, c.abstract,
                 c.published_at, c.fetched_at, c.primary_category,
                 c.abstract_url, c.pdf_url, c.code_urls,
                 c.translation, c.language
@@ -139,7 +173,7 @@ class PaperContentStore:
                 "source_id": row[0],
                 "title": row[1],
                 "authors": json.loads(row[2]),
-                "summary": row[3],
+                "abstract": row[3],
                 "published_at": row[4],
                 "fetched_at": row[5],
                 "primary_category": row[6],
