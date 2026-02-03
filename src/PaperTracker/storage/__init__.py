@@ -64,13 +64,13 @@ def create_llm_store(
     """
     from PaperTracker.config import AppConfig
 
-    if not config.llm_enabled:
+    if not config.llm.enabled:
         return None
 
     return LLMGeneratedStore(
         conn=db_manager.conn,
-        provider=config.llm_provider,
-        model=config.llm_model,
+        provider=config.llm.provider,
+        model=config.llm.model,
     )
 
 

@@ -28,11 +28,11 @@ def create_llm_service(config) -> LLMService | None:
     """
     from PaperTracker.config import AppConfig
 
-    if not config.llm_enabled:
+    if not config.llm.enabled:
         return None
 
     # Get API key from environment
-    api_key_env = config.llm_api_key_env or "OPENAI_API_KEY"
+    api_key_env = config.llm.api_key_env or "OPENAI_API_KEY"
     api_key = os.getenv(api_key_env)
 
     if not api_key:
@@ -43,25 +43,25 @@ def create_llm_service(config) -> LLMService | None:
 
     # Create HTTP client with retry configuration
     client = LLMApiClient(
-        base_url=config.llm_base_url,
+        base_url=config.llm.base_url,
         api_key=api_key,
-        timeout=config.llm_timeout,
-        max_retries=config.llm_max_retries,
-        retry_base_delay=config.llm_retry_base_delay,
-        retry_max_delay=config.llm_retry_max_delay,
-        timeout_multiplier=config.llm_retry_timeout_multiplier,
+        timeout=config.llm.timeout,
+        max_retries=config.llm.max_retries,
+        retry_base_delay=config.llm.retry_base_delay,
+        retry_max_delay=config.llm.retry_max_delay,
+        timeout_multiplier=config.llm.retry_timeout_multiplier,
     )
 
     # Create provider based on config
-    provider_type = config.llm_provider.lower()
+    provider_type = config.llm.provider.lower()
 
     if provider_type == "openai-compat":
         provider: LLMProvider = OpenAICompatProvider(
-            name=f"OpenAI-Compatible ({config.llm_model})",
+            name=f"OpenAI-Compatible ({config.llm.model})",
             client=client,
-            model=config.llm_model,
-            temperature=config.llm_temperature,
-            max_tokens=config.llm_max_tokens,
+            model=config.llm.model,
+            temperature=config.llm.temperature,
+            max_tokens=config.llm.max_tokens,
         )
     else:
         raise ValueError(f"Unsupported LLM provider: {provider_type}")
@@ -69,20 +69,20 @@ def create_llm_service(config) -> LLMService | None:
     # Create service
     service = LLMService(
         provider=provider,
-        target_lang=config.llm_target_lang,
-        max_workers=config.llm_max_workers,
+        target_lang=config.llm.target_lang,
+        max_workers=config.llm.max_workers,
         enabled=True,
-        enable_translation=config.llm_enable_translation,
-        enable_summary=config.llm_enable_summary,
+        enable_translation=config.llm.enable_translation,
+        enable_summary=config.llm.enable_summary,
     )
 
     log.info(
         "LLM service created: provider=%s model=%s lang=%s translation=%s summary=%s",
         provider.name,
-        config.llm_model,
-        config.llm_target_lang,
-        config.llm_enable_translation,
-        config.llm_enable_summary,
+        config.llm.model,
+        config.llm.target_lang,
+        config.llm.enable_translation,
+        config.llm.enable_summary,
     )
 
     return service
