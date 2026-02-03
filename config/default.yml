@@ -62,8 +62,17 @@ llm:
   timeout: 30                             # Request timeout (seconds)
   target_lang: zh                         # Target language (zh/en/ja/ko/fr/de/es)
   temperature: 0.0                        # Sampling temperature (0.0 = deterministic)
-  max_tokens: 800                         # Maximum response tokens
+  max_tokens: 1000                        # Maximum response tokens (increased for summary)
   max_workers: 3                          # Parallel translation workers
+
+  # Feature selection
+  # You can choose one of three modes:
+  # 1. Translation only: enable_translation=true, enable_summary=false
+  # 2. Summary only: enable_translation=false, enable_summary=true
+  # 3. Both: enable_translation=true, enable_summary=true
+  enable_translation: true                # Enable abstract translation
+  enable_summary: true                   # Enable paper summary (TLDR, motivation, method, result, conclusion)
+                                          # Default: false (to control API costs)
 
   # Retry configuration (for handling timeouts and transient errors)
   max_retries: 3                          # Maximum retry attempts (0 to disable)

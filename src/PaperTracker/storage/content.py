@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, Sequence
 
-from PaperTracker.core.models import LLMGeneratedInfo, Paper
+from PaperTracker.core.models import Paper
 from PaperTracker.utils.log import log
 
 if TYPE_CHECKING:
@@ -15,7 +15,8 @@ if TYPE_CHECKING:
 class PaperContentStore:
     """SQLite-based content store for full paper data.
 
-    Stores complete paper metadata, summaries, and LLM-enhanced fields (translation).
+    Stores complete paper metadata and original content only.
+    LLM-generated data (translations, summaries) is stored separately in LLMGeneratedStore.
     Separated from deduplication storage for cleaner concerns separation.
     """
 
@@ -89,102 +90,6 @@ class PaperContentStore:
 
         self.conn.commit()
         log.debug("Saved %d papers to content store", len(papers))
-
-    def update_translation(self, source_id: str, translation: str, language: str) -> None:
-        """Update translation for a paper.
-
-        Args:
-            source_id: Paper source ID.
-            translation: Translated abstract content.
-            language: Target language code (e.g., 'zh', 'en').
-        """
-        self.conn.execute(
-            "UPDATE paper_content SET translation = ?, language = ? WHERE source_id = ?",
-            (translation, language, source_id),
-        )
-        self.conn.commit()
-        log.debug("Updated translation for paper %s to %s", source_id, language)
-
-    def save_llm_generated(self, infos: Sequence[LLMGeneratedInfo]) -> None:
-        """Persist LLM-generated enrichment to dedicated columns.
-
-        This intentionally avoids writing into `Paper.extra`.
-        """
-        if not infos:
-            return
-
-        for info in infos:
-            self.conn.execute(
-                """
-                UPDATE paper_content
-                SET
-                  translation = ?,
-                  language = ?
-                WHERE id = (
-                  SELECT id
-                  FROM paper_content
-                  WHERE source = ? AND source_id = ?
-                  ORDER BY fetched_at DESC
-                  LIMIT 1
-                )
-                """,
-                (
-                    info.abstract_translation,
-                    info.language,
-                    info.source,
-                    info.source_id,
-                ),
-            )
-
-        self.conn.commit()
-        log.debug("Saved LLM enrichment for %d papers", len(infos))
-
-    def get_recent_papers(self, limit: int = 100, days: int | None = None) -> list[dict]:
-        """Get recent papers from content store.
-
-        Args:
-            limit: Maximum number of papers to return.
-            days: Optional filter for papers fetched in last N days.
-
-        Returns:
-            List of paper dictionaries with metadata and translation fields.
-        """
-        query = """
-            SELECT
-                c.source_id, c.title, c.authors, c.abstract,
-                c.published_at, c.fetched_at, c.primary_category,
-                c.abstract_url, c.pdf_url, c.code_urls,
-                c.translation, c.language
-            FROM paper_content c
-        """
-        params = []
-
-        if days is not None:
-            query += " WHERE c.fetched_at > strftime('%s', 'now', ?)"
-            params.append(f"-{days} days")
-
-        query += " ORDER BY c.fetched_at DESC LIMIT ?"
-        params.append(limit)
-
-        cursor = self.conn.execute(query, params)
-
-        return [
-            {
-                "source_id": row[0],
-                "title": row[1],
-                "authors": json.loads(row[2]),
-                "abstract": row[3],
-                "published_at": row[4],
-                "fetched_at": row[5],
-                "primary_category": row[6],
-                "abstract_url": row[7],
-                "pdf_url": row[8],
-                "code_urls": json.loads(row[9]) if row[9] else [],
-                "translation": row[10],
-                "language": row[11],
-            }
-            for row in cursor
-        ]
 
     def get_statistics(self) -> dict:
         """Get content store statistics.

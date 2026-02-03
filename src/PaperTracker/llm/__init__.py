@@ -72,13 +72,17 @@ def create_llm_service(config) -> LLMService | None:
         target_lang=config.llm_target_lang,
         max_workers=config.llm_max_workers,
         enabled=True,
+        enable_translation=config.llm_enable_translation,
+        enable_summary=config.llm_enable_summary,
     )
 
     log.info(
-        "LLM service created: provider=%s model=%s lang=%s",
+        "LLM service created: provider=%s model=%s lang=%s translation=%s summary=%s",
         provider.name,
         config.llm_model,
         config.llm_target_lang,
+        config.llm_enable_translation,
+        config.llm_enable_summary,
     )
 
     return service

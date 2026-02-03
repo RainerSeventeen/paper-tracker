@@ -144,9 +144,9 @@ New papers: 10 (filtered 0 duplicates)
 [Paper details...]
 ```
 
-### Example 2: Query Stored Content
+### Example 2: Query Statistics
 
-The `PaperContentStore` class provides methods to query stored papers (for future CLI commands or scripts):
+The `PaperContentStore` class provides methods to get database statistics:
 
 ```python
 from pathlib import Path
@@ -157,17 +157,6 @@ from PaperTracker.storage.content import PaperContentStore
 db_manager = DatabaseManager(Path("database/papers.db"))
 content_store = PaperContentStore(db_manager)
 
-# Get 50 most recent papers
-recent_papers = content_store.get_recent_papers(limit=50)
-
-for paper in recent_papers:
-    print(f"{paper['title']} - {paper['primary_category']}")
-    print(f"Authors: {', '.join(paper['authors'])}")
-    print(f"PDF: {paper['pdf_url']}\n")
-
-# Get papers from last 7 days
-week_papers = content_store.get_recent_papers(limit=100, days=7)
-
 # Get statistics
 stats = content_store.get_statistics()
 print(f"Total records: {stats['total_records']}")
@@ -175,18 +164,7 @@ print(f"Unique papers: {stats['unique_papers']}")
 print(f"Categories: {stats['categories']}")
 ```
 
-### Example 3: Add Translations (Future Enhancement)
-
-The schema includes `translation` and `language` fields for LLM-enhanced content:
-
-```python
-# Update translation for a paper
-content_store.update_translation(
-    source_id="2601.21922",
-    translation="这是一篇关于神经网络图像压缩的论文...",
-    language="zh"
-)
-```
+**Note**: LLM-generated translations and summaries are now stored in a separate `llm_generated` table, managed by `LLMGeneratedStore`. See LLM feature documentation for details.
 
 ## Implementation Details
 
@@ -210,12 +188,12 @@ Manages the shared SQLite connection using the singleton pattern:
 
 #### `PaperContentStore`
 
-Handles full paper content storage:
+Handles full paper content storage (original data only):
 
 - `save_papers(papers)`: Save full metadata for a list of papers
-- `update_translation(source_id, translation, language)`: Add translated content
-- `get_recent_papers(limit, days)`: Query recent papers with optional time filter
 - `get_statistics()`: Get database statistics (total records, unique papers, categories, etc.)
+
+**Note**: LLM-related data (translations, summaries) is now managed by `LLMGeneratedStore` in a separate `llm_generated` table.
 
 ### Integration Points
 

@@ -48,6 +48,8 @@ class AppConfig:
         llm_retry_base_delay: Base delay for exponential backoff (seconds).
         llm_retry_max_delay: Maximum delay between retries (seconds).
         llm_retry_timeout_multiplier: Timeout multiplier for each retry attempt.
+        llm_enable_translation: Enable abstract translation feature.
+        llm_enable_summary: Enable paper summary generation feature.
     """
 
     log_level: str = "INFO"
@@ -78,6 +80,8 @@ class AppConfig:
     llm_retry_base_delay: float = 1.0
     llm_retry_max_delay: float = 10.0
     llm_retry_timeout_multiplier: float = 1.0
+    llm_enable_translation: bool = True
+    llm_enable_summary: bool = False
 
 
 _ALLOWED_FIELDS = {"TITLE", "ABSTRACT", "AUTHOR", "JOURNAL", "CATEGORY"}
@@ -306,6 +310,8 @@ def load_config(path: Path) -> AppConfig:
     llm_retry_base_delay = float(_get(llm_obj, "retry_base_delay", 1.0) or 1.0)
     llm_retry_max_delay = float(_get(llm_obj, "retry_max_delay", 10.0) or 10.0)
     llm_retry_timeout_multiplier = float(_get(llm_obj, "retry_timeout_multiplier", 1.0) or 1.0)
+    llm_enable_translation = bool(_get(llm_obj, "enable_translation", True))
+    llm_enable_summary = bool(_get(llm_obj, "enable_summary", False))
 
     if not queries:
         raise ValueError("Missing required config: queries")
@@ -341,4 +347,6 @@ def load_config(path: Path) -> AppConfig:
         llm_retry_base_delay=llm_retry_base_delay,
         llm_retry_max_delay=llm_retry_max_delay,
         llm_retry_timeout_multiplier=llm_retry_timeout_multiplier,
+        llm_enable_translation=llm_enable_translation,
+        llm_enable_summary=llm_enable_summary,
     )

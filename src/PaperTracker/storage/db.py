@@ -143,8 +143,6 @@ def init_schema(conn: sqlite3.Connection) -> None:
           code_urls TEXT,
           project_urls TEXT,
           doi TEXT,
-          translation TEXT,
-          language TEXT,
           extra TEXT,
           FOREIGN KEY (seen_paper_id) REFERENCES seen_papers(id) ON DELETE CASCADE,
           UNIQUE(source, source_id, fetched_at)
@@ -168,5 +166,28 @@ def init_schema(conn: sqlite3.Connection) -> None:
 
         CREATE INDEX IF NOT EXISTS idx_content_category
           ON paper_content(primary_category);
+
+        CREATE TABLE IF NOT EXISTS llm_generated (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          paper_content_id INTEGER NOT NULL,
+          generated_at INTEGER NOT NULL DEFAULT (CAST(strftime('%s','now') AS INTEGER)),
+          provider TEXT NOT NULL,
+          model TEXT NOT NULL,
+          language TEXT NOT NULL,
+          abstract_translation TEXT,
+          summary_tldr TEXT,
+          summary_motivation TEXT,
+          summary_method TEXT,
+          summary_result TEXT,
+          summary_conclusion TEXT,
+          extra TEXT,
+          FOREIGN KEY (paper_content_id) REFERENCES paper_content(id) ON DELETE CASCADE
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_llm_generated_paper
+          ON llm_generated(paper_content_id);
+
+        CREATE INDEX IF NOT EXISTS idx_llm_generated_time
+          ON llm_generated(generated_at DESC);
     """)
     conn.commit()

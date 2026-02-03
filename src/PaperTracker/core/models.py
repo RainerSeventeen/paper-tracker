@@ -64,11 +64,23 @@ class Paper:
 class LLMGeneratedInfo:
     """LLM-generated enrichment for a paper.
 
-    This data is stored separately from `Paper.extra` to avoid coupling the core
-    paper model to LLM concerns.
+    Supports two types of enrichment:
+    - Translation: abstract_translation field
+    - Summary: tldr, motivation, method, result, conclusion fields
+
+    At least one enrichment type should be present.
     """
 
     source: str
     source_id: str
-    abstract_translation: str
-    language: str
+    language: str = "en"
+
+    # Translation enrichment
+    abstract_translation: str | None = None
+
+    # Summary enrichment (structured key points)
+    tldr: str | None = None              # Too Long; Didn't Read summary
+    motivation: str | None = None        # Research motivation and background
+    method: str | None = None            # Research methodology and approach
+    result: str | None = None            # Experimental results and findings
+    conclusion: str | None = None        # Conclusions and implications
