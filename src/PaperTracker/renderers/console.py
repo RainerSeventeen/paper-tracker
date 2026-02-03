@@ -1,76 +1,58 @@
 """Console text output renderers.
 
-Renders a list of `Paper` into human-friendly text.
+Renders a list of `PaperView` into human-friendly text.
 Provides ConsoleOutputWriter implementation for command output.
 """
 
 from __future__ import annotations
 
-from datetime import datetime
 from typing import Iterable
 
-from PaperTracker.core.models import Paper
 from PaperTracker.core.query import SearchQuery
 from PaperTracker.renderers.base import OutputWriter
+from PaperTracker.renderers.view_models import PaperView
 from PaperTracker.utils.log import log
 
 
-def _fmt_dt(dt: datetime | None) -> str:
-    """Format datetime for console output.
+def render_text(papers: Iterable[PaperView]) -> str:
+    """Render paper views into a human-readable text block.
 
     Args:
-        dt: A datetime object or None.
-
-    Returns:
-        A short date string (YYYY-mm-dd) or "-" when dt is None.
-    """
-    if not dt:
-        return "-"
-    return dt.strftime("%Y-%m-%d")
-
-
-def render_text(papers: Iterable[Paper]) -> str:
-    """Render papers into a human-readable text block.
-
-    Args:
-        papers: Iterable of papers.
+        papers: Iterable of paper views.
 
     Returns:
         A formatted string ready to be printed.
     """
     lines: list[str] = []
-    for idx, paper in enumerate(papers, start=1):
-        authors = ", ".join(paper.authors)
-        lines.append(f"{idx}. {paper.title}")
+    for idx, view in enumerate(papers, start=1):
+        authors = ", ".join(view.authors)
+        lines.append(f"{idx}. {view.title}")
         lines.append(f"   Authors: {authors}")
-        if paper.primary_category:
-            lines.append(f"   Category: {paper.primary_category}")
-        lines.append(f"   Published: {_fmt_dt(paper.published)}  Updated: {_fmt_dt(paper.updated)}")
-        if paper.links.abstract:
-            lines.append(f"   Abs: {paper.links.abstract}")
-        if paper.links.pdf:
-            lines.append(f"   PDF: {paper.links.pdf}")
+        if view.primary_category:
+            lines.append(f"   Category: {view.primary_category}")
+        lines.append(f"   Published: {view.published or '-'}  Updated: {view.updated or '-'}")
+        if view.abstract_url:
+            lines.append(f"   Abs: {view.abstract_url}")
+        if view.pdf_url:
+            lines.append(f"   PDF: {view.pdf_url}")
 
         # Display translation if available
-        if "translation" in paper.extra:
-            trans = paper.extra["translation"]
-            if trans.get("summary_translated"):
-                lines.append(f"   Abs Translation: {trans['summary_translated']}")
+        if view.abstract_translation:
+            lines.append(f"   Abs Translation: {view.abstract_translation}")
 
         # Display summary if available
-        if "summary" in paper.extra:
-            summary = paper.extra["summary"]
+        if any([view.tldr, view.motivation, view.method, view.result, view.conclusion]):
             lines.append("   --- Summary ---")
-            if summary.get("tldr"):
-                lines.append(f"   TLDR: {summary['tldr']}")
-            if summary.get("motivation"):
-                lines.append(f"   Motivation: {summary['motivation']}")
-            if summary.get("method"):
-                lines.append(f"   Method: {summary['method']}")
-            if summary.get("result"):
-                lines.append(f"   Result: {summary['result']}")
-            if summary.get("conclusion"):
-                lines.append(f"   Conclusion: {summary['conclusion']}")
+            if view.tldr:
+                lines.append(f"   TLDR: {view.tldr}")
+            if view.motivation:
+                lines.append(f"   Motivation: {view.motivation}")
+            if view.method:
+                lines.append(f"   Method: {view.method}")
+            if view.result:
+                lines.append(f"   Result: {view.result}")
+            if view.conclusion:
+                lines.append(f"   Conclusion: {view.conclusion}")
 
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
@@ -81,14 +63,14 @@ class ConsoleOutputWriter(OutputWriter):
 
     def write_query_result(
         self,
-        papers: list[Paper],
+        papers: list[PaperView],
         query: SearchQuery,
         scope: SearchQuery | None,
     ) -> None:
         """Write query result to console.
 
         Args:
-            papers: List of papers found.
+            papers: List of paper views to display.
             query: The query that produced these results.
             scope: Optional global scope applied to the query.
         """
