@@ -14,6 +14,7 @@ from PaperTracker.renderers import OutputWriter
 from PaperTracker.services.search import PaperSearchService
 from PaperTracker.storage.content import PaperContentStore
 from PaperTracker.storage.deduplicate import SqliteDeduplicateStore
+from PaperTracker.storage.llm import LLMGeneratedStore
 from PaperTracker.utils.log import log
 
 
@@ -29,8 +30,9 @@ class SearchCommand:
     search_service: PaperSearchService
     dedup_store: SqliteDeduplicateStore | None
     content_store: PaperContentStore | None
+    llm_service: LLMService | None
+    llm_store: LLMGeneratedStore | None
     output_writer: OutputWriter
-    llm_service: LLMService | None = None
 
     def execute(self) -> None:
         """Execute search for all configured queries.
@@ -82,12 +84,16 @@ class SearchCommand:
 
                 papers = new_papers
 
-            # Translate papers if LLM is enabled
-            if self.llm_service and papers:
+            # Generate LLM enrichment
+            if self.llm_service and self.llm_store and papers:
                 log.info("Generating LLM enrichment for %d papers", len(papers))
                 infos = self.llm_service.generate_batch(papers)
 
-                if self.content_store and infos:
-                    self.content_store.save_llm_generated(infos)
+                # Save to llm_generated table
+                if infos:
+                    self.llm_store.save(infos)
+
+                # Inject enrichment data into paper.extra
+                papers = self.llm_service.enrich_papers(papers, infos)
 
             self.output_writer.write_query_result(papers, query, self.config.scope)

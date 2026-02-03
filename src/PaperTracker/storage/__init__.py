@@ -11,6 +11,7 @@ from pathlib import Path
 from PaperTracker.storage.content import PaperContentStore
 from PaperTracker.storage.db import DatabaseManager
 from PaperTracker.storage.deduplicate import SqliteDeduplicateStore
+from PaperTracker.storage.llm import LLMGeneratedStore
 from PaperTracker.utils.log import log
 
 
@@ -48,9 +49,36 @@ def create_storage(
     return db_manager, dedup_store, content_store
 
 
+def create_llm_store(
+    db_manager: DatabaseManager,
+    config: AppConfig,  # type: ignore[name-defined]
+) -> LLMGeneratedStore | None:
+    """Create LLM generated store from config.
+
+    Args:
+        db_manager: Database manager instance.
+        config: Application config.
+
+    Returns:
+        LLM store if LLM is enabled, None otherwise.
+    """
+    from PaperTracker.config import AppConfig
+
+    if not config.llm_enabled:
+        return None
+
+    return LLMGeneratedStore(
+        conn=db_manager.conn,
+        provider=config.llm_provider,
+        model=config.llm_model,
+    )
+
+
 __all__ = [
     "DatabaseManager",
     "SqliteDeduplicateStore",
     "PaperContentStore",
+    "LLMGeneratedStore",
     "create_storage",
+    "create_llm_store",
 ]

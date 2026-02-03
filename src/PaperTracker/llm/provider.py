@@ -31,3 +31,23 @@ class LLMProvider(Protocol):
             Exception: If translation fails (caller should handle gracefully).
         """
         raise NotImplementedError
+
+    def generate_summary(
+        self,
+        abstract: str,
+        target_lang: str = "en",
+    ) -> dict[str, str]:
+        """Generate structured summary from paper abstract.
+
+        Args:
+            abstract: Paper abstract in English.
+            target_lang: Target language for summary (en, zh, etc).
+
+        Returns:
+            Dictionary with keys: tldr, motivation, method, result, conclusion.
+            All values are strings.
+
+        Raises:
+            Exception: If generation fails (caller should handle gracefully).
+        """
+        raise NotImplementedError

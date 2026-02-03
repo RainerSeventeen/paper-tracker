@@ -50,6 +50,28 @@ def render_text(papers: Iterable[Paper]) -> str:
             lines.append(f"   Abs: {paper.links.abstract}")
         if paper.links.pdf:
             lines.append(f"   PDF: {paper.links.pdf}")
+
+        # Display translation if available
+        if "translation" in paper.extra:
+            trans = paper.extra["translation"]
+            if trans.get("summary_translated"):
+                lines.append(f"   Abs Translation: {trans['summary_translated']}")
+
+        # Display summary if available
+        if "summary" in paper.extra:
+            summary = paper.extra["summary"]
+            lines.append("   --- Summary ---")
+            if summary.get("tldr"):
+                lines.append(f"   TLDR: {summary['tldr']}")
+            if summary.get("motivation"):
+                lines.append(f"   Motivation: {summary['motivation']}")
+            if summary.get("method"):
+                lines.append(f"   Method: {summary['method']}")
+            if summary.get("result"):
+                lines.append(f"   Result: {summary['result']}")
+            if summary.get("conclusion"):
+                lines.append(f"   Conclusion: {summary['conclusion']}")
+
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 

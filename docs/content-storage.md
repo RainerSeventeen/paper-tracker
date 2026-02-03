@@ -5,7 +5,7 @@
 PaperTracker 提供了一个可选的**内容存储**功能,可以将完整的论文元数据持久化到 SQLite 数据库中。该功能独立于去重功能,支持以下高级用例:
 
 - 构建带有完整元数据的本地论文库
-- 添加 LLM 增强字段(例如翻译、摘要)
+- 添加 LLM 增强字段(翻译、摘要等,详见 [LLM 增强功能](llm-features.md))
 - 查询历史论文集合
 - 分析论文随时间的趋势
 
@@ -144,9 +144,9 @@ New papers: 10 (filtered 0 duplicates)
 [论文详情...]
 ```
 
-### 示例 2: 查询存储的内容
+### 示例 2: 查询统计信息
 
-`PaperContentStore` 类提供了查询存储论文的方法(用于未来的 CLI 命令或脚本):
+`PaperContentStore` 类提供了获取数据库统计信息的方法:
 
 ```python
 from pathlib import Path
@@ -157,17 +157,6 @@ from PaperTracker.storage.content import PaperContentStore
 db_manager = DatabaseManager(Path("database/papers.db"))
 content_store = PaperContentStore(db_manager)
 
-# 获取最近的 50 篇论文
-recent_papers = content_store.get_recent_papers(limit=50)
-
-for paper in recent_papers:
-    print(f"{paper['title']} - {paper['primary_category']}")
-    print(f"Authors: {', '.join(paper['authors'])}")
-    print(f"PDF: {paper['pdf_url']}\n")
-
-# 获取过去 7 天的论文
-week_papers = content_store.get_recent_papers(limit=100, days=7)
-
 # 获取统计信息
 stats = content_store.get_statistics()
 print(f"Total records: {stats['total_records']}")
@@ -175,18 +164,7 @@ print(f"Unique papers: {stats['unique_papers']}")
 print(f"Categories: {stats['categories']}")
 ```
 
-### 示例 3: 添加翻译(未来增强)
-
-模式包含 `translation` 和 `language` 字段用于 LLM 增强内容:
-
-```python
-# 为论文更新翻译
-content_store.update_translation(
-    source_id="2601.21922",
-    translation="这是一篇关于神经网络图像压缩的论文...",
-    language="zh"
-)
-```
+**注意**: LLM 生成的翻译和摘要现在存储在独立的 `llm_generated` 表中,通过 `LLMGeneratedStore` 管理。详见 [LLM 增强功能文档](llm-features.md)。
 
 ## 实现细节
 
@@ -210,12 +188,12 @@ content_store.update_translation(
 
 #### `PaperContentStore`
 
-处理完整论文内容存储:
+处理完整论文内容存储(仅原始数据):
 
 - `save_papers(papers)`: 保存论文列表的完整元数据
-- `update_translation(source_id, translation, language)`: 添加翻译内容
-- `get_recent_papers(limit, days)`: 查询最近的论文,可选时间过滤
 - `get_statistics()`: 获取数据库统计信息(总记录数、唯一论文数、类别等)
+
+**注意**: LLM 相关数据(翻译、摘要)现在由 `LLMGeneratedStore` 管理,存储在独立的 `llm_generated` 表中。详见 [LLM 增强功能文档](llm-features.md)。
 
 ### 集成点
 
@@ -319,7 +297,7 @@ paper-tracker --config config/papers.yml search
 
 内容存储功能旨在支持:
 
-1. **翻译服务**: 使用 LLM 自动翻译摘要
+1. ~~**翻译服务**: 使用 LLM 自动翻译摘要~~ ✅ 已实现,见 [LLM 增强功能](llm-features.md)
 2. **论文推荐**: 分析存储的论文以建议相关工作
 3. **导出功能**: 导出为 BibTeX、Markdown 或其他格式
 4. **Web 界面**: 通过 Web UI 浏览和搜索存储的论文
