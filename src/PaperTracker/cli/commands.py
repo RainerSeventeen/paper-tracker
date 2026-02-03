@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from PaperTracker.config import AppConfig
 from PaperTracker.llm import LLMService
 from PaperTracker.renderers import OutputWriter
+from PaperTracker.renderers.mapper import map_papers_to_views
 from PaperTracker.services.search import PaperSearchService
 from PaperTracker.storage.content import PaperContentStore
 from PaperTracker.storage.deduplicate import SqliteDeduplicateStore
@@ -96,4 +97,7 @@ class SearchCommand:
                 # Inject enrichment data into paper.extra
                 papers = self.llm_service.enrich_papers(papers, infos)
 
-            self.output_writer.write_query_result(papers, query, self.config.scope)
+            # Map to view models for output
+            paper_views = map_papers_to_views(papers)
+
+            self.output_writer.write_query_result(paper_views, query, self.config.scope)

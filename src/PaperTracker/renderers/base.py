@@ -8,8 +8,8 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-from PaperTracker.core.models import Paper
 from PaperTracker.core.query import SearchQuery
+from PaperTracker.renderers.view_models import PaperView
 
 
 class OutputWriter(ABC):
@@ -18,14 +18,14 @@ class OutputWriter(ABC):
     @abstractmethod
     def write_query_result(
         self,
-        papers: list[Paper],
+        papers: list[PaperView],
         query: SearchQuery,
         scope: SearchQuery | None,
     ) -> None:
         """Write results from a single query.
 
         Args:
-            papers: List of papers found.
+            papers: List of paper views to display.
             query: The query that produced these results.
             scope: Optional global scope applied to the query.
         """
