@@ -110,17 +110,23 @@ arXiv 专用选项。
 
 ### 2.8 `llm`（可选）
 
-LLM 增强（当前实现：摘要翻译）相关选项。
+LLM 增强功能相关选项，支持摘要翻译和结构化摘要生成。
 
-- `enabled`：是否启用 LLM 功能；启用后会对搜索结果进行翻译/增强
+**基础配置**：
+- `enabled`：是否启用 LLM 功能；启用后会对搜索结果进行翻译/摘要增强
 - `provider`：提供商类型（当前为 `openai-compat`）
 - `api_key_env`：API Key 的环境变量名（默认 `LLM_API_KEY`）
 - `base_url`：OpenAI 兼容接口的 Base URL
 - `model`：模型名称（例如 `gpt-4o-mini`、`deepseek-chat`）
 - `timeout`：请求超时（秒）
 - `target_lang`：目标语言（例如 `zh`）
-- `temperature`、`max_tokens`：采样与输出长度控制
-- `max_workers`：并发 worker 数（用于并行翻译）
+- `temperature`：采样温度（0.0 = 确定性）
+- `max_tokens`：最大响应 token 数
+- `max_workers`：并发 worker 数（用于并行处理）
+
+**功能选择**：
+- `enable_translation`：是否启用摘要翻译（默认 `true`）
+- `enable_summary`：是否启用结构化摘要生成（默认 `false`，包含 TLDR、动机、方法、结果、结论）
 
 **重试配置**（用于应对网络超时和临时性 API 故障）：
 - `max_retries`：最大重试次数（默认 3，设为 0 禁用重试）
@@ -132,6 +138,7 @@ LLM 增强（当前实现：摘要翻译）相关选项。
 - 当 `llm.enabled: true` 时，必须设置对应的环境变量（默认 `LLM_API_KEY`），否则会报错并提示关闭或配置密钥。
 - 重试机制对以下错误生效：网络超时、连接错误、HTTP 429/500/502/503/504。
 - 不可重试的错误（如 HTTP 400/401/403）会立即失败。
+- 功能使用详情、成本分析、故障排查等参见 [LLM 增强功能文档](llm-features.md)。
 
 ---
 

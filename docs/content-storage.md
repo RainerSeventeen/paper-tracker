@@ -5,7 +5,7 @@
 PaperTracker 提供了一个可选的**内容存储**功能,可以将完整的论文元数据持久化到 SQLite 数据库中。该功能独立于去重功能,支持以下高级用例:
 
 - 构建带有完整元数据的本地论文库
-- 添加 LLM 增强字段(例如翻译、摘要)
+- 添加 LLM 增强字段(翻译、摘要等,详见 [LLM 增强功能](llm-features.md))
 - 查询历史论文集合
 - 分析论文随时间的趋势
 
@@ -164,7 +164,7 @@ print(f"Unique papers: {stats['unique_papers']}")
 print(f"Categories: {stats['categories']}")
 ```
 
-**注意**: LLM 生成的翻译和摘要现在存储在独立的 `llm_generated` 表中,通过 `LLMGeneratedStore` 管理。详见 LLM 功能相关文档。
+**注意**: LLM 生成的翻译和摘要现在存储在独立的 `llm_generated` 表中,通过 `LLMGeneratedStore` 管理。详见 [LLM 增强功能文档](llm-features.md)。
 
 ## 实现细节
 
@@ -193,7 +193,7 @@ print(f"Categories: {stats['categories']}")
 - `save_papers(papers)`: 保存论文列表的完整元数据
 - `get_statistics()`: 获取数据库统计信息(总记录数、唯一论文数、类别等)
 
-**注意**: LLM 相关数据(翻译、摘要)现在由 `LLMGeneratedStore` 管理,存储在独立的 `llm_generated` 表中。
+**注意**: LLM 相关数据(翻译、摘要)现在由 `LLMGeneratedStore` 管理,存储在独立的 `llm_generated` 表中。详见 [LLM 增强功能文档](llm-features.md)。
 
 ### 集成点
 
@@ -297,7 +297,7 @@ paper-tracker --config config/papers.yml search
 
 内容存储功能旨在支持:
 
-1. **翻译服务**: 使用 LLM 自动翻译摘要
+1. ~~**翻译服务**: 使用 LLM 自动翻译摘要~~ ✅ 已实现,见 [LLM 增强功能](llm-features.md)
 2. **论文推荐**: 分析存储的论文以建议相关工作
 3. **导出功能**: 导出为 BibTeX、Markdown 或其他格式
 4. **Web 界面**: 通过 Web UI 浏览和搜索存储的论文
