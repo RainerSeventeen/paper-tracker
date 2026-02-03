@@ -16,6 +16,28 @@ from PaperTracker.core.query import FieldQuery, SearchQuery
 
 
 @dataclass(frozen=True, slots=True)
+class LLMConfig:
+    """LLM-related configuration."""
+
+    enabled: bool = False
+    provider: str = "openai-compat"
+    base_url: str = "https://api.openai.com"
+    model: str = "gpt-4o-mini"
+    api_key_env: str = "LLM_API_KEY"
+    timeout: int = 30
+    target_lang: str = "zh"
+    temperature: float = 0.0
+    max_tokens: int = 800
+    max_workers: int = 3
+    max_retries: int = 3
+    retry_base_delay: float = 1.0
+    retry_max_delay: float = 10.0
+    retry_timeout_multiplier: float = 1.0
+    enable_translation: bool = True
+    enable_summary: bool = False
+
+
+@dataclass(frozen=True, slots=True)
 class AppConfig:
     """Normalized runtime configuration.
 
@@ -34,22 +56,7 @@ class AppConfig:
         state_db_path: Database path for state management.
         content_storage_enabled: Whether to enable content storage for full paper data.
         arxiv_keep_version: Whether to keep arXiv version suffix in the paper id.
-        llm_enabled: Enable LLM translation features.
-        llm_provider: LLM provider type (currently only 'openai-compat').
-        llm_base_url: API base URL (supports partial URLs).
-        llm_model: Model identifier.
-        llm_api_key_env: Environment variable name for API key.
-        llm_timeout: Request timeout in seconds.
-        llm_target_lang: Target language for translation.
-        llm_temperature: Sampling temperature.
-        llm_max_tokens: Maximum response tokens.
-        llm_max_workers: Parallel translation workers.
-        llm_max_retries: Maximum retry attempts for LLM API calls.
-        llm_retry_base_delay: Base delay for exponential backoff (seconds).
-        llm_retry_max_delay: Maximum delay between retries (seconds).
-        llm_retry_timeout_multiplier: Timeout multiplier for each retry attempt.
-        llm_enable_translation: Enable abstract translation feature.
-        llm_enable_summary: Enable paper summary generation feature.
+        llm: LLM configuration settings.
     """
 
     log_level: str = "INFO"
@@ -66,22 +73,7 @@ class AppConfig:
     state_db_path: str = "database/papers.db"
     content_storage_enabled: bool = False
     arxiv_keep_version: bool = False
-    llm_enabled: bool = False
-    llm_provider: str = "openai-compat"
-    llm_base_url: str = "https://api.openai.com"
-    llm_model: str = "gpt-4o-mini"
-    llm_api_key_env: str = "LLM_API_KEY"
-    llm_timeout: int = 30
-    llm_target_lang: str = "zh"
-    llm_temperature: float = 0.0
-    llm_max_tokens: int = 800
-    llm_max_workers: int = 3
-    llm_max_retries: int = 3
-    llm_retry_base_delay: float = 1.0
-    llm_retry_max_delay: float = 10.0
-    llm_retry_timeout_multiplier: float = 1.0
-    llm_enable_translation: bool = True
-    llm_enable_summary: bool = False
+    llm: LLMConfig = LLMConfig()
 
 
 _ALLOWED_FIELDS = {"TITLE", "ABSTRACT", "AUTHOR", "JOURNAL", "CATEGORY"}
@@ -296,22 +288,24 @@ def load_config(path: Path) -> AppConfig:
 
     # LLM configuration
     llm_obj = raw.get("llm", {})
-    llm_enabled = bool(_get(llm_obj, "enabled", False))
-    llm_provider = str(_get(llm_obj, "provider", "openai-compat") or "openai-compat")
-    llm_base_url = str(_get(llm_obj, "base_url", "https://api.openai.com") or "https://api.openai.com")
-    llm_model = str(_get(llm_obj, "model", "gpt-4o-mini") or "gpt-4o-mini")
-    llm_api_key_env = str(_get(llm_obj, "api_key_env", "LLM_API_KEY") or "LLM_API_KEY")
-    llm_timeout = int(_get(llm_obj, "timeout", 30) or 30)
-    llm_target_lang = str(_get(llm_obj, "target_lang", "zh") or "zh")
-    llm_temperature = float(_get(llm_obj, "temperature", 0.0) or 0.0)
-    llm_max_tokens = int(_get(llm_obj, "max_tokens", 800) or 800)
-    llm_max_workers = int(_get(llm_obj, "max_workers", 3) or 3)
-    llm_max_retries = int(_get(llm_obj, "max_retries", 3) or 3)
-    llm_retry_base_delay = float(_get(llm_obj, "retry_base_delay", 1.0) or 1.0)
-    llm_retry_max_delay = float(_get(llm_obj, "retry_max_delay", 10.0) or 10.0)
-    llm_retry_timeout_multiplier = float(_get(llm_obj, "retry_timeout_multiplier", 1.0) or 1.0)
-    llm_enable_translation = bool(_get(llm_obj, "enable_translation", True))
-    llm_enable_summary = bool(_get(llm_obj, "enable_summary", False))
+    llm_config = LLMConfig(
+        enabled=bool(_get(llm_obj, "enabled", False)),
+        provider=str(_get(llm_obj, "provider", "openai-compat") or "openai-compat"),
+        base_url=str(_get(llm_obj, "base_url", "https://api.openai.com") or "https://api.openai.com"),
+        model=str(_get(llm_obj, "model", "gpt-4o-mini") or "gpt-4o-mini"),
+        api_key_env=str(_get(llm_obj, "api_key_env", "LLM_API_KEY") or "LLM_API_KEY"),
+        timeout=int(_get(llm_obj, "timeout", 30) or 30),
+        target_lang=str(_get(llm_obj, "target_lang", "zh") or "zh"),
+        temperature=float(_get(llm_obj, "temperature", 0.0) or 0.0),
+        max_tokens=int(_get(llm_obj, "max_tokens", 800) or 800),
+        max_workers=int(_get(llm_obj, "max_workers", 3) or 3),
+        max_retries=int(_get(llm_obj, "max_retries", 3) or 3),
+        retry_base_delay=float(_get(llm_obj, "retry_base_delay", 1.0) or 1.0),
+        retry_max_delay=float(_get(llm_obj, "retry_max_delay", 10.0) or 10.0),
+        retry_timeout_multiplier=float(_get(llm_obj, "retry_timeout_multiplier", 1.0) or 1.0),
+        enable_translation=bool(_get(llm_obj, "enable_translation", True)),
+        enable_summary=bool(_get(llm_obj, "enable_summary", False)),
+    )
 
     if not queries:
         raise ValueError("Missing required config: queries")
@@ -333,20 +327,5 @@ def load_config(path: Path) -> AppConfig:
         state_db_path=state_db_path,
         content_storage_enabled=content_storage_enabled,
         arxiv_keep_version=arxiv_keep_version,
-        llm_enabled=llm_enabled,
-        llm_provider=llm_provider,
-        llm_base_url=llm_base_url,
-        llm_model=llm_model,
-        llm_api_key_env=llm_api_key_env,
-        llm_timeout=llm_timeout,
-        llm_target_lang=llm_target_lang,
-        llm_temperature=llm_temperature,
-        llm_max_tokens=llm_max_tokens,
-        llm_max_workers=llm_max_workers,
-        llm_max_retries=llm_max_retries,
-        llm_retry_base_delay=llm_retry_base_delay,
-        llm_retry_max_delay=llm_retry_max_delay,
-        llm_retry_timeout_multiplier=llm_retry_timeout_multiplier,
-        llm_enable_translation=llm_enable_translation,
-        llm_enable_summary=llm_enable_summary,
+        llm=llm_config,
     )
