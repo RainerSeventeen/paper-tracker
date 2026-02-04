@@ -38,13 +38,15 @@ class LLMConfig:
 
 
 @dataclass(frozen=True, slots=True)
-class OutputMarkdownConfig:
-    """Markdown output configuration."""
+class OutputConfig:
+    """Output configuration."""
 
-    template_dir: str = "template/markdown"
-    document_template: str = "document.md"
-    paper_template: str = "paper.md"
-    paper_separator: str = "\n\n---\n\n"
+    base_dir: str = "output"
+    formats: tuple[str, ...] = ("console",)
+    markdown_template_dir: str = "template/markdown"
+    markdown_document_template: str = "document.md"
+    markdown_paper_template: str = "paper.md"
+    markdown_paper_separator: str = "\n\n---\n\n"
 
 
 @dataclass(frozen=True, slots=True)
@@ -60,14 +62,13 @@ class AppConfig:
         max_results: Maximum number of papers.
         sort_by: Sort field.
         sort_order: Sort order.
-        output_formats: Output formats (console/json/markdown).
-        output_base_dir: Output base directory for file formats.
+        output: Output configuration.
         state_enabled: Whether to enable state management.
         state_db_path: Database path for state management (relative or absolute path).
         content_storage_enabled: Whether to enable content storage for full paper data.
         arxiv_keep_version: Whether to keep arXiv version suffix in the paper id.
         llm: LLM configuration settings.
-        output_markdown: Markdown output settings.
+        output: Output configuration.
     """
 
     log_level: str = "INFO"
@@ -78,14 +79,12 @@ class AppConfig:
     max_results: int = 20
     sort_by: str = "submittedDate"
     sort_order: str = "descending"
-    output_formats: tuple[str, ...] = ("console",)
-    output_base_dir: str = "output"
+    output: OutputConfig = OutputConfig()
     state_enabled: bool = False
     state_db_path: str = "database/papers.db"
     content_storage_enabled: bool = False
     arxiv_keep_version: bool = False
     llm: LLMConfig = LLMConfig()
-    output_markdown: OutputMarkdownConfig = OutputMarkdownConfig()
 
 
 _ALLOWED_FIELDS = {"TITLE", "ABSTRACT", "AUTHOR", "JOURNAL", "CATEGORY"}
@@ -278,6 +277,10 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
     - `search.sort_order`
     - `output.base_dir` - Output base directory
     - `output.formats` - Output formats for results
+    - `output.markdown.template_dir`
+    - `output.markdown.document_template`
+    - `output.markdown.paper_template`
+    - `output.markdown.paper_separator`
     - `state.enabled` - Enable state management (deduplication)
     - `state.db_path` - Database path (relative or absolute; relative to working directory)
     - `state.content_storage_enabled` - Enable full content storage
@@ -325,20 +328,21 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
         raise ValueError(f"output.formats has unknown formats: {sorted(unknown_formats)}")
 
     markdown_obj = _get_section(output_obj, "markdown")
-    markdown_config = OutputMarkdownConfig()
+    markdown_template_dir = OutputConfig.markdown_template_dir
+    markdown_document_template = OutputConfig.markdown_document_template
+    markdown_paper_template = OutputConfig.markdown_paper_template
+    markdown_paper_separator = OutputConfig.markdown_paper_separator
     if "markdown" in output_formats:
-        markdown_config = OutputMarkdownConfig(
-            template_dir=_get_required(
-                markdown_obj, "template_dir", "output.markdown.template_dir", str
-            ),
-            document_template=_get_required(
-                markdown_obj, "document_template", "output.markdown.document_template", str
-            ),
-            paper_template=_get_required(
-                markdown_obj, "paper_template", "output.markdown.paper_template", str
-            ),
-            paper_separator=_get(markdown_obj, "paper_separator", "\n\n---\n\n"),
+        markdown_template_dir = _get_required(
+            markdown_obj, "template_dir", "output.markdown.template_dir", str
         )
+        markdown_document_template = _get_required(
+            markdown_obj, "document_template", "output.markdown.document_template", str
+        )
+        markdown_paper_template = _get_required(
+            markdown_obj, "paper_template", "output.markdown.paper_template", str
+        )
+        markdown_paper_separator = _get(markdown_obj, "paper_separator", "\n\n---\n\n")
 
     state_obj = raw.get("state")
     if not isinstance(state_obj, Mapping):
@@ -392,14 +396,19 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
         max_results=max_results,
         sort_by=sort_by,
         sort_order=sort_order,
-        output_formats=output_formats,
-        output_base_dir=output_base_dir,
+        output=OutputConfig(
+            base_dir=output_base_dir,
+            formats=output_formats,
+            markdown_template_dir=markdown_template_dir,
+            markdown_document_template=markdown_document_template,
+            markdown_paper_template=markdown_paper_template,
+            markdown_paper_separator=markdown_paper_separator,
+        ),
         state_enabled=state_enabled,
         state_db_path=state_db_path,
         content_storage_enabled=content_storage_enabled,
         arxiv_keep_version=arxiv_keep_version,
         llm=llm_config,
-        output_markdown=markdown_config,
     )
 
 

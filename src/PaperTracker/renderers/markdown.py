@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Mapping, Sequence
 
-from PaperTracker.config import OutputMarkdownConfig
+from PaperTracker.config import OutputConfig
 from PaperTracker.core.query import SearchQuery
 from PaperTracker.renderers.base import OutputWriter
 from PaperTracker.renderers.template_renderer import TemplateRenderer
@@ -64,25 +64,24 @@ class MarkdownRenderer:
 class MarkdownFileWriter(OutputWriter):
     """Render markdown and write files on finalize."""
 
-    def __init__(self, base_dir: str, markdown_config: OutputMarkdownConfig) -> None:
+    def __init__(self, output_config: OutputConfig) -> None:
         """Initialize Markdown writer.
 
         Args:
-            base_dir: Base output directory.
-            markdown_config: Markdown output configuration.
+            output_config: Output configuration.
         """
-        self.output_dir = Path(base_dir) / "markdown"
+        self.output_dir = Path(output_config.base_dir) / "markdown"
         self.template_renderer = TemplateRenderer()
         self.renderer = MarkdownRenderer(
             document_template=_load_template(
-                markdown_config.template_dir,
-                markdown_config.document_template,
+                output_config.markdown_template_dir,
+                output_config.markdown_document_template,
             ),
             paper_template=_load_template(
-                markdown_config.template_dir,
-                markdown_config.paper_template,
+                output_config.markdown_template_dir,
+                output_config.markdown_paper_template,
             ),
-            paper_separator=markdown_config.paper_separator,
+            paper_separator=output_config.markdown_paper_separator,
             template_renderer=self.template_renderer,
         )
         self.pending_outputs: list[tuple[str, str]] = []

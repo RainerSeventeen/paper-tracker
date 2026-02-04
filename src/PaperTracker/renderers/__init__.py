@@ -26,12 +26,12 @@ def create_output_writer(config: AppConfig) -> OutputWriter:
         Appropriate OutputWriter instance for configured format.
     """
     writers: list[OutputWriter] = []
-    if "console" in config.output_formats:
+    if "console" in config.output.formats:
         writers.append(ConsoleOutputWriter())
-    if "json" in config.output_formats:
-        writers.append(JsonFileWriter(config.output_base_dir))
-    if "markdown" in config.output_formats:
-        writers.append(MarkdownFileWriter(config.output_base_dir, config.output_markdown))
+    if "json" in config.output.formats:
+        writers.append(JsonFileWriter(config.output.base_dir))
+    if "markdown" in config.output.formats:
+        writers.append(MarkdownFileWriter(config.output))
 
     if not writers:
         raise ValueError("No output writers configured")

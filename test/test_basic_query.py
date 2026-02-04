@@ -21,7 +21,7 @@ class TestBasicQueryConfig(unittest.TestCase):
         self.assertEqual(cfg.max_results, 5)
         self.assertEqual(cfg.sort_by, "submittedDate")
         self.assertEqual(cfg.sort_order, "descending")
-        self.assertEqual(cfg.output_formats, ("json",))
+        self.assertEqual(cfg.output.formats, ("json",))
 
         self.assertEqual(len(cfg.queries), 1)
         query = cfg.queries[0]
