@@ -33,7 +33,7 @@ output:
 
 state:
   enabled: false
-  db_path: null
+  db_path: database/papers.db
   content_storage_enabled: false
 
 arxiv:

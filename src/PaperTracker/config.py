@@ -53,7 +53,7 @@ class AppConfig:
         output_format: Output format (text/json).
         output_dir: Directory for JSON output files.
         state_enabled: Whether to enable state management.
-        state_db_path: Database path for state management.
+        state_db_path: Database path for state management (relative or absolute path).
         content_storage_enabled: Whether to enable content storage for full paper data.
         arxiv_keep_version: Whether to keep arXiv version suffix in the paper id.
         llm: LLM configuration settings.
@@ -239,8 +239,8 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
     - `output.format` / `format`
     - `output.dir` - Output directory for JSON files
     - `state.enabled` - Enable state management (deduplication)
-    - `state.db_path` - Database path (default: database/papers.db)
-    - `state.content_storage_enabled` - Enable full content storage (default: false)
+    - `state.db_path` - Database path (relative or absolute; relative to working directory)
+    - `state.content_storage_enabled` - Enable full content storage
     - `arxiv.keep_version`
 
     Args:
@@ -254,9 +254,20 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
         TypeError: If required fields are missing or have wrong types.
     """
 
-    log_level = str(_get(raw, "log.level", _get(raw, "log_level", "INFO")) or "INFO").upper()
-    log_to_file = bool(_get(raw, "log.to_file", _get(raw, "log_to_file", True)))
-    log_dir = str(_get(raw, "log.dir", _get(raw, "log_dir", "log")) or "log")
+    log_level_raw = _get(raw, "log.level", _get(raw, "log_level"))
+    if log_level_raw is None:
+        raise ValueError("Missing required config: log.level or log_level")
+    log_level = str(log_level_raw).upper()
+
+    log_to_file_raw = _get(raw, "log.to_file", _get(raw, "log_to_file"))
+    if log_to_file_raw is None:
+        raise ValueError("Missing required config: log.to_file or log_to_file")
+    log_to_file = bool(log_to_file_raw)
+
+    log_dir_raw = _get(raw, "log.dir", _get(raw, "log_dir"))
+    if log_dir_raw is None:
+        raise ValueError("Missing required config: log.dir or log_dir")
+    log_dir = str(log_dir_raw)
 
     scope_obj = raw.get("scope")
     scope = _parse_search_query(scope_obj) if scope_obj is not None else None
@@ -266,42 +277,84 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
         raise TypeError("queries must be a list")
     queries = tuple(_parse_search_query(q) for q in queries_obj)
 
-    max_results = int(_get(raw, "search.max_results", _get(raw, "max_results", 20)) or 20)
-    sort_by = str(_get(raw, "search.sort_by", _get(raw, "sort_by", "submittedDate")) or "submittedDate")
-    sort_order = str(_get(raw, "search.sort_order", _get(raw, "sort_order", "descending")) or "descending")
+    max_results_raw = _get(raw, "search.max_results", _get(raw, "max_results"))
+    if max_results_raw is None:
+        raise ValueError("Missing required config: search.max_results or max_results")
+    max_results = int(max_results_raw)
 
-    output_format = str(_get(raw, "output.format", _get(raw, "format", "text")) or "text").lower()
-    output_dir = str(_get(raw, "output.dir", "output") or "output")
+    sort_by_raw = _get(raw, "search.sort_by", _get(raw, "sort_by"))
+    if sort_by_raw is None:
+        raise ValueError("Missing required config: search.sort_by or sort_by")
+    sort_by = str(sort_by_raw)
 
-    state_obj = raw.get("state", )
-    state_enabled = bool(_get(state_obj, "enabled", False))
-    state_db_path_raw = _get(state_obj, "db_path", None)
+    sort_order_raw = _get(raw, "search.sort_order", _get(raw, "sort_order"))
+    if sort_order_raw is None:
+        raise ValueError("Missing required config: search.sort_order or sort_order")
+    sort_order = str(sort_order_raw)
+
+    output_format_raw = _get(raw, "output.format", _get(raw, "format"))
+    if output_format_raw is None:
+        raise ValueError("Missing required config: output.format or format")
+    output_format = str(output_format_raw).lower()
+
+    output_dir_raw = _get(raw, "output.dir")
+    if output_dir_raw is None:
+        raise ValueError("Missing required config: output.dir")
+    output_dir = str(output_dir_raw)
+
+    state_obj = raw.get("state")
+    if state_obj is None:
+        raise ValueError("Missing required config: state")
+
+    state_enabled_raw = _get(state_obj, "enabled")
+    if state_enabled_raw is None:
+        raise ValueError("Missing required config: state.enabled")
+    state_enabled = bool(state_enabled_raw)
+
+    state_db_path_raw = _get(state_obj, "db_path")
     if state_db_path_raw is None:
-        state_db_path = "database/papers.db"
-    else:
-        state_db_path = str(state_db_path_raw)
-    content_storage_enabled = bool(_get(state_obj, "content_storage_enabled", False))
-    arxiv_keep_version = bool(_get(raw, "arxiv.keep_version", False))
+        raise ValueError("Missing required config: state.db_path")
+    state_db_path = str(state_db_path_raw)
+
+    content_storage_enabled_raw = _get(state_obj, "content_storage_enabled")
+    if content_storage_enabled_raw is None:
+        raise ValueError("Missing required config: state.content_storage_enabled")
+    content_storage_enabled = bool(content_storage_enabled_raw)
+
+    arxiv_keep_version_raw = _get(raw, "arxiv.keep_version")
+    if arxiv_keep_version_raw is None:
+        raise ValueError("Missing required config: arxiv.keep_version")
+    arxiv_keep_version = bool(arxiv_keep_version_raw)
 
     # LLM configuration
-    llm_obj = raw.get("llm", {})
+    llm_obj = raw.get("llm")
+    if llm_obj is None:
+        raise ValueError("Missing required config: llm")
+
+    def _get_required_llm_field(field_name: str, converter: type) -> Any:
+        """Get a required LLM config field and convert it."""
+        value = _get(llm_obj, field_name)
+        if value is None:
+            raise ValueError(f"Missing required config: llm.{field_name}")
+        return converter(value)
+
     llm_config = LLMConfig(
-        enabled=bool(_get(llm_obj, "enabled", False)),
-        provider=str(_get(llm_obj, "provider", "openai-compat") or "openai-compat"),
-        base_url=str(_get(llm_obj, "base_url", "https://api.openai.com") or "https://api.openai.com"),
-        model=str(_get(llm_obj, "model", "gpt-4o-mini") or "gpt-4o-mini"),
-        api_key_env=str(_get(llm_obj, "api_key_env", "LLM_API_KEY") or "LLM_API_KEY"),
-        timeout=int(_get(llm_obj, "timeout", 30) or 30),
-        target_lang=str(_get(llm_obj, "target_lang", "zh") or "zh"),
-        temperature=float(_get(llm_obj, "temperature", 0.0) or 0.0),
-        max_tokens=int(_get(llm_obj, "max_tokens", 800) or 800),
-        max_workers=int(_get(llm_obj, "max_workers", 3) or 3),
-        max_retries=int(_get(llm_obj, "max_retries", 3) or 3),
-        retry_base_delay=float(_get(llm_obj, "retry_base_delay", 1.0) or 1.0),
-        retry_max_delay=float(_get(llm_obj, "retry_max_delay", 10.0) or 10.0),
-        retry_timeout_multiplier=float(_get(llm_obj, "retry_timeout_multiplier", 1.0) or 1.0),
-        enable_translation=bool(_get(llm_obj, "enable_translation", True)),
-        enable_summary=bool(_get(llm_obj, "enable_summary", False)),
+        enabled=_get_required_llm_field("enabled", bool),
+        provider=_get_required_llm_field("provider", str),
+        base_url=_get_required_llm_field("base_url", str),
+        model=_get_required_llm_field("model", str),
+        api_key_env=_get_required_llm_field("api_key_env", str),
+        timeout=_get_required_llm_field("timeout", int),
+        target_lang=_get_required_llm_field("target_lang", str),
+        temperature=_get_required_llm_field("temperature", float),
+        max_tokens=_get_required_llm_field("max_tokens", int),
+        max_workers=_get_required_llm_field("max_workers", int),
+        max_retries=_get_required_llm_field("max_retries", int),
+        retry_base_delay=_get_required_llm_field("retry_base_delay", float),
+        retry_max_delay=_get_required_llm_field("retry_max_delay", float),
+        retry_timeout_multiplier=_get_required_llm_field("retry_timeout_multiplier", float),
+        enable_translation=_get_required_llm_field("enable_translation", bool),
+        enable_summary=_get_required_llm_field("enable_summary", bool),
     )
 
     if not queries:

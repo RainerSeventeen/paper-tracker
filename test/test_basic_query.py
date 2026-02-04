@@ -7,14 +7,15 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from PaperTracker.config import load_config
+from PaperTracker.config import load_config_with_defaults
 
 
 class TestBasicQueryConfig(unittest.TestCase):
     def test_basic_query_config_parsing(self) -> None:
         config_path = REPO_ROOT / "config" / "test" / "basic_query.yml"
+        default_path = REPO_ROOT / "config" / "default.yml"
 
-        cfg = load_config(config_path)
+        cfg = load_config_with_defaults(config_path, default_path=default_path)
 
         self.assertEqual(cfg.log_level, "INFO")
         self.assertEqual(cfg.max_results, 5)

@@ -123,7 +123,9 @@ arXiv 专用选项。
 状态管理（去重）与内容存储相关选项。
 
 - `enabled`：是否启用状态管理（去重）
-- `db_path`：SQLite 数据库路径；为 `null` 时使用默认 `database/papers.db`
+- `db_path`：SQLite 数据库路径
+  - 支持相对路径（相对于当前工作目录）或绝对路径（以 `/` 开头）
+  - 默认值：`database/papers.db`
 - `content_storage_enabled`：是否启用完整内容存储（将完整论文元数据写入 `paper_content` 表）
 
 说明：
