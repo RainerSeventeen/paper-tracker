@@ -100,6 +100,7 @@ scope:
 
 ### 2.5 `output`
 
+- `base_dir`: 输出根目录，默认 `output`
 - `formats`: 输出格式列表，支持 `console` / `json` / `markdown`
   - `console`: 将结果通过日志输出到控制台
   - `json`: 将结果保存为 JSON 文件
@@ -111,8 +112,14 @@ scope:
 
 ```yml
 output:
-  format: json
-  dir: custom_output  # 输出文件到 custom_output/ 目录
+  base_dir: output
+  formats: [json, markdown]
+
+  markdown:
+    template_dir: template/markdown/
+    document_template: document.md
+    paper_template: paper.md
+    paper_separator: "\n\n---\n\n"
 ```
 
 ### 2.6 `arxiv`

@@ -48,7 +48,7 @@ CommandRunner.run_search()
   ├─ create_storage(config) → (DatabaseManager, DeduplicateStore, ContentStore)
   │  └─ 在 storage/__init__.py 中创建
   ├─ create_output_writer(config) → OutputWriter
-  │  └─ 在 renderers/__init__.py 中根据 config.output_format 决定实现
+  │  └─ 在 renderers/__init__.py 中根据 config.output_formats 决定实现
   ├─ SearchCommand(config, service, dedup, content, writer)
   └─ command.execute() + writer.finalize()
 ```
@@ -87,9 +87,12 @@ class OutputWriter(ABC):
 ```python
 def create_output_writer(config: AppConfig) -> OutputWriter:
     """Create output writer based on config."""
-    if config.output_format == "json":
-        return JsonFileWriter(config.output_dir)
-    return ConsoleOutputWriter()
+    writers: list[OutputWriter] = []
+    if "console" in config.output_formats:
+        writers.append(ConsoleOutputWriter())
+    if "json" in config.output_formats:
+        writers.append(JsonFileWriter(config.output_base_dir, config.output_json))
+    return writers[0] if len(writers) == 1 else MultiOutputWriter(writers)
 ```
 
 **扩展**：
@@ -110,11 +113,14 @@ class CsvOutputWriter(OutputWriter):
 2. 在 `renderers/__init__.py` 中更新工厂函数：
 ```python
 def create_output_writer(config: AppConfig) -> OutputWriter:
-    if config.output_format == "json":
-        return JsonFileWriter(config.output_dir)
-    elif config.output_format == "csv":
-        return CsvOutputWriter(config.output_dir)
-    return ConsoleOutputWriter()
+    writers: list[OutputWriter] = []
+    if "console" in config.output_formats:
+        writers.append(ConsoleOutputWriter())
+    if "json" in config.output_formats:
+        writers.append(JsonFileWriter(config.output_base_dir, config.output_json))
+    if "csv" in config.output_formats:
+        writers.append(CsvOutputWriter(config.output_base_dir))
+    return writers[0] if len(writers) == 1 else MultiOutputWriter(writers)
 ```
 
 ### 2. SearchCommand (`commands.py`)
@@ -193,9 +199,12 @@ def create_storage(config: AppConfig) -> tuple[...]:
 ```python
 def create_output_writer(config: AppConfig) -> OutputWriter:
     """Create output writer based on config."""
-    if config.output_format == "json":
-        return JsonFileWriter(config.output_dir)
-    return ConsoleOutputWriter()
+    writers: list[OutputWriter] = []
+    if "console" in config.output_formats:
+        writers.append(ConsoleOutputWriter())
+    if "json" in config.output_formats:
+        writers.append(JsonFileWriter(config.output_base_dir, config.output_json))
+    return writers[0] if len(writers) == 1 else MultiOutputWriter(writers)
 ```
 
 **扩展**：
@@ -276,7 +285,7 @@ def export_cmd(ctx):
 
 1. 在 `renderers/markdown.py` 中实现新的 Writer：
 ```python
-class MarkdownOutputWriter(OutputWriter):
+class MarkdownFileWriter(OutputWriter):
     def write_query_result(self, papers, query, scope):
         # 格式化为 Markdown
         pass
@@ -288,20 +297,24 @@ class MarkdownOutputWriter(OutputWriter):
 
 2. 在 `renderers/__init__.py` 中更新 `create_output_writer()` 工厂：
 ```python
-from PaperTracker.renderers.markdown import MarkdownOutputWriter
+from PaperTracker.renderers.markdown import MarkdownFileWriter
 
 def create_output_writer(config: AppConfig) -> OutputWriter:
-    if config.output_format == "markdown":
-        return MarkdownOutputWriter(config.output_dir)
-    elif config.output_format == "json":
-        return JsonFileWriter(config.output_dir)
-    return ConsoleOutputWriter()
+    writers: list[OutputWriter] = []
+    if "console" in config.output_formats:
+        writers.append(ConsoleOutputWriter())
+    if "json" in config.output_formats:
+        writers.append(JsonFileWriter(config.output_base_dir, config.output_json))
+    if "markdown" in config.output_formats:
+        writers.append(MarkdownFileWriter(config.output_base_dir, config.output_markdown))
+    return writers[0] if len(writers) == 1 else MultiOutputWriter(writers)
 ```
 
 3. 在配置文件中使用：
 ```yaml
 output:
-  format: markdown
+  base_dir: output
+  formats: [markdown]
 ```
 
 ### 添加新的数据源
@@ -342,20 +355,20 @@ def create_search_service(config: AppConfig) -> PaperSearchService:
 2. 在 `load_config()` 中添加解析逻辑
 3. 相关模块通过 `config` 参数获取新配置
 
-例如，新增输出目录字段：
+例如，新增输出根目录字段：
 
 ```python
 @dataclass(frozen=True, slots=True)
 class AppConfig:
     # ... 其他字段
-    output_dir: str = "output"  # 新增
+    output_base_dir: str = "output"  # 新增
 
 # 在 load_config() 中
 output_obj = raw.get("output", {})
-output_dir = str(_get(output_obj, "dir") or "output")
+output_base_dir = str(_get(output_obj, "base_dir") or "output")
 
 # 在 JsonFileWriter 中使用
-self.output_dir = config.output_dir
+self.output_dir = Path(config.output_base_dir) / "json"
 ```
 
 ---

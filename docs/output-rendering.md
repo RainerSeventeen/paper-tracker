@@ -231,7 +231,7 @@ def map_papers_to_views(papers: Sequence[Paper]) -> list[PaperView]:
 
 ```yaml
 output:
-  format: text    # 输出格式：text 或 json
+  format: console    # 输出格式：console 或 json
   dir: output     # JSON 文件输出目录（可选，默认 "output"）
 ```
 
@@ -241,7 +241,7 @@ output:
 
 输出格式类型：
 
-- **`text`**：控制台文本输出
+- **`console`**：控制台文本输出
   - 通过日志系统输出到标准输出
   - 人类友好的格式化展示
   - 适合交互式查看
@@ -268,7 +268,7 @@ output:
 
 ```yaml
 output:
-  format: text
+  format: console
 ```
 
 #### 示例 2: JSON 文件输出
@@ -457,7 +457,7 @@ llm:
   enabled: false
 
 output:
-  format: text
+  format: console
 
 queries:
   - NAME: compression
@@ -505,7 +505,7 @@ llm:
   target_lang: zh
 
 output:
-  format: text
+  format: console
 ```
 
 **输出**：
@@ -668,8 +668,8 @@ def render_markdown_table(papers: Iterable[PaperView]) -> str:
 class MarkdownFileWriter(OutputWriter):
     """将查询结果输出到 Markdown 文件。"""
 
-    def __init__(self, output_dir: str = "output"):
-        self.output_dir = Path(output_dir)
+    def __init__(self, base_dir: str = "output"):
+        self.output_dir = Path(base_dir) / "markdown"
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.results: list[tuple[str, str, list[PaperView]]] = []
 
@@ -688,8 +688,8 @@ class MarkdownFileWriter(OutputWriter):
         """写入 Markdown 文件。"""
         from datetime import datetime
 
-        timestamp = datetime.now().strftime("%m%d%H%M")
-        filename = self.output_dir / f"{action}_{timestamp}.md"
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = self.output_dir / f"papers_{timestamp}.md"
 
         with open(filename, "w", encoding="utf-8") as f:
             f.write(f"# {action.capitalize()} Results\n\n")
@@ -714,6 +714,7 @@ from PaperTracker.renderers.base import OutputWriter
 from PaperTracker.renderers.console import ConsoleOutputWriter
 from PaperTracker.renderers.json import JsonFileWriter
 from PaperTracker.renderers.markdown import MarkdownFileWriter  # 新增
+from PaperTracker.renderers.multi import MultiOutputWriter
 
 __all__ = ["OutputWriter", "create_output_writer"]
 
@@ -727,11 +728,14 @@ def create_output_writer(config: AppConfig) -> OutputWriter:
     Returns:
         相应的 OutputWriter 实现
     """
-    if config.output_format == "json":
-        return JsonFileWriter(config.output_dir)
-    elif config.output_format == "markdown":  # 新增
-        return MarkdownFileWriter(config.output_dir)
-    return ConsoleOutputWriter()
+    writers: list[OutputWriter] = []
+    if "console" in config.output_formats:
+        writers.append(ConsoleOutputWriter())
+    if "json" in config.output_formats:
+        writers.append(JsonFileWriter(config.output_base_dir, config.output_json))
+    if "markdown" in config.output_formats:  # 新增
+        writers.append(MarkdownFileWriter(config.output_base_dir, config.output_markdown))
+    return writers[0] if len(writers) == 1 else MultiOutputWriter(writers)
 ```
 
 #### 步骤 3: 使用新格式
@@ -740,11 +744,11 @@ def create_output_writer(config: AppConfig) -> OutputWriter:
 
 ```yaml
 output:
-  format: markdown
-  dir: markdown_output
+  base_dir: output
+  formats: [markdown]
 ```
 
-**输出示例** (`markdown_output/search_02031030.md`)：
+**输出示例** (`output/markdown/papers_20250203_103045.md`)：
 
 ```markdown
 # Search Results

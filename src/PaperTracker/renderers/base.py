@@ -7,6 +7,8 @@ Separates control flow from output logic for better testability.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from typing import Sequence
 
 from PaperTracker.core.query import SearchQuery
 from PaperTracker.renderers.view_models import PaperView
@@ -37,3 +39,25 @@ class OutputWriter(ABC):
         Args:
             action: The CLI command name (e.g., 'search').
         """
+
+
+@dataclass(slots=True)
+class MultiOutputWriter(OutputWriter):
+    """Delegate output to multiple writers."""
+
+    writers: Sequence[OutputWriter]
+
+    def write_query_result(
+        self,
+        papers: list[PaperView],
+        query: SearchQuery,
+        scope: SearchQuery | None,
+    ) -> None:
+        """Send query results to all writers."""
+        for writer in self.writers:
+            writer.write_query_result(papers, query, scope)
+
+    def finalize(self, action: str) -> None:
+        """Finalize all writers."""
+        for writer in self.writers:
+            writer.finalize(action)

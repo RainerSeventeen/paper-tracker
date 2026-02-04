@@ -26,19 +26,19 @@ arxiv:
 #     OR: [cs.CV]
 
 queries:
-  - NAME: compression
+  # - NAME: compression
+  #   OR:
+  #     - Image Compression
+  #     - Video Compression
+  - NAME: neural_video_compression
     OR:
-      - Image Compression
-      - Video Compression
-  # - NAME: neural_video_compression
-  #   OR:
-  #     - Neural Video Compression
-  #     - Learned Video Compression
-  #     - End-to-end Video
-  # - NAME: vqa
-  #   OR:
-  #     - Video Quality Assessment
-  #     - Perceptual Quality Assessment
+      - Neural Video Compression
+      - Learned Video Compression
+      - End-to-end Video
+  - NAME: vqa
+    OR:
+      - Video Quality Assessment
+      - Perceptual Quality Assessment
   # - NAME: vsr
   #   OR:
   #     - Video Super Resolution
@@ -52,8 +52,14 @@ search:
 
 output:
   base_dir: output/              # Output root directory
-  formats: [console]             # Output formats: console, json, markdown (can select multiple)
+  formats: [console, json, markdown]             # Output formats: console, json, markdown (can select multiple)
 
+  # Markdown export configuration
+  markdown:
+    template_dir: template/markdown/
+    document_template: document.md       # Document-level template
+    paper_template: paper.md             # Paper-level template
+    paper_separator: "\n\n---\n\n"       # Separator between papers
 
 # LLM translation configuration
 llm:

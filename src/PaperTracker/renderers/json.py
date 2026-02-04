@@ -87,13 +87,13 @@ def render_json(papers: Iterable[PaperView]) -> list[dict]:
 class JsonFileWriter(OutputWriter):
     """Accumulate results and write to JSON file on finalize."""
 
-    def __init__(self, output_dir: str) -> None:
+    def __init__(self, base_dir: str) -> None:
         """Initialize JSON writer.
 
         Args:
-            output_dir: Directory where to write output files.
+            base_dir: Base output directory.
         """
-        self.output_dir = Path(output_dir)
+        self.output_dir = Path(base_dir) / "json"
         self.all_results: list[dict] = []
 
     def write_query_result(
@@ -127,6 +127,7 @@ class JsonFileWriter(OutputWriter):
         payload = json.dumps(self.all_results, ensure_ascii=False, indent=2)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_path = self.output_dir / f"{action}_{timestamp}.json"
+        filename = f"{action}_{timestamp}.json"
+        output_path = self.output_dir / filename
         output_path.write_text(payload, encoding="utf-8")
         log.info("JSON saved to %s", output_path)

@@ -38,6 +38,16 @@ class LLMConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class OutputMarkdownConfig:
+    """Markdown output configuration."""
+
+    template_dir: str = "template/markdown"
+    document_template: str = "document.md"
+    paper_template: str = "paper.md"
+    paper_separator: str = "\n\n---\n\n"
+
+
+@dataclass(frozen=True, slots=True)
 class AppConfig:
     """Normalized runtime configuration.
 
@@ -57,6 +67,7 @@ class AppConfig:
         content_storage_enabled: Whether to enable content storage for full paper data.
         arxiv_keep_version: Whether to keep arXiv version suffix in the paper id.
         llm: LLM configuration settings.
+        output_markdown: Markdown output settings.
     """
 
     log_level: str = "INFO"
@@ -74,6 +85,7 @@ class AppConfig:
     content_storage_enabled: bool = False
     arxiv_keep_version: bool = False
     llm: LLMConfig = LLMConfig()
+    output_markdown: OutputMarkdownConfig = OutputMarkdownConfig()
 
 
 _ALLOWED_FIELDS = {"TITLE", "ABSTRACT", "AUTHOR", "JOURNAL", "CATEGORY"}
@@ -264,8 +276,8 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
     - `search.max_results`
     - `search.sort_by`
     - `search.sort_order`
-    - `output.format` - Output format for results
-    - `output.dir` - Output directory for JSON files
+    - `output.base_dir` - Output base directory
+    - `output.formats` - Output formats for results
     - `state.enabled` - Enable state management (deduplication)
     - `state.db_path` - Database path (relative or absolute; relative to working directory)
     - `state.content_storage_enabled` - Enable full content storage
@@ -301,8 +313,32 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
     sort_order = _get_required(search_obj, "sort_order", "search.sort_order", str)
 
     output_obj = _get_section(raw, "output")
-    output_format = _get_required(output_obj, "format", "output.format", str).lower()
-    output_dir = _get_required(output_obj, "dir", "output.dir", str)
+    output_base_dir = _get_required(output_obj, "base_dir", "output.base_dir", str)
+    output_formats_raw = _get_required(output_obj, "formats", "output.formats", _as_str_list)
+    output_formats = tuple(fmt.lower() for fmt in output_formats_raw)
+
+    allowed_formats = {"console", "json", "markdown"}
+    if not output_formats:
+        raise ValueError("output.formats must include at least one format")
+    unknown_formats = set(output_formats) - allowed_formats
+    if unknown_formats:
+        raise ValueError(f"output.formats has unknown formats: {sorted(unknown_formats)}")
+
+    markdown_obj = _get_section(output_obj, "markdown")
+    markdown_config = OutputMarkdownConfig()
+    if "markdown" in output_formats:
+        markdown_config = OutputMarkdownConfig(
+            template_dir=_get_required(
+                markdown_obj, "template_dir", "output.markdown.template_dir", str
+            ),
+            document_template=_get_required(
+                markdown_obj, "document_template", "output.markdown.document_template", str
+            ),
+            paper_template=_get_required(
+                markdown_obj, "paper_template", "output.markdown.paper_template", str
+            ),
+            paper_separator=_get(markdown_obj, "paper_separator", "\n\n---\n\n"),
+        )
 
     state_obj = raw.get("state")
     if not isinstance(state_obj, Mapping):
@@ -347,9 +383,6 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
 
     if not queries:
         raise ValueError("Missing required config: queries")
-    if output_format not in {"text", "json"}:
-        raise ValueError("output.format must be text or json")
-
     return AppConfig(
         log_level=log_level,
         log_to_file=log_to_file,
@@ -359,13 +392,14 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
         max_results=max_results,
         sort_by=sort_by,
         sort_order=sort_order,
-        output_format=output_format,
-        output_dir=output_dir,
+        output_formats=output_formats,
+        output_base_dir=output_base_dir,
         state_enabled=state_enabled,
         state_db_path=state_db_path,
         content_storage_enabled=content_storage_enabled,
         arxiv_keep_version=arxiv_keep_version,
         llm=llm_config,
+        output_markdown=markdown_config,
     )
 
 
