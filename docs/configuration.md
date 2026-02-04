@@ -47,7 +47,8 @@ search:
   max_results: 3
 
 output:
-  format: text
+  base_dir: output
+  formats: [console]
 ```
 
 运行：
@@ -99,17 +100,26 @@ scope:
 
 ### 2.5 `output`
 
-- `format`: `text` / `json`
-  - `text`: 将结果通过日志输出到控制台
-  - `json`: 将结果保存为时间戳 JSON 文件
-- `dir`: 可选，默认 `output`，指定 JSON 文件的输出目录
+- `base_dir`: 输出根目录，默认 `output`
+- `formats`: 输出格式列表，支持 `console` / `json` / `markdown`
+  - `console`: 将结果通过日志输出到控制台
+  - `json`: 将结果保存为 JSON 文件
+  - `markdown`: 将结果保存为 Markdown 文件
+- `markdown`: Markdown 导出配置（见下方示例）
+- `json`: JSON 导出配置（文件名模板）
 
 示例：
 
 ```yml
 output:
-  format: json
-  dir: custom_output  # 输出文件到 custom_output/ 目录
+  base_dir: output
+  formats: [json, markdown]
+
+  markdown:
+    template_dir: template/markdown/
+    document_template: document.md
+    paper_template: paper.md
+    paper_separator: "\n\n---\n\n"
 ```
 
 ### 2.6 `arxiv`

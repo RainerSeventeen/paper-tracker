@@ -28,8 +28,8 @@ search:
   sort_order: descending
 
 output:
-  format: text
-  dir: output
+  base_dir: output
+  formats: [console]
 
 state:
   enabled: false
@@ -83,7 +83,7 @@ queries:
 
         self.assertEqual(cfg.log_level, "DEBUG")
         self.assertEqual(cfg.max_results, 10)
-        self.assertEqual(cfg.output_format, "text")
+        self.assertEqual(cfg.output.formats, ("console",))
         self.assertEqual(len(cfg.queries), 1)
         self.assertEqual(cfg.queries[0].name, "override")
 

@@ -26,8 +26,8 @@ search:
   sort_order: descending
 
 output:
-  format: text
-  dir: output/
+  base_dir: output/
+  formats: [console]
 
 # LLM translation enabled for testing
 llm:

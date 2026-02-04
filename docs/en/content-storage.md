@@ -125,7 +125,7 @@ search:
   sort_order: descending
 
 output:
-  format: text
+  format: console
 ```
 
 Run the search:
