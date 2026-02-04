@@ -36,15 +36,16 @@ paper-tracker --config config/default.yml search
 
 ## 文档入口
 - [使用指南](./docs/zh/guide_user.md)
-- [详细参数配置说明](./guide_configuration.md)
-- [arXiv 查询语法说明](./source_arxiv_api_query.md)
+- [详细参数配置说明](./docs/zh/guide_configuration.md)
+- [arXiv 查询语法说明](./docs/zh/source_arxiv_api_query.md)
 
 ## 版权与许可
 
 本仓库为独立实现，基于开源项目的功能思路进行重构
+
 当前仓库使用 MIT 协议，详见 `LICENSE`。
 
 本项目使用了 `libs/` 下以下 submodule 的部分功能思路:（保持原仓库许可证与版权信息）：
 
-- `libs/Arxiv-tracker`（https://github.com/colorfulandcjy0806/Arxiv-tracker）
-- `libs/daily-arXiv-ai-enhanced`（https://github.com/zhengqinjian/daily-arXiv-ai-enhanced）
+- [Arxiv-tracker](https://github.com/colorfulandcjy0806/Arxiv-tracker)
+- [daily-arXiv-ai-enhanced](https://github.com/dw-dengwei/daily-arXiv-ai-enhanced)
