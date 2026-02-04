@@ -225,6 +225,29 @@ def _get_section(raw: Mapping[str, Any], key: str) -> Mapping[str, Any]:
     return {}
 
 
+def _get_required(
+    section: Mapping[str, Any], field_name: str, config_key: str, converter: type
+) -> Any:
+    """Get a required config field with validation and conversion.
+
+    Args:
+        section: The config section mapping.
+        field_name: The field name in the section.
+        config_key: The full config key path for error messages (e.g., "log.level").
+        converter: Type converter function (str, int, bool, float).
+
+    Returns:
+        Converted field value.
+
+    Raises:
+        ValueError: If the field is missing.
+    """
+    value = _get(section, field_name)
+    if value is None:
+        raise ValueError(f"Missing required config: {config_key}")
+    return converter(value)
+
+
 def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
     """Normalize a configuration mapping into `AppConfig`.
 
@@ -260,20 +283,9 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
     """
 
     log_obj = _get_section(raw, "log")
-    log_level_raw = _get(log_obj, "level")
-    if log_level_raw is None:
-        raise ValueError("Missing required config: log.level")
-    log_level = str(log_level_raw).upper()
-
-    log_to_file_raw = _get(log_obj, "to_file")
-    if log_to_file_raw is None:
-        raise ValueError("Missing required config: log.to_file")
-    log_to_file = bool(log_to_file_raw)
-
-    log_dir_raw = _get(log_obj, "dir")
-    if log_dir_raw is None:
-        raise ValueError("Missing required config: log.dir")
-    log_dir = str(log_dir_raw)
+    log_level = _get_required(log_obj, "level", "log.level", str).upper()
+    log_to_file = _get_required(log_obj, "to_file", "log.to_file", bool)
+    log_dir = _get_required(log_obj, "dir", "log.dir", str)
 
     scope_obj = raw.get("scope")
     scope = _parse_search_query(scope_obj) if scope_obj is not None else None
@@ -284,88 +296,53 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
     queries = tuple(_parse_search_query(q) for q in queries_obj)
 
     search_obj = _get_section(raw, "search")
-    max_results_raw = _get(search_obj, "max_results")
-    if max_results_raw is None:
-        raise ValueError("Missing required config: search.max_results")
-    max_results = int(max_results_raw)
-
-    sort_by_raw = _get(search_obj, "sort_by")
-    if sort_by_raw is None:
-        raise ValueError("Missing required config: search.sort_by")
-    sort_by = str(sort_by_raw)
-
-    sort_order_raw = _get(search_obj, "sort_order")
-    if sort_order_raw is None:
-        raise ValueError("Missing required config: search.sort_order")
-    sort_order = str(sort_order_raw)
+    max_results = _get_required(search_obj, "max_results", "search.max_results", int)
+    sort_by = _get_required(search_obj, "sort_by", "search.sort_by", str)
+    sort_order = _get_required(search_obj, "sort_order", "search.sort_order", str)
 
     output_obj = _get_section(raw, "output")
-    output_format_raw = _get(output_obj, "format")
-    if output_format_raw is None:
-        raise ValueError("Missing required config: output.format")
-    output_format = str(output_format_raw).lower()
-
-    output_dir_raw = _get(output_obj, "dir")
-    if output_dir_raw is None:
-        raise ValueError("Missing required config: output.dir")
-    output_dir = str(output_dir_raw)
+    output_format = _get_required(output_obj, "format", "output.format", str).lower()
+    output_dir = _get_required(output_obj, "dir", "output.dir", str)
 
     state_obj = raw.get("state")
     if not isinstance(state_obj, Mapping):
         raise ValueError("Missing required config: state")
 
-    state_enabled_raw = _get(state_obj, "enabled")
-    if state_enabled_raw is None:
-        raise ValueError("Missing required config: state.enabled")
-    state_enabled = bool(state_enabled_raw)
-
-    state_db_path_raw = _get(state_obj, "db_path")
-    if state_db_path_raw is None:
-        raise ValueError("Missing required config: state.db_path")
-    state_db_path = str(state_db_path_raw)
-
-    content_storage_enabled_raw = _get(state_obj, "content_storage_enabled")
-    if content_storage_enabled_raw is None:
-        raise ValueError("Missing required config: state.content_storage_enabled")
-    content_storage_enabled = bool(content_storage_enabled_raw)
+    state_enabled = _get_required(state_obj, "enabled", "state.enabled", bool)
+    state_db_path = _get_required(state_obj, "db_path", "state.db_path", str)
+    content_storage_enabled = _get_required(
+        state_obj, "content_storage_enabled", "state.content_storage_enabled", bool
+    )
 
     arxiv_obj = raw.get("arxiv")
     if not isinstance(arxiv_obj, Mapping):
         raise ValueError("Missing required config: arxiv")
-    arxiv_keep_version_raw = _get(arxiv_obj, "keep_version")
-    if arxiv_keep_version_raw is None:
-        raise ValueError("Missing required config: arxiv.keep_version")
-    arxiv_keep_version = bool(arxiv_keep_version_raw)
+    arxiv_keep_version = _get_required(arxiv_obj, "keep_version", "arxiv.keep_version", bool)
 
     # LLM configuration
     llm_obj = raw.get("llm")
     if not isinstance(llm_obj, Mapping):
         raise ValueError("Missing required config: llm")
 
-    def _get_required_llm_field(field_name: str, converter: type) -> Any:
-        """Get a required LLM config field and convert it."""
-        value = _get(llm_obj, field_name)
-        if value is None:
-            raise ValueError(f"Missing required config: llm.{field_name}")
-        return converter(value)
-
     llm_config = LLMConfig(
-        enabled=_get_required_llm_field("enabled", bool),
-        provider=_get_required_llm_field("provider", str),
-        base_url=_get_required_llm_field("base_url", str),
-        model=_get_required_llm_field("model", str),
-        api_key_env=_get_required_llm_field("api_key_env", str),
-        timeout=_get_required_llm_field("timeout", int),
-        target_lang=_get_required_llm_field("target_lang", str),
-        temperature=_get_required_llm_field("temperature", float),
-        max_tokens=_get_required_llm_field("max_tokens", int),
-        max_workers=_get_required_llm_field("max_workers", int),
-        max_retries=_get_required_llm_field("max_retries", int),
-        retry_base_delay=_get_required_llm_field("retry_base_delay", float),
-        retry_max_delay=_get_required_llm_field("retry_max_delay", float),
-        retry_timeout_multiplier=_get_required_llm_field("retry_timeout_multiplier", float),
-        enable_translation=_get_required_llm_field("enable_translation", bool),
-        enable_summary=_get_required_llm_field("enable_summary", bool),
+        enabled=_get_required(llm_obj, "enabled", "llm.enabled", bool),
+        provider=_get_required(llm_obj, "provider", "llm.provider", str),
+        base_url=_get_required(llm_obj, "base_url", "llm.base_url", str),
+        model=_get_required(llm_obj, "model", "llm.model", str),
+        api_key_env=_get_required(llm_obj, "api_key_env", "llm.api_key_env", str),
+        timeout=_get_required(llm_obj, "timeout", "llm.timeout", int),
+        target_lang=_get_required(llm_obj, "target_lang", "llm.target_lang", str),
+        temperature=_get_required(llm_obj, "temperature", "llm.temperature", float),
+        max_tokens=_get_required(llm_obj, "max_tokens", "llm.max_tokens", int),
+        max_workers=_get_required(llm_obj, "max_workers", "llm.max_workers", int),
+        max_retries=_get_required(llm_obj, "max_retries", "llm.max_retries", int),
+        retry_base_delay=_get_required(llm_obj, "retry_base_delay", "llm.retry_base_delay", float),
+        retry_max_delay=_get_required(llm_obj, "retry_max_delay", "llm.retry_max_delay", float),
+        retry_timeout_multiplier=_get_required(
+            llm_obj, "retry_timeout_multiplier", "llm.retry_timeout_multiplier", float
+        ),
+        enable_translation=_get_required(llm_obj, "enable_translation", "llm.enable_translation", bool),
+        enable_summary=_get_required(llm_obj, "enable_summary", "llm.enable_summary", bool),
     )
 
     if not queries:
