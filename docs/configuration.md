@@ -2,6 +2,30 @@
 
 本项目的 CLI 只接受一个参数：`--config <path>`。
 
+配置只支持 YAML 嵌套结构（例如 `log:` 下的 `level`），不支持 `log.level` 这类扁平键写法。
+
+`config/default.yml` 是完整默认配置文档。执行时会将 `--config` 指定的 YAML 作为覆盖文件，与默认配置进行合并：同路径字段覆盖，未提供字段使用默认值。合并规则为“mapping 递归合并，列表和标量整体覆盖”。
+
+示例（只覆盖少量字段）：
+
+```yml
+log:
+  level: DEBUG
+
+search:
+  max_results: 10
+
+queries:
+  - NAME: override
+    OR: [diffusion]
+```
+
+运行：
+
+```bash
+paper-tracker --config custom.yml search
+```
+
 配置文件使用 YAML，核心目标是：**用户侧高可读、结构统一**；内部会将配置编译成不同数据源所需的查询格式（当前实现 arXiv）。
 
 ---
@@ -101,7 +125,9 @@ arXiv 专用选项。
 状态管理（去重）与内容存储相关选项。
 
 - `enabled`：是否启用状态管理（去重）
-- `db_path`：SQLite 数据库路径；为 `null` 时使用默认 `database/papers.db`
+- `db_path`：SQLite 数据库路径
+  - 支持相对路径（相对于当前工作目录）或绝对路径（以 `/` 开头）
+  - 默认值：`database/papers.db`
 - `content_storage_enabled`：是否启用完整内容存储（将完整论文元数据写入 `paper_content` 表）
 
 说明：
