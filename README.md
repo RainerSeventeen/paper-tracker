@@ -1,45 +1,50 @@
 # Paper Tracker
 
-功能尚未完成，处于开发状态中……
+PaperTracker 是一个最小化论文追踪工具，核心功能是根据关键词查询 arXiv API 并输出论文列表
 
-- 原始项目仓库：https://github.com/colorfulandcjy0806/Arxiv-tracker
+## 核心功能
 
-本仓库从零重新整理，仅保留核心功能与配置
+功能尚未开发完毕......
 
-## 核心功能（当前已实现）
+目前支持:
 
-- 根据关键词（可选分类/排除词）调用 arXiv API 抓取论文列表
-- 在命令行输出（支持 `console` / `json`）
+- 关键词检索（支持分类、标题、作者等字段）
+- 去重与可选内容的存储（SQLite）
+- 多种输出格式（console/json/markdown）
+- 可选 LLM 增强（翻译与结构化摘要）
 
-### 快速开始
 
-**1. 安装依赖**（推荐用虚拟环境）：
+## 快速开始
+
+**1. 安装**（推荐使用虚拟环境）：
 ```bash
 python -m pip install -e .
 ```
 
-**2. 配置环境变量**（`config/default.yml` 默认启用 LLM 翻译，需要配置密钥；或在配置里关闭 `llm.enabled`）：
+**2. 配置环境变量**（如使用 LLM）：
 ```bash
 cp .env.example .env
-# 编辑 .env 文件，填入你的 API 密钥
+# 编辑 .env 文件，填入你的 API Key
 ```
 
-**3. 运行程序**：
-
-准备配置文件（参考 `config/default.yml`），然后运行：
+**3. 运行**：
 ```bash
 paper-tracker --config config/default.yml search
 ```
 
-**相关文档**：
-- 配置文件写法与字段说明：`docs/configuration.md`
-- 环境变量配置说明：`docs/environment-variables.md`
-- 测试说明：`docs/testing.md`
+更多说明见 [使用指南](./docs/zh/guide_user.md)
 
-## TODOs
-- 增加默认参数配置，手动写覆盖参数即可
-- 增加 set 选项，专门用来写入配置功能
+## 文档入口
+- [使用指南](./docs/zh/guide_user.md)
+- [详细参数配置说明](./guide_configuration.md)
+- [arXiv 查询语法说明](./source_arxiv_api_query.md)
 
 ## 版权与许可
 
-本仓库 **继承原仓库的版权与许可**, 使用 MIT 开源协议，详见 [LICENSE](./LICENSE)
+本仓库为独立实现，基于开源项目的功能思路进行重构
+当前仓库使用 MIT 协议，详见 `LICENSE`。
+
+本项目使用了 `libs/` 下以下 submodule 的部分功能思路:（保持原仓库许可证与版权信息）：
+
+- `libs/Arxiv-tracker`（https://github.com/colorfulandcjy0806/Arxiv-tracker）
+- `libs/daily-arXiv-ai-enhanced`（https://github.com/zhengqinjian/daily-arXiv-ai-enhanced）
