@@ -602,7 +602,7 @@ User: Please analyze the following abstract...
 1. 增加 `max_workers` 提高并发
 2. 选择响应更快的 API 提供商
 3. 仅启用需要的功能(翻译或摘要)
-4. 减少 `search.max_results`
+4. 减少 `search` 中的 `max_results`
 
 ## 相关文档
 

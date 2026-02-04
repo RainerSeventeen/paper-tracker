@@ -1,4 +1,5 @@
-log_level: INFO
+log:
+  level: INFO
 
 queries:
   - NAME: basic

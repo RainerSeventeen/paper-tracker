@@ -342,7 +342,7 @@ def create_search_service(config: AppConfig) -> PaperSearchService:
 2. 在 `load_config()` 中添加解析逻辑
 3. 相关模块通过 `config` 参数获取新配置
 
-例如，`output.dir` 的添加：
+例如，新增输出目录字段：
 
 ```python
 @dataclass(frozen=True, slots=True)
@@ -351,7 +351,8 @@ class AppConfig:
     output_dir: str = "output"  # 新增
 
 # 在 load_config() 中
-output_dir = str(_get(raw, "output.dir", "output") or "output")
+output_obj = raw.get("output", {})
+output_dir = str(_get(output_obj, "dir") or "output")
 
 # 在 JsonFileWriter 中使用
 self.output_dir = config.output_dir

@@ -201,42 +201,47 @@ def _parse_yaml(text: str) -> dict[str, Any]:
     return dict(data)
 
 
-def _get(d: Mapping[str, Any], path: str, default: Any = None) -> Any:
-    """Get nested key from mapping by dotted path.
+def _get(d: Mapping[str, Any], key: str, default: Any = None) -> Any:
+    """Get a key from a mapping with a default fallback.
 
     Args:
         d: Mapping to search.
-        path: Dotted key path (e.g., "log.level").
+        key: Key to fetch.
         default: Default value if missing.
 
     Returns:
-        Value found at the path or the default.
+        Value found at the key or the default.
     """
-    cur: Any = d
-    for key in path.split("."):
-        if not isinstance(cur, Mapping) or key not in cur:
-            return default
-        cur = cur[key]
-    return cur
+    if not isinstance(d, Mapping):
+        return default
+    return d.get(key, default)
+
+
+def _get_section(raw: Mapping[str, Any], key: str) -> Mapping[str, Any]:
+    """Get a nested mapping section or return an empty mapping."""
+    section = raw.get(key)
+    if isinstance(section, Mapping):
+        return section
+    return {}
 
 
 def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
     """Normalize a configuration mapping into `AppConfig`.
 
-    Supported YAML structure (both flat and nested keys are accepted):
+    Supported YAML structure (nested keys only; dotted keys are not supported):
 
-    - `log_level` / `log.level`
-    - `log_to_file` / `log.to_file`
-    - `log_dir` / `log.dir`
+    - `log.level`
+    - `log.to_file`
+    - `log.dir`
     - `scope` (optional)
       - Field mapping applied to every query.
     - `queries`
       - List of query objects.
       - Field keys and operator keys must be uppercase.
-    - `search.max_results` / `max_results`
-    - `search.sort_by` / `sort_by`
-    - `search.sort_order` / `sort_order`
-    - `output.format` / `format`
+    - `search.max_results`
+    - `search.sort_by`
+    - `search.sort_order`
+    - `output.format` - Output format for results
     - `output.dir` - Output directory for JSON files
     - `state.enabled` - Enable state management (deduplication)
     - `state.db_path` - Database path (relative or absolute; relative to working directory)
@@ -254,19 +259,20 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
         TypeError: If required fields are missing or have wrong types.
     """
 
-    log_level_raw = _get(raw, "log.level", _get(raw, "log_level"))
+    log_obj = _get_section(raw, "log")
+    log_level_raw = _get(log_obj, "level")
     if log_level_raw is None:
-        raise ValueError("Missing required config: log.level or log_level")
+        raise ValueError("Missing required config: log.level")
     log_level = str(log_level_raw).upper()
 
-    log_to_file_raw = _get(raw, "log.to_file", _get(raw, "log_to_file"))
+    log_to_file_raw = _get(log_obj, "to_file")
     if log_to_file_raw is None:
-        raise ValueError("Missing required config: log.to_file or log_to_file")
+        raise ValueError("Missing required config: log.to_file")
     log_to_file = bool(log_to_file_raw)
 
-    log_dir_raw = _get(raw, "log.dir", _get(raw, "log_dir"))
+    log_dir_raw = _get(log_obj, "dir")
     if log_dir_raw is None:
-        raise ValueError("Missing required config: log.dir or log_dir")
+        raise ValueError("Missing required config: log.dir")
     log_dir = str(log_dir_raw)
 
     scope_obj = raw.get("scope")
@@ -277,33 +283,35 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
         raise TypeError("queries must be a list")
     queries = tuple(_parse_search_query(q) for q in queries_obj)
 
-    max_results_raw = _get(raw, "search.max_results", _get(raw, "max_results"))
+    search_obj = _get_section(raw, "search")
+    max_results_raw = _get(search_obj, "max_results")
     if max_results_raw is None:
-        raise ValueError("Missing required config: search.max_results or max_results")
+        raise ValueError("Missing required config: search.max_results")
     max_results = int(max_results_raw)
 
-    sort_by_raw = _get(raw, "search.sort_by", _get(raw, "sort_by"))
+    sort_by_raw = _get(search_obj, "sort_by")
     if sort_by_raw is None:
-        raise ValueError("Missing required config: search.sort_by or sort_by")
+        raise ValueError("Missing required config: search.sort_by")
     sort_by = str(sort_by_raw)
 
-    sort_order_raw = _get(raw, "search.sort_order", _get(raw, "sort_order"))
+    sort_order_raw = _get(search_obj, "sort_order")
     if sort_order_raw is None:
-        raise ValueError("Missing required config: search.sort_order or sort_order")
+        raise ValueError("Missing required config: search.sort_order")
     sort_order = str(sort_order_raw)
 
-    output_format_raw = _get(raw, "output.format", _get(raw, "format"))
+    output_obj = _get_section(raw, "output")
+    output_format_raw = _get(output_obj, "format")
     if output_format_raw is None:
-        raise ValueError("Missing required config: output.format or format")
+        raise ValueError("Missing required config: output.format")
     output_format = str(output_format_raw).lower()
 
-    output_dir_raw = _get(raw, "output.dir")
+    output_dir_raw = _get(output_obj, "dir")
     if output_dir_raw is None:
         raise ValueError("Missing required config: output.dir")
     output_dir = str(output_dir_raw)
 
     state_obj = raw.get("state")
-    if state_obj is None:
+    if not isinstance(state_obj, Mapping):
         raise ValueError("Missing required config: state")
 
     state_enabled_raw = _get(state_obj, "enabled")
@@ -321,14 +329,17 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
         raise ValueError("Missing required config: state.content_storage_enabled")
     content_storage_enabled = bool(content_storage_enabled_raw)
 
-    arxiv_keep_version_raw = _get(raw, "arxiv.keep_version")
+    arxiv_obj = raw.get("arxiv")
+    if not isinstance(arxiv_obj, Mapping):
+        raise ValueError("Missing required config: arxiv")
+    arxiv_keep_version_raw = _get(arxiv_obj, "keep_version")
     if arxiv_keep_version_raw is None:
         raise ValueError("Missing required config: arxiv.keep_version")
     arxiv_keep_version = bool(arxiv_keep_version_raw)
 
     # LLM configuration
     llm_obj = raw.get("llm")
-    if llm_obj is None:
+    if not isinstance(llm_obj, Mapping):
         raise ValueError("Missing required config: llm")
 
     def _get_required_llm_field(field_name: str, converter: type) -> Any:
