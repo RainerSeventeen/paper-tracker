@@ -17,4 +17,5 @@ search:
   sort_order: descending
 
 output:
-  format: json
+  base_dir: output
+  formats: [json]

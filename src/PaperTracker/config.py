@@ -50,8 +50,8 @@ class AppConfig:
         max_results: Maximum number of papers.
         sort_by: Sort field.
         sort_order: Sort order.
-        output_format: Output format (text/json).
-        output_dir: Directory for JSON output files.
+        output_formats: Output formats (console/json/markdown).
+        output_base_dir: Output base directory for file formats.
         state_enabled: Whether to enable state management.
         state_db_path: Database path for state management (relative or absolute path).
         content_storage_enabled: Whether to enable content storage for full paper data.
@@ -67,8 +67,8 @@ class AppConfig:
     max_results: int = 20
     sort_by: str = "submittedDate"
     sort_order: str = "descending"
-    output_format: str = "text"
-    output_dir: str = "output"
+    output_formats: tuple[str, ...] = ("console",)
+    output_base_dir: str = "output"
     state_enabled: bool = False
     state_db_path: str = "database/papers.db"
     content_storage_enabled: bool = False

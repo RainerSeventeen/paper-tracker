@@ -51,8 +51,9 @@ search:
   sort_order: descending
 
 output:
-  format: text # `text`, `json`
-  dir: output/
+  base_dir: output/              # Output root directory
+  formats: [console]             # Output formats: console, json, markdown (can select multiple)
+
 
 # LLM translation configuration
 llm:
