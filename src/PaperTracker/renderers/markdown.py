@@ -60,6 +60,27 @@ class MarkdownRenderer:
         }
         return self.template_renderer.render(self.document_template, document_context)
 
+    def render_query_section(self, papers: Sequence[PaperView], query_label: str) -> str:
+        """Render a single query section with its papers.
+
+        Args:
+            papers: PaperView sequence for this query.
+            query_label: Query name for section header.
+
+        Returns:
+            Rendered query section content (without document wrapper).
+        """
+        paper_blocks: list[str] = []
+        for idx, paper in enumerate(papers, start=1):
+            context = _prepare_paper_context(paper, idx)
+            paper_blocks.append(self.template_renderer.render_conditional(self.paper_template, context))
+
+        papers_md = self.paper_separator.join(paper_blocks)
+
+        # Render query section with header
+        section = f"## 🔍 `{query_label}`\n\n{papers_md}"
+        return section
+
 
 class MarkdownFileWriter(OutputWriter):
     """Render markdown and write files on finalize."""
@@ -84,7 +105,8 @@ class MarkdownFileWriter(OutputWriter):
             paper_separator=output_config.markdown_paper_separator,
             template_renderer=self.template_renderer,
         )
-        self.pending_outputs: list[tuple[str, str]] = []
+        self.pending_sections: list[str] = []
+        self.timestamp_dt: datetime | None = None
 
     def write_query_result(
         self,
@@ -92,37 +114,56 @@ class MarkdownFileWriter(OutputWriter):
         query: SearchQuery,
         scope: SearchQuery | None,
     ) -> None:
-        """Render one query and store output for finalize.
+        """Render one query section and accumulate for finalize.
 
         Args:
             papers: List of paper views to display.
             query: The query that produced these results.
             scope: Optional global scope applied to the query.
         """
+        # Record timestamp on first call
+        if self.timestamp_dt is None:
+            self.timestamp_dt = datetime.now()
+
         query_label = _query_label(query)
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        rendered = self.renderer.render(papers, query_label=query_label, timestamp=timestamp)
-        self.pending_outputs.append((rendered, timestamp))
+        section = self.renderer.render_query_section(papers, query_label=query_label)
+        self.pending_sections.append(section)
 
     def finalize(self, action: str) -> None:
-        """Write all rendered markdown documents to disk.
+        """Merge all query sections and write to a single markdown file.
 
         Args:
             action: The CLI command name (used in filename).
         """
+        if not self.pending_sections:
+            log.debug("No markdown sections to write")
+            return
+
+        # Use timestamp from first query, or generate new one if somehow missing
+        timestamp_dt = self.timestamp_dt or datetime.now()
+        timestamp_filename = timestamp_dt.strftime("%Y%m%d_%H%M%S")
+        timestamp_display = timestamp_dt.strftime("%Y-%m-%d %H:%M:%S")
+
+        # Merge all query sections with separators
+        query_separator = "\n\n---\n\n"
+        all_sections = query_separator.join(self.pending_sections)
+
+        # Build final document
+        document_header = f"# Paper Tracker Report\n\n🕐 **Generated Time**: {timestamp_display}\n\n---\n\n"
+        final_content = document_header + all_sections
+
         try:
             self.output_dir.mkdir(parents=True, exist_ok=True)
         except OSError as exc:
             raise OutputError(f"Failed to create output directory: {self.output_dir}") from exc
 
-        for content, timestamp in self.pending_outputs:
-            filename = f"{action}_{timestamp}.md"
-            output_path = self.output_dir / filename
-            try:
-                output_path.write_text(content, encoding="utf-8")
-            except OSError as exc:
-                raise OutputError(f"Failed to write markdown file: {output_path}") from exc
-            log.info("Markdown saved to %s", output_path)
+        filename = f"{action}_{timestamp_filename}.md"
+        output_path = self.output_dir / filename
+        try:
+            output_path.write_text(final_content, encoding="utf-8")
+        except OSError as exc:
+            raise OutputError(f"Failed to write markdown file: {output_path}") from exc
+        log.info("Markdown saved to %s", output_path)
 
 
 def _load_template(template_dir: str, filename: str) -> str:
