@@ -2,6 +2,28 @@
 
 本项目的 CLI 只接受一个参数：`--config <path>`。
 
+`config/default.yml` 是完整默认配置文档。执行时会将 `--config` 指定的 YAML 作为覆盖文件，与默认配置进行合并：同路径字段覆盖，未提供字段使用默认值。合并规则为“mapping 递归合并，列表和标量整体覆盖”。
+
+示例（只覆盖少量字段）：
+
+```yml
+log:
+  level: DEBUG
+
+search:
+  max_results: 10
+
+queries:
+  - NAME: override
+    OR: [diffusion]
+```
+
+运行：
+
+```bash
+paper-tracker --config custom.yml search
+```
+
 配置文件使用 YAML，核心目标是：**用户侧高可读、结构统一**；内部会将配置编译成不同数据源所需的查询格式（当前实现 arXiv）。
 
 ---

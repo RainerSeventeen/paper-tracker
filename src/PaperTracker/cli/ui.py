@@ -12,7 +12,7 @@ import click
 from dotenv import load_dotenv
 
 from PaperTracker.cli.runner import CommandRunner
-from PaperTracker.config import load_config
+from PaperTracker.config import load_config_with_defaults
 
 
 @click.group(help="PaperTracker: search papers and print in terminal.")
@@ -22,7 +22,7 @@ from PaperTracker.config import load_config
     type=click.Path(path_type=Path, dir_okay=False),
     default=Path("config/default.yml"),
     show_default=True,
-    help="Path to YAML config file.",
+    help="Path to YAML config file (overrides defaults).",
 )
 @click.pass_context
 def cli(ctx: click.Context, config_path: Path) -> None:
@@ -37,7 +37,7 @@ def cli(ctx: click.Context, config_path: Path) -> None:
     # Load environment variables from .env file
     load_dotenv()
 
-    cfg = load_config(config_path)
+    cfg = load_config_with_defaults(config_path)
     ctx.obj = cfg
 
 

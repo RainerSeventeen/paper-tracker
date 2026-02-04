@@ -220,8 +220,8 @@ def _get(d: Mapping[str, Any], path: str, default: Any = None) -> Any:
     return cur
 
 
-def load_config(path: Path) -> AppConfig:
-    """Load YAML config file and normalize into `AppConfig`.
+def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
+    """Normalize a configuration mapping into `AppConfig`.
 
     Supported YAML structure (both flat and nested keys are accepted):
 
@@ -244,18 +244,15 @@ def load_config(path: Path) -> AppConfig:
     - `arxiv.keep_version`
 
     Args:
-        path: Path to the YAML config file.
+        raw: Parsed configuration mapping.
 
     Returns:
         Normalized application configuration.
 
     Raises:
-        OSError: If the file cannot be read.
-        ValueError: If the YAML is invalid or the config is malformed.
+        ValueError: If the config is malformed.
         TypeError: If required fields are missing or have wrong types.
     """
-
-    raw = _parse_yaml(path.read_text(encoding="utf-8"))
 
     log_level = str(_get(raw, "log.level", _get(raw, "log_level", "INFO")) or "INFO").upper()
     log_to_file = bool(_get(raw, "log.to_file", _get(raw, "log_to_file", True)))
@@ -329,3 +326,72 @@ def load_config(path: Path) -> AppConfig:
         arxiv_keep_version=arxiv_keep_version,
         llm=llm_config,
     )
+
+
+def load_config(path: Path) -> AppConfig:
+    """Load YAML config file and normalize into `AppConfig`.
+
+    This loads the config file as-is without merging with defaults.
+    Equivalent to `load_config_with_defaults(path, default_path=path)`.
+
+    Args:
+        path: Path to the YAML config file.
+
+    Returns:
+        Normalized application configuration.
+
+    Raises:
+        OSError: If the file cannot be read.
+        ValueError: If the YAML is invalid or the config is malformed.
+        TypeError: If required fields are missing or have wrong types.
+    """
+    return load_config_with_defaults(path, default_path=path)
+
+
+def _merge_config_dicts(base: Mapping[str, Any], override: Mapping[str, Any]) -> dict[str, Any]:
+    """Deep-merge two configuration mappings.
+
+    Mapping values are merged recursively. For other types (scalars, lists),
+    the override replaces the base value.
+
+    Args:
+        base: Base configuration mapping.
+        override: Override configuration mapping.
+
+    Returns:
+        Merged configuration mapping.
+    """
+    merged: dict[str, Any] = dict(base)
+    for key, value in override.items():
+        if key in merged and isinstance(merged[key], Mapping) and isinstance(value, Mapping):
+            merged[key] = _merge_config_dicts(merged[key], value)
+        else:
+            merged[key] = value
+    return merged
+
+
+def load_config_with_defaults(
+    config_path: Path, default_path: Path = Path("config/default.yml")
+) -> AppConfig:
+    """Load config by merging defaults with an optional override.
+
+    Args:
+        config_path: Path to the user-provided config file (override).
+        default_path: Path to the default config file.
+
+    Returns:
+        Normalized application configuration.
+
+    Raises:
+        OSError: If either file cannot be read.
+        ValueError: If the YAML is invalid or the config is malformed.
+        TypeError: If required fields are missing or have wrong types.
+    """
+    base = _parse_yaml(default_path.read_text(encoding="utf-8"))
+
+    if config_path == default_path:
+        return parse_config_dict(base)
+
+    override = _parse_yaml(config_path.read_text(encoding="utf-8"))
+    merged = _merge_config_dicts(base, override)
+    return parse_config_dict(merged)
