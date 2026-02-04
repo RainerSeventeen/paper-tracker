@@ -111,7 +111,9 @@ arXiv 的查询字符串支持布尔组合与括号分组，常见写法：
 
 ## 4. 与本项目配置的对应关系
 
-本项目的配置文件中使用结构化 query（`queries` 列表），而不是直接让用户手写 arXiv 的 `search_query`。
+本项目的配置文件中使用结构化 query（`queries` 列表）
+
+详细说明可以参考: [详细配置参数说明](./guide_configuration.md)
 
 配置层使用语义字段：
 
