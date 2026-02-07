@@ -47,6 +47,9 @@ class OutputConfig:
     markdown_document_template: str = "document.md"
     markdown_paper_template: str = "paper.md"
     markdown_paper_separator: str = "\n\n---\n\n"
+    html_template_dir: str = "template/html/interactive"
+    html_document_template: str = "document.html"
+    html_paper_template: str = "paper.html"
 
 
 @dataclass(frozen=True, slots=True)
@@ -281,6 +284,9 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
     - `output.markdown.document_template`
     - `output.markdown.paper_template`
     - `output.markdown.paper_separator`
+    - `output.html.template_dir`
+    - `output.html.document_template`
+    - `output.html.paper_template`
     - `state.enabled` - Enable state management (deduplication)
     - `state.db_path` - Database path (relative or absolute; relative to working directory)
     - `state.content_storage_enabled` - Enable full content storage
@@ -320,7 +326,7 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
     output_formats_raw = _get_required(output_obj, "formats", "output.formats", _as_str_list)
     output_formats = tuple(fmt.lower() for fmt in output_formats_raw)
 
-    allowed_formats = {"console", "json", "markdown"}
+    allowed_formats = {"console", "json", "markdown", "html"}
     if not output_formats:
         raise ValueError("output.formats must include at least one format")
     unknown_formats = set(output_formats) - allowed_formats
@@ -343,6 +349,17 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
             markdown_obj, "paper_template", "output.markdown.paper_template", str
         )
         markdown_paper_separator = _get(markdown_obj, "paper_separator", "\n\n---\n\n")
+
+    html_obj = _get_section(output_obj, "html")
+    html_template_dir = OutputConfig.html_template_dir
+    html_document_template = OutputConfig.html_document_template
+    html_paper_template = OutputConfig.html_paper_template
+    if "html" in output_formats:
+        html_template_dir = _get_required(html_obj, "template_dir", "output.html.template_dir", str)
+        html_document_template = _get_required(
+            html_obj, "document_template", "output.html.document_template", str
+        )
+        html_paper_template = _get_required(html_obj, "paper_template", "output.html.paper_template", str)
 
     state_obj = raw.get("state")
     if not isinstance(state_obj, Mapping):
@@ -403,6 +420,9 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
             markdown_document_template=markdown_document_template,
             markdown_paper_template=markdown_paper_template,
             markdown_paper_separator=markdown_paper_separator,
+            html_template_dir=html_template_dir,
+            html_document_template=html_document_template,
+            html_paper_template=html_paper_template,
         ),
         state_enabled=state_enabled,
         state_db_path=state_db_path,
