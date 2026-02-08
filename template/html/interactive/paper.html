@@ -3,10 +3,11 @@
     <p class="paper-index">No. {paper_number}</p>
     <h3 class="paper-title">{title}</h3>
     <p class="paper-authors">{authors}</p>
-    <p class="paper-meta"><span>来源</span>{source}</p>
-    <p class="paper-meta"><span>主分类</span>{primary_category}</p>
-    <p class="paper-meta"><span>更新时间</span>{updated}</p>
-    <p class="paper-categories">{categories}</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>来源</span>{source}</p>
+      <p class="meta-item"><span>更新时间</span>{updated}</p>
+      <p class="meta-item taxonomy-item"><span>分类</span><strong class="primary-tag">{primary_category}</strong>{secondary_categories}</p>
+    </div>
   </header>
   <div class="paper-links {links_state}">
     <a class="paper-link" href="{pdf_url}" target="_blank" rel="noopener noreferrer">PDF</a>

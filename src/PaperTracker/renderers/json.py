@@ -2,6 +2,7 @@
 
 Renders a list of `PaperView` into JSON-serializable objects.
 Provides JsonFileWriter implementation for command output.
+Also provides functions to read JSON files back into PaperView objects.
 """
 
 from __future__ import annotations

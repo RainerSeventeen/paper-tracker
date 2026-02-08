@@ -288,6 +288,11 @@ def _prepare_paper_context_html(paper: PaperView, paper_number: int) -> Mapping[
     pdf_url = _escape_url(paper.pdf_url or "")
     abstract_url = _escape_url(paper.abstract_url or "")
     has_links = bool(pdf_url or abstract_url or doi_url)
+    primary_category, secondary_categories = _build_category_display(
+        paper.primary_category,
+        paper.categories,
+    )
+    updated_display = paper.updated or paper.published or "Unknown"
 
     return {
         "paper_number": str(paper_number),
@@ -296,8 +301,9 @@ def _prepare_paper_context_html(paper: PaperView, paper_number: int) -> Mapping[
         "authors": html.escape(", ".join(paper.authors) if paper.authors else ""),
         "doi": html.escape(paper.doi or ""),
         "doi_url": doi_url,
-        "updated": html.escape(paper.updated or paper.published or ""),
-        "primary_category": html.escape(paper.primary_category or ""),
+        "updated": html.escape(updated_display),
+        "primary_category": html.escape(primary_category),
+        "secondary_categories": html.escape(secondary_categories),
         "categories": html.escape(", ".join(paper.categories) if paper.categories else ""),
         "pdf_url": pdf_url,
         "abstract_url": abstract_url,
@@ -332,3 +338,28 @@ def _build_doi_url(doi: str | None) -> str:
         return _escape_url(normalized)
 
     return _escape_url(f"https://doi.org/{normalized}")
+
+
+def _build_category_display(
+    primary_category: str | None,
+    categories: Sequence[str],
+) -> tuple[str, str]:
+    """Build category display values with highlighted primary category.
+
+    Args:
+        primary_category: Primary category value.
+        categories: Full category list.
+
+    Returns:
+        Tuple of (primary_display, secondary_display).
+    """
+    normalized_categories = [cat.strip() for cat in categories if cat and cat.strip()]
+    normalized_primary = (primary_category or "").strip()
+
+    if not normalized_primary and normalized_categories:
+        normalized_primary = normalized_categories[0]
+
+    secondary = [cat for cat in normalized_categories if cat != normalized_primary]
+    if not secondary:
+        return normalized_primary, ""
+    return normalized_primary, " · " + " · ".join(secondary)
