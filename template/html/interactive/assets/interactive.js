@@ -1,68 +1,143 @@
 "use strict";
 
-function initPaperToggle() {
-  const cards = document.querySelectorAll(".paper-card");
-  cards.forEach((card) => {
-    card.addEventListener("click", (event) => {
-      if (event.target.closest("a")) {
-        return;
-      }
-      card.classList.toggle("expanded");
-    });
+const THEME_STORAGE_KEY = "paper-tracker-theme";
+
+function listPaperDetails() {
+  return Array.from(document.querySelectorAll("[data-paper-details]"));
+}
+
+function setAllDetails(expanded) {
+  listPaperDetails().forEach((detail) => {
+    detail.open = expanded;
   });
 }
 
+function initDetailControls() {
+  const expandButton = document.getElementById("expand-all");
+  const collapseButton = document.getElementById("collapse-all");
+
+  if (expandButton) {
+    expandButton.addEventListener("click", () => setAllDetails(true));
+  }
+  if (collapseButton) {
+    collapseButton.addEventListener("click", () => setAllDetails(false));
+  }
+}
+
+function applyTheme(root, toggleButton, theme) {
+  const safeTheme = theme === "dark" ? "dark" : "light";
+  root.classList.remove("theme-light", "theme-dark");
+  root.classList.add(`theme-${safeTheme}`);
+  if (toggleButton) {
+    toggleButton.textContent = safeTheme === "dark" ? "切换浅色模式" : "切换暗色模式";
+  }
+}
+
 function initThemeToggle() {
-  const themeToggle = document.getElementById("theme-toggle");
   const root = document.body;
-  if (!themeToggle || !root) {
+  const toggleButton = document.getElementById("theme-toggle");
+  if (!root) {
     return;
   }
 
-  const savedTheme = localStorage.getItem("paper-tracker-theme") || "light";
-  root.classList.remove("theme-light", "theme-dark");
-  root.classList.add(`theme-${savedTheme}`);
+  const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || "light";
+  applyTheme(root, toggleButton, savedTheme);
 
-  themeToggle.addEventListener("click", () => {
-    const current = root.classList.contains("theme-dark") ? "dark" : "light";
-    const next = current === "dark" ? "light" : "dark";
-    root.classList.remove(`theme-${current}`);
-    root.classList.add(`theme-${next}`);
-    localStorage.setItem("paper-tracker-theme", next);
+  if (!toggleButton) {
+    return;
+  }
+
+  toggleButton.addEventListener("click", () => {
+    const isDark = root.classList.contains("theme-dark");
+    const nextTheme = isDark ? "light" : "dark";
+    applyTheme(root, toggleButton, nextTheme);
+    localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
   });
 }
 
 function initSidebar() {
   const sidebar = document.getElementById("sidebar");
   if (!sidebar) {
-    return;
+    return [];
   }
 
-  const sections = document.querySelectorAll(".query-section");
+  const sections = Array.from(document.querySelectorAll(".query-section"));
   if (sections.length === 0) {
-    return;
+    return [];
   }
 
   const nav = document.createElement("nav");
   nav.className = "sidebar-nav";
 
-  sections.forEach((section) => {
-    const title = section.querySelector("h2");
-    if (!title || !section.id) {
-      return;
-    }
-    const link = document.createElement("a");
-    link.href = `#${section.id}`;
-    link.textContent = title.textContent || section.id;
-    link.className = "nav-link";
-    nav.appendChild(link);
-  });
+  const links = sections
+    .map((section) => {
+      const titleElement = section.querySelector(".query-header h2");
+      if (!titleElement || !section.id) {
+        return null;
+      }
+
+      const title = section.dataset.queryLabel || titleElement.textContent || section.id;
+      const count = section.dataset.paperCount || "0";
+
+      const link = document.createElement("a");
+      link.href = `#${section.id}`;
+      link.className = "nav-link";
+
+      const titleNode = document.createElement("span");
+      titleNode.className = "nav-link-title";
+      titleNode.textContent = title;
+      link.appendChild(titleNode);
+
+      const metaNode = document.createElement("span");
+      metaNode.className = "nav-link-meta";
+      metaNode.textContent = `${count} 篇`;
+      link.appendChild(metaNode);
+
+      nav.appendChild(link);
+      return { section, link };
+    })
+    .filter(Boolean);
 
   sidebar.appendChild(nav);
+  return links;
+}
+
+function initActiveSectionHighlight(navItems) {
+  if (!navItems.length) {
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        const matched = navItems.find((item) => item.section === entry.target);
+        if (!matched) {
+          return;
+        }
+
+        if (entry.isIntersecting) {
+          navItems.forEach((item) => item.link.classList.remove("is-active"));
+          matched.link.classList.add("is-active");
+        }
+      });
+    },
+    {
+      rootMargin: "-30% 0px -55% 0px",
+      threshold: 0.1,
+    },
+  );
+
+  navItems.forEach((item) => observer.observe(item.section));
+}
+
+function initPrintModeBehavior() {
+  window.addEventListener("beforeprint", () => setAllDetails(true));
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  initPaperToggle();
+  initDetailControls();
   initThemeToggle();
-  initSidebar();
+  const navItems = initSidebar();
+  initActiveSectionHighlight(navItems);
+  initPrintModeBehavior();
 });
