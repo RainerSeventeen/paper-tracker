@@ -24,8 +24,11 @@ queries:
 
 search:
   max_results: 5
-  sort_by: submittedDate
-  sort_order: descending
+  pull_every: 7
+  fill_enabled: false
+  max_lookback_days: 30
+  max_fetch_items: 125
+  fetch_batch_size: 25
 
 output:
   base_dir: output
@@ -82,7 +85,7 @@ queries:
             cfg = load_config_with_defaults(override_path, default_path=base_path)
 
         self.assertEqual(cfg.log_level, "DEBUG")
-        self.assertEqual(cfg.max_results, 10)
+        self.assertEqual(cfg.search.max_results, 10)
         self.assertEqual(cfg.output.formats, ("console",))
         self.assertEqual(len(cfg.queries), 1)
         self.assertEqual(cfg.queries[0].name, "override")
@@ -97,7 +100,7 @@ queries:
             cfg = load_config_with_defaults(override_path, default_path=base_path)
 
         self.assertEqual(cfg.log_level, "INFO")
-        self.assertEqual(cfg.max_results, 5)
+        self.assertEqual(cfg.search.max_results, 5)
         self.assertEqual(len(cfg.queries), 1)
         self.assertEqual(cfg.queries[0].name, "base")
 

@@ -157,8 +157,6 @@ queries:
 
 search:
   max_results: 5
-  sort_by: submittedDate
-  sort_order: descending
 
 output:
   base_dir: output

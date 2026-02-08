@@ -39,8 +39,9 @@ class SearchCommand:
         """Execute search for all configured queries.
 
         Iterates through queries, applies filtering, and delegates
-        output to the configured OutputWriter. Handles deduplication
-        and content storage if enabled.
+        output to the configured OutputWriter. Search behavior uses `config.search`.
+        ArxivSource will handle multi-round fetching with time-based filtering
+        and deduplication internally.
         """
         multiple = len(self.config.queries) > 1
 
@@ -60,32 +61,20 @@ class SearchCommand:
                 log.info("name=%s", query.name)
             log.info("fields=%s", dict(query.fields))
 
+            # Search papers; ArxivSource chooses strategy based on search config.
             papers = self.search_service.search(
                 query,
-                max_results=self.config.max_results,
-                sort_by=self.config.sort_by,
-                sort_order=self.config.sort_order,
+                max_results=self.config.search.max_results,
+                sort_by="lastUpdatedDate",  # Ignored when search config is enabled.
+                sort_order="descending",  # Ignored when search config is enabled.
             )
-            log.info("Fetched %d papers", len(papers))
+            log.info("Collected %d papers", len(papers))
 
-            if self.dedup_store:
-                new_papers = self.dedup_store.filter_new(papers)
-                log.info(
-                    "New papers: %d (filtered %d duplicates)",
-                    len(new_papers),
-                    len(papers) - len(new_papers),
-                )
+            # Persist full paper content before rendering outputs.
+            if self.content_store and papers:
+                self.content_store.save_papers(papers)
 
-                # Mark as seen first (writes to seen_papers table)
-                self.dedup_store.mark_seen(papers)
-
-                # Save full content if enabled (writes to paper_content table)
-                if self.content_store:
-                    self.content_store.save_papers(papers)
-
-                papers = new_papers
-
-            # Generate LLM enrichment
+            # Generate LLM enrichment.
             if self.llm_service and self.llm_store and papers:
                 log.info("Generating LLM enrichment for %d papers", len(papers))
                 infos = self.llm_service.generate_batch(papers)

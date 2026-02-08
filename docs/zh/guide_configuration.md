@@ -138,21 +138,42 @@ queries:
       NOT: ["survey", "review"]
 ```
 
-### 2.6 `search`
+### 2.6 `search`（拉取策略配置）
 
-- `max_results`: 每条 query 最大返回数; 可选值: 整数，建议大于 0。
+- `max_results`: 目标论文数量，每条 query 最多返回这么多篇**新论文**（去重后）; 可选值: 整数，必须大于 0。
 
-- `sort_by`: 排序字段; 可选值: `submittedDate` / `lastUpdatedDate`（arXiv 支持的排序字段）。
+- `pull_every`: strict 时间窗口大小（单位：天），论文的更新/发布时间必须在 `[now - pull_every, now]` 范围内; 可选值: 整数，必须大于 0。建议值：`7`（最近一周）。
 
-- `sort_order`: 排序方向; 可选值: `ascending` / `descending`。
+- `fill_enabled`: 是否允许 strict 窗口外的论文进入候选（用于补满 `max_results`）; 可选值: `true` / `false`。
+  - `false`（严格模式）：仅允许 strict 时间窗内的论文，即使数量不足 `max_results` 也不会扩展搜索。
+  - `true`（补全模式）：如果 strict 窗口内论文数量不足，会继续拉取更早的论文（受 `max_lookback_days` 限制）。
+
+- `max_lookback_days`: fill 的最大回溯天数（单位：天），仅在 `fill_enabled=true` 时生效; 可选值: `-1`（不限制）或大于等于 `pull_every` 的整数。建议值：`30`（最近一个月）。
+
+- `max_fetch_items`: 单条 query 最大拉取的原始论文条目数（包括重复和被过滤的）; 可选值: `-1`（不限制）或大于 0 的整数。建议值：`125`（控制 API 调用次数）。
+
+- `fetch_batch_size`: 每次 API 请求拉取的论文数量（分页大小）; 可选值: 整数，必须大于 0。建议值：`25`。
+
+**排序策略**：arXiv 拉取时固定使用 `lastUpdatedDate` + `descending`（最新更新优先），不支持用户配置。
 
 示例（`search` 只给一个示例即可）：
 ```yml
 search:
-  max_results: 10
-  sort_by: submittedDate
-  sort_order: descending
+  max_results: 10             # 目标返回 10 篇新论文
+
+  # 时间窗口配置
+  pull_every: 7               # strict 窗口：最近 7 天
+  fill_enabled: false         # 严格模式，不补全
+  max_lookback_days: 30       # 如果 fill_enabled=true，最多回溯 30 天
+  max_fetch_items: 125        # 最多拉取 125 条原始数据
+  fetch_batch_size: 25        # 每页 25 条
 ```
+
+**配置约束**：
+- `pull_every > 0`
+- `fill_enabled=true` 时：`max_lookback_days == -1` 或 `max_lookback_days >= pull_every`
+- `max_fetch_items == -1` 或 `max_fetch_items > 0`
+- `fetch_batch_size > 0`
 
 ### 2.7 `output`
 

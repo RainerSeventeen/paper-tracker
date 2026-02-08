@@ -16,6 +16,36 @@ from PaperTracker.core.query import FieldQuery, SearchQuery
 
 
 @dataclass(frozen=True, slots=True)
+class SearchConfig:
+    """Search configuration for multi-round paper fetching."""
+
+    max_results: int
+    pull_every: int
+    fill_enabled: bool
+    max_lookback_days: int
+    max_fetch_items: int
+    fetch_batch_size: int
+
+    def __post_init__(self) -> None:
+        """Validate search bounds and cross-field constraints.
+
+        Raises:
+            ValueError: If any search field is outside supported bounds.
+        """
+        if self.max_results <= 0:
+            raise ValueError("max_results must be positive")
+        if self.pull_every <= 0:
+            raise ValueError("pull_every must be positive")
+        # Validate lookback constraints only when fill mode is enabled.
+        if self.fill_enabled and self.max_lookback_days != -1 and self.max_lookback_days < self.pull_every:
+            raise ValueError("When fill_enabled=true, max_lookback_days must be -1 or >= pull_every")
+        if self.max_fetch_items == 0 or self.max_fetch_items < -1:
+            raise ValueError("max_fetch_items must be -1 or positive")
+        if self.fetch_batch_size <= 0:
+            raise ValueError("fetch_batch_size must be positive")
+
+
+@dataclass(frozen=True, slots=True)
 class LLMConfig:
     """LLM-related configuration."""
 
@@ -62,16 +92,13 @@ class AppConfig:
         log_dir: Base directory for log files.
         scope: Optional global scope applied to every query.
         queries: Independent queries.
-        max_results: Maximum number of papers.
-        sort_by: Sort field.
-        sort_order: Sort order.
+        search: Search configuration.
         output: Output configuration.
         state_enabled: Whether to enable state management.
         state_db_path: Database path for state management (relative or absolute path).
         content_storage_enabled: Whether to enable content storage for full paper data.
         arxiv_keep_version: Whether to keep arXiv version suffix in the paper id.
         llm: LLM configuration settings.
-        output: Output configuration.
     """
 
     log_level: str = "INFO"
@@ -79,9 +106,14 @@ class AppConfig:
     log_dir: str = "log"
     scope: SearchQuery | None = None
     queries: tuple[SearchQuery, ...] = ()
-    max_results: int = 20
-    sort_by: str = "submittedDate"
-    sort_order: str = "descending"
+    search: SearchConfig = SearchConfig(
+        max_results=20,
+        pull_every=7,
+        fill_enabled=False,
+        max_lookback_days=30,
+        max_fetch_items=125,
+        fetch_batch_size=25,
+    )
     output: OutputConfig = OutputConfig()
     state_enabled: bool = False
     state_db_path: str = "database/papers.db"
@@ -107,9 +139,12 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
     - `queries`
       - List of query objects.
       - Field keys and operator keys must be uppercase.
-    - `search.max_results`
-    - `search.sort_by`
-    - `search.sort_order`
+    - `search.max_results` - Target number of returned papers
+    - `search.pull_every` - Strict window size in days
+    - `search.fill_enabled` - Whether to allow papers outside strict window
+    - `search.max_lookback_days` - Max fill lookback days (`-1` means unlimited)
+    - `search.max_fetch_items` - Max raw fetched items per query (`-1` means unlimited)
+    - `search.fetch_batch_size` - Page size for each upstream fetch
     - `output.base_dir` - Output base directory
     - `output.formats` - Output formats for results
     - `output.markdown.template_dir`
@@ -150,8 +185,20 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
 
     search_obj = _get_section(raw, "search")
     max_results = _get_required(search_obj, "max_results", "search.max_results", int)
-    sort_by = _get_required(search_obj, "sort_by", "search.sort_by", str)
-    sort_order = _get_required(search_obj, "sort_order", "search.sort_order", str)
+    pull_every = _get_required(search_obj, "pull_every", "search.pull_every", int)
+    fill_enabled = _get_required(search_obj, "fill_enabled", "search.fill_enabled", bool)
+    max_lookback_days = _get_required(search_obj, "max_lookback_days", "search.max_lookback_days", int)
+    max_fetch_items = _get_required(search_obj, "max_fetch_items", "search.max_fetch_items", int)
+    fetch_batch_size = _get_required(search_obj, "fetch_batch_size", "search.fetch_batch_size", int)
+
+    search_config = SearchConfig(
+        max_results=max_results,
+        pull_every=pull_every,
+        fill_enabled=fill_enabled,
+        max_lookback_days=max_lookback_days,
+        max_fetch_items=max_fetch_items,
+        fetch_batch_size=fetch_batch_size,
+    )
 
     output_obj = _get_section(raw, "output")
     output_base_dir = _get_required(output_obj, "base_dir", "output.base_dir", str)
@@ -242,9 +289,7 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
         log_dir=log_dir,
         scope=scope,
         queries=queries,
-        max_results=max_results,
-        sort_by=sort_by,
-        sort_order=sort_order,
+        search=search_config,
         output=OutputConfig(
             base_dir=output_base_dir,
             formats=output_formats,
