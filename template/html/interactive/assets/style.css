@@ -326,6 +326,23 @@ a {
   margin-right: 4px;
 }
 
+.paper-tldr {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent-soft) 58%, transparent);
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.paper-tldr span {
+  display: inline-block;
+  margin-right: 6px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
 .paper-links {
   display: flex;
   flex-wrap: wrap;
