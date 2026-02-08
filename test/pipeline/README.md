@@ -76,7 +76,7 @@ MARKDOWN_DOCUMENT_TEMPLATE = "document.md"
 MARKDOWN_PAPER_TEMPLATE = "paper.md"
 MARKDOWN_PAPER_SEPARATOR = "\n\n---\n\n"
 
-HTML_TEMPLATE_DIR = "template/html/interactive"
+HTML_TEMPLATE_DIR = "template/html/scholar"
 HTML_DOCUMENT_TEMPLATE = "document.html"
 HTML_PAPER_TEMPLATE = "paper.html"
 

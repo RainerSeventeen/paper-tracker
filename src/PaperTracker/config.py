@@ -47,7 +47,7 @@ class OutputConfig:
     markdown_document_template: str = "document.md"
     markdown_paper_template: str = "paper.md"
     markdown_paper_separator: str = "\n\n---\n\n"
-    html_template_dir: str = "template/html/interactive"
+    html_template_dir: str = "template/html/scholar"
     html_document_template: str = "document.html"
     html_paper_template: str = "paper.html"
 
