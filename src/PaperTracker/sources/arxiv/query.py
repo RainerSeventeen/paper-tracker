@@ -30,6 +30,36 @@ from PaperTracker.core.query import FieldQuery, SearchQuery
 _RE_NEEDS_QUOTE = re.compile(r"[\s-]")
 
 
+def compile_search_query(*, query: SearchQuery, scope: SearchQuery | None = None) -> str:
+    """Compile query + optional scope into an arXiv `search_query`.
+
+    Args:
+        query: Main query.
+        scope: Optional global scope applied to every query.
+
+    Returns:
+        arXiv `search_query` string.
+    """
+
+    parts: list[str] = []
+
+    def add_fields(q: SearchQuery) -> None:
+        for field, fq in q.fields.items():
+            compiled = _compile_field(field, fq)
+            if compiled:
+                parts.append(compiled)
+
+    if scope is not None:
+        add_fields(scope)
+    add_fields(query)
+
+    if not parts:
+        return "all:*"
+    if len(parts) == 1:
+        return parts[0]
+    return "(" + " AND ".join(parts) + ")"
+
+
 def _quote(term: str) -> str:
     t = term.strip()
     if not t:
@@ -102,33 +132,3 @@ def _compile_field(field: str, fq: FieldQuery) -> str:
         return f"(all:* AND NOT {neg})"
 
     return positive
-
-
-def compile_search_query(*, query: SearchQuery, scope: SearchQuery | None = None) -> str:
-    """Compile query + optional scope into an arXiv `search_query`.
-
-    Args:
-        query: Main query.
-        scope: Optional global scope applied to every query.
-
-    Returns:
-        arXiv `search_query` string.
-    """
-
-    parts: list[str] = []
-
-    def add_fields(q: SearchQuery) -> None:
-        for field, fq in q.fields.items():
-            compiled = _compile_field(field, fq)
-            if compiled:
-                parts.append(compiled)
-
-    if scope is not None:
-        add_fields(scope)
-    add_fields(query)
-
-    if not parts:
-        return "all:*"
-    if len(parts) == 1:
-        return parts[0]
-    return "(" + " AND ".join(parts) + ")"

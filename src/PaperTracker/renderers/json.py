@@ -17,25 +17,6 @@ from PaperTracker.renderers.view_models import PaperView
 from PaperTracker.utils.log import log
 
 
-def _fields_payload(q: SearchQuery) -> dict[str, dict[str, list[str]]]:
-    """Convert search query fields to payload format.
-
-    Args:
-        q: SearchQuery to convert.
-
-    Returns:
-        Dictionary mapping field names to operator->terms mappings.
-    """
-    return {
-        k: {
-            "AND": list(v.AND),
-            "OR": list(v.OR),
-            "NOT": list(v.NOT),
-        }
-        for k, v in q.fields.items()
-    }
-
-
 def render_json(papers: Iterable[PaperView]) -> list[dict]:
     """Render paper views into JSON-serializable Python objects.
 
@@ -131,3 +112,22 @@ class JsonFileWriter(OutputWriter):
         output_path = self.output_dir / filename
         output_path.write_text(payload, encoding="utf-8")
         log.info("JSON saved to %s", output_path)
+
+
+def _fields_payload(q: SearchQuery) -> dict[str, dict[str, list[str]]]:
+    """Convert search query fields to payload format.
+
+    Args:
+        q: SearchQuery to convert.
+
+    Returns:
+        Dictionary mapping field names to operator->terms mappings.
+    """
+    return {
+        k: {
+            "AND": list(v.AND),
+            "OR": list(v.OR),
+            "NOT": list(v.NOT),
+        }
+        for k, v in q.fields.items()
+    }

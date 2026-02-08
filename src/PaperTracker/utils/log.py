@@ -21,20 +21,6 @@ _LEVEL_ABBREV: Final[dict[int, str]] = {
 }
 
 
-class _AbbrevLevelFormatter(logging.Formatter):
-    def format(self, record: logging.LogRecord) -> str:  # noqa: A003 - record is stdlib name
-        """Format one log record with an abbreviated level.
-
-        Args:
-            record: Logging record.
-
-        Returns:
-            Formatted message string.
-        """
-        record.levelabbr = _LEVEL_ABBREV.get(record.levelno, record.levelname[:4])
-        return super().format(record)
-
-
 log = logging.getLogger("PaperTracker")
 
 
@@ -86,3 +72,17 @@ def configure_logging(
         log.addHandler(handler)
     log.setLevel(min(logging.DEBUG, resolved_level))
     log.propagate = False
+
+
+class _AbbrevLevelFormatter(logging.Formatter):
+    def format(self, record: logging.LogRecord) -> str:  # noqa: A003 - record is stdlib name
+        """Format one log record with an abbreviated level.
+
+        Args:
+            record: Logging record.
+
+        Returns:
+            Formatted message string.
+        """
+        record.levelabbr = _LEVEL_ABBREV.get(record.levelno, record.levelname[:4])
+        return super().format(record)
