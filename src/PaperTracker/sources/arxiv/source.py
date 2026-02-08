@@ -1,22 +1,19 @@
 """arXiv data source adapter.
 
-Composes query building, HTTP fetching, and XML parsing into a `PaperSource`
-implementation with arXiv-specific multi-round fetching strategy.
+Composes query building, HTTP fetching, and XML parsing with arXiv-specific
+multi-round fetching strategy.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import TYPE_CHECKING
 
 from PaperTracker.core.models import Paper
 from PaperTracker.core.query import SearchQuery
-from PaperTracker.services.search import PaperSource
 from PaperTracker.sources.arxiv.client import ArxivApiClient
 from PaperTracker.sources.arxiv.fetch import collect_papers_with_time_filter
 from PaperTracker.sources.arxiv.parser import parse_arxiv_feed
-from PaperTracker.sources.arxiv.query import compile_search_query
-from PaperTracker.utils.log import log
 
 if TYPE_CHECKING:
     from PaperTracker.config import SearchConfig
@@ -24,8 +21,8 @@ if TYPE_CHECKING:
 
 
 @dataclass(slots=True)
-class ArxivSource(PaperSource):
-    """`PaperSource` implementation backed by arXiv.
+class ArxivSource:
+    """arXiv-backed source implementation.
 
     Translates `SearchQuery` into arXiv query syntax, fetches the Atom feed, and
     parses it into internal `Paper` objects. Supports arXiv-specific multi-round
@@ -44,83 +41,36 @@ class ArxivSource(PaperSource):
         query: SearchQuery,
         *,
         max_results: int,
-        sort_by: str,
-        sort_order: str,
     ) -> list[Paper]:
         """Search papers from arXiv.
 
-        Uses arXiv-specific multi-round fetching (time filtering + optional
-        deduplication) when `search_config` is configured; otherwise falls back
-        to single-page behavior for compatibility.
+        Always uses arXiv-specific multi-round fetching (time filtering +
+        optional deduplication). `fill_enabled` only controls candidate
+        inclusion window and does not control pagination behavior.
 
         Args:
             query: Structured query (field -> AND/OR/NOT terms).
-            max_results: Maximum number of results to return.
-            sort_by: Sort field used when `search_config` is not configured.
-            sort_order: Sort order used when `search_config` is not configured.
+            max_results: Target number of returned papers for this query.
 
         Returns:
             A list of Paper.
         """
-        # Use multi-round strategy when search config is enabled.
-        if self.search_config:
-            return collect_papers_with_time_filter(
-                query=query,
-                scope=self.scope,
-                policy=self.search_config,
-                fetch_page_func=self._fetch_page,
-                dedup_store=self.dedup_store,
-            )
+        if self.search_config is None:
+            raise ValueError("ArxivSource.search_config is required for multi-round fetching")
 
-        # Backward-compatible single-page fetch.
-        return self.search_page(
+        policy = (
+            self.search_config
+            if self.search_config.max_results == max_results
+            else replace(self.search_config, max_results=max_results)
+        )
+
+        return collect_papers_with_time_filter(
             query=query,
-            start=0,
-            max_results=max_results,
-            sort_by=sort_by,
-            sort_order=sort_order,
+            scope=self.scope,
+            policy=policy,
+            fetch_page_func=self._fetch_page,
+            dedup_store=self.dedup_store,
         )
-
-    def search_page(
-        self,
-        query: SearchQuery,
-        *,
-        start: int,
-        max_results: int,
-        sort_by: str,
-        sort_order: str,
-    ) -> list[Paper]:
-        """Search a single page of papers from arXiv.
-
-        Args:
-            query: Structured query (field -> AND/OR/NOT terms).
-            start: Starting index for pagination.
-            max_results: Maximum number of results to return in this page.
-            sort_by: Sort field (submittedDate/lastUpdatedDate).
-            sort_order: Sort order (ascending/descending).
-
-        Returns:
-            A list of Paper for this page.
-        """
-        search_query = compile_search_query(query=query, scope=self.scope)
-        log.debug(
-            "arXiv page query: %s (start=%s max_results=%s sort_by=%s sort_order=%s)",
-            search_query,
-            start,
-            max_results,
-            sort_by,
-            sort_order,
-        )
-        xml = self.client.fetch_feed(
-            search_query=search_query,
-            start=start,
-            max_results=max_results,
-            sort_by=sort_by,
-            sort_order=sort_order,
-        )
-        items = list(parse_arxiv_feed(xml, keep_version=self.keep_version))
-        log.debug("arXiv page parsed %d entries", len(items))
-        return items
 
     def _fetch_page(
         self,

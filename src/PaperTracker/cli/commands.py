@@ -65,8 +65,6 @@ class SearchCommand:
             papers = self.search_service.search(
                 query,
                 max_results=self.config.search.max_results,
-                sort_by="lastUpdatedDate",  # Ignored when search config is enabled.
-                sort_order="descending",  # Ignored when search config is enabled.
             )
             log.info("Collected %d papers", len(papers))
 

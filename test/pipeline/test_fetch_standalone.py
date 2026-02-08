@@ -210,8 +210,6 @@ def main():
         results = source.search(
             query=query,
             max_results=config.search.max_results,
-            sort_by="lastUpdatedDate",
-            sort_order="descending",
         )
 
         elapsed_time = time.time() - start_time

@@ -38,8 +38,9 @@ def collect_papers_with_time_filter(
     """Collect papers with time filtering and optional persistent deduplication.
 
     This arXiv-specific strategy uses fixed sorting (`lastUpdatedDate` +
-    `descending`), fetches pages until limits are hit, filters papers by strict
-    and optional fill windows, then applies datastore deduplication per page.
+    `descending`) and always fetches by pages until stop conditions are met.
+    `fill_enabled` only affects whether non-strict-window papers can become
+    candidates; it does not control whether the next page is fetched.
 
     Args:
         query: Query object for this fetch task.
@@ -54,7 +55,7 @@ def collect_papers_with_time_filter(
     """
     from PaperTracker.sources.arxiv.query import compile_search_query
 
-    candidates: list[Paper] = []
+    candidate_count = 0
     new_items: list[Paper] = []
     page_offset = 0
     fetched_items = 0
@@ -77,7 +78,7 @@ def collect_papers_with_time_filter(
                 elapsed,
                 TIMEOUT_SECONDS,
                 fetched_items,
-                len(candidates),
+                candidate_count,
             )
             break
 
@@ -110,8 +111,8 @@ def collect_papers_with_time_filter(
             elif _resolve_timestamp(paper) is None:
                 logger.debug("Skip paper without timestamp: %s", paper.id)
 
-        candidates.extend(page_candidates)
-        logger.debug("Page candidates: %d (total candidates %d)", len(page_candidates), len(candidates))
+        candidate_count += len(page_candidates)
+        logger.debug("Page candidates: %d (total candidates %d)", len(page_candidates), candidate_count)
 
         if dedup_store:
             page_new = dedup_store.filter_new(page_candidates)
@@ -132,6 +133,7 @@ def collect_papers_with_time_filter(
         # Since upstream is sorted by lastUpdatedDate descending, once the
         # oldest paper in the current page is already outside the effective
         # window, all later pages will also be outside and can be skipped.
+        # This stop condition is independent from whether fill is enabled.
         oldest_in_page = page[-1]
         if _is_outside_collection_window(
             oldest_in_page,
@@ -161,9 +163,8 @@ def collect_papers_with_time_filter(
             break
 
         # Rate limiting: sleep before next request (arXiv recommends 3s interval)
-        if page_num >= 1:
-            logger.debug("Sleeping %.1fs to respect arXiv rate limit", REQUEST_INTERVAL)
-            time_module.sleep(REQUEST_INTERVAL)
+        logger.debug("Sleeping %.1fs to respect arXiv rate limit", REQUEST_INTERVAL)
+        time_module.sleep(REQUEST_INTERVAL)
 
     new_items.sort(
         key=lambda paper: (
@@ -182,7 +183,7 @@ def collect_papers_with_time_filter(
             "Target not reached - target: %d, actual: %d (candidates %d, after dedup %d)",
             policy.max_results,
             len(result),
-            len(candidates),
+            candidate_count,
             len(new_items),
         )
     else:

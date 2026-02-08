@@ -145,8 +145,8 @@ queries:
 - `pull_every`: strict 时间窗口大小（单位：天），论文的更新/发布时间必须在 `[now - pull_every, now]` 范围内; 可选值: 整数，必须大于 0。建议值：`7`（最近一周）。
 
 - `fill_enabled`: 是否允许 strict 窗口外的论文进入候选（用于补满 `max_results`）; 可选值: `true` / `false`。
-  - `false`（严格模式）：仅允许 strict 时间窗内的论文，即使数量不足 `max_results` 也不会扩展搜索。
-  - `true`（补全模式）：如果 strict 窗口内论文数量不足，会继续拉取更早的论文（受 `max_lookback_days` 限制）。
+  - `false`（严格模式）：仅允许 strict 时间窗内的论文进入候选。系统仍会继续分页拉取，直到命中停止条件（例如达到目标、到达 strict 窗口边界、或触发抓取上限）。
+  - `true`（补全模式）：允许 strict 窗口外（受 `max_lookback_days` 限制）的论文进入候选，用于补齐数量；同样始终按分页策略抓取。
 
 - `max_lookback_days`: fill 的最大回溯天数（单位：天），仅在 `fill_enabled=true` 时生效; 可选值: `-1`（不限制）或大于等于 `pull_every` 的整数。建议值：`30`（最近一个月）。
 
