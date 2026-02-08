@@ -94,174 +94,6 @@ _ALLOWED_FIELDS = {"TITLE", "ABSTRACT", "AUTHOR", "JOURNAL", "CATEGORY"}
 _ALLOWED_OPS = {"AND", "OR", "NOT"}
 
 
-def _as_str_list(value: Any) -> list[str]:
-    """Normalize a term list into a list of stripped strings.
-
-    Args:
-        value: A string, list of strings, or None.
-
-    Returns:
-        A list of non-empty, stripped strings.
-
-    Raises:
-        TypeError: If the input is not a string, list of strings, or None.
-    """
-    if value is None:
-        return []
-    if isinstance(value, str):
-        s = value.strip()
-        return [s] if s else []
-    if isinstance(value, list):
-        out: list[str] = []
-        for item in value:
-            if not isinstance(item, str):
-                raise TypeError("Terms must be strings")
-            s = item.strip()
-            if s:
-                out.append(s)
-        return out
-    raise TypeError("Terms must be a string or a list of strings")
-
-
-def _parse_field_query(value: Any) -> FieldQuery:
-    """Parse a field query mapping into a FieldQuery object.
-
-    Args:
-        value: Mapping containing AND/OR/NOT keys.
-
-    Returns:
-        A FieldQuery with normalized term lists.
-
-    Raises:
-        TypeError: If the value is not a mapping.
-        ValueError: If unknown operators are provided.
-    """
-    if value is None:
-        return FieldQuery()
-    if not isinstance(value, Mapping):
-        raise TypeError("Field config must be an object with AND/OR/NOT")
-    unknown = {str(k) for k in value.keys()} - _ALLOWED_OPS
-    if unknown:
-        raise ValueError(f"Unknown operator(s): {sorted(unknown)}")
-
-    and_terms = _as_str_list(value.get("AND"))
-    or_terms = _as_str_list(value.get("OR"))
-    not_terms = _as_str_list(value.get("NOT"))
-    return FieldQuery(AND=tuple(and_terms), OR=tuple(or_terms), NOT=tuple(not_terms))
-
-
-def _parse_search_query(value: Any) -> SearchQuery:
-    """Parse a query mapping into a SearchQuery object.
-
-    Args:
-        value: Mapping containing query fields and optional NAME.
-
-    Returns:
-        A SearchQuery with normalized fields.
-
-    Raises:
-        TypeError: If the value is not a mapping or fields are invalid.
-        ValueError: If required fields are missing or invalid.
-    """
-    if not isinstance(value, Mapping):
-        raise TypeError("Each query must be an object")
-
-    name = None
-    if "NAME" in value:
-        if not isinstance(value["NAME"], str):
-            raise TypeError("NAME must be a string")
-        name = value["NAME"].strip() or None
-
-    fields: dict[str, FieldQuery] = {}
-    # Shorthand: allow top-level AND/OR/NOT to mean "TEXT" (title+abstract).
-    if any(k in value for k in _ALLOWED_OPS):
-        fields["TEXT"] = _parse_field_query({op: value.get(op) for op in _ALLOWED_OPS if op in value})
-
-    for k, v in value.items():
-        if k == "NAME":
-            continue
-        if k in _ALLOWED_OPS:
-            continue
-        if not isinstance(k, str):
-            raise TypeError("Field names must be strings")
-        if k != k.upper():
-            raise ValueError(f"Field keys must be uppercase: {k}")
-        field = k.strip().upper()
-        if field not in _ALLOWED_FIELDS:
-            raise ValueError(f"Unknown field: {field}")
-        fields[field] = _parse_field_query(v)
-
-    if not fields:
-        raise ValueError("Query must include at least one field")
-    return SearchQuery(name=name, fields=fields)
-
-
-def _parse_yaml(text: str) -> dict[str, Any]:
-    """Parse YAML configuration text using PyYAML.
-
-    Args:
-        text: Raw YAML string.
-
-    Returns:
-        Parsed YAML data as a mapping.
-
-    Raises:
-        ValueError: If the YAML root is not a mapping.
-        yaml.YAMLError: If the YAML is invalid.
-    """
-    data = yaml.safe_load(text) or {}
-    if not isinstance(data, Mapping):
-        raise ValueError("Config root must be a mapping/object")
-    return dict(data)
-
-
-def _get(d: Mapping[str, Any], key: str, default: Any = None) -> Any:
-    """Get a key from a mapping with a default fallback.
-
-    Args:
-        d: Mapping to search.
-        key: Key to fetch.
-        default: Default value if missing.
-
-    Returns:
-        Value found at the key or the default.
-    """
-    if not isinstance(d, Mapping):
-        return default
-    return d.get(key, default)
-
-
-def _get_section(raw: Mapping[str, Any], key: str) -> Mapping[str, Any]:
-    """Get a nested mapping section or return an empty mapping."""
-    section = raw.get(key)
-    if isinstance(section, Mapping):
-        return section
-    return {}
-
-
-def _get_required(
-    section: Mapping[str, Any], field_name: str, config_key: str, converter: type
-) -> Any:
-    """Get a required config field with validation and conversion.
-
-    Args:
-        section: The config section mapping.
-        field_name: The field name in the section.
-        config_key: The full config key path for error messages (e.g., "log.level").
-        converter: Type converter function (str, int, bool, float).
-
-    Returns:
-        Converted field value.
-
-    Raises:
-        ValueError: If the field is missing.
-    """
-    value = _get(section, field_name)
-    if value is None:
-        raise ValueError(f"Missing required config: {config_key}")
-    return converter(value)
-
-
 def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
     """Normalize a configuration mapping into `AppConfig`.
 
@@ -452,28 +284,6 @@ def load_config(path: Path) -> AppConfig:
     return load_config_with_defaults(path, default_path=path)
 
 
-def _merge_config_dicts(base: Mapping[str, Any], override: Mapping[str, Any]) -> dict[str, Any]:
-    """Deep-merge two configuration mappings.
-
-    Mapping values are merged recursively. For other types (scalars, lists),
-    the override replaces the base value.
-
-    Args:
-        base: Base configuration mapping.
-        override: Override configuration mapping.
-
-    Returns:
-        Merged configuration mapping.
-    """
-    merged: dict[str, Any] = dict(base)
-    for key, value in override.items():
-        if key in merged and isinstance(merged[key], Mapping) and isinstance(value, Mapping):
-            merged[key] = _merge_config_dicts(merged[key], value)
-        else:
-            merged[key] = value
-    return merged
-
-
 def load_config_with_defaults(
     config_path: Path, default_path: Path = Path("config/default.yml")
 ) -> AppConfig:
@@ -499,3 +309,193 @@ def load_config_with_defaults(
     override = _parse_yaml(config_path.read_text(encoding="utf-8"))
     merged = _merge_config_dicts(base, override)
     return parse_config_dict(merged)
+
+
+def _as_str_list(value: Any) -> list[str]:
+    """Normalize a term list into a list of stripped strings.
+
+    Args:
+        value: A string, list of strings, or None.
+
+    Returns:
+        A list of non-empty, stripped strings.
+
+    Raises:
+        TypeError: If the input is not a string, list of strings, or None.
+    """
+    if value is None:
+        return []
+    if isinstance(value, str):
+        s = value.strip()
+        return [s] if s else []
+    if isinstance(value, list):
+        out: list[str] = []
+        for item in value:
+            if not isinstance(item, str):
+                raise TypeError("Terms must be strings")
+            s = item.strip()
+            if s:
+                out.append(s)
+        return out
+    raise TypeError("Terms must be a string or a list of strings")
+
+
+def _parse_field_query(value: Any) -> FieldQuery:
+    """Parse a field query mapping into a FieldQuery object.
+
+    Args:
+        value: Mapping containing AND/OR/NOT keys.
+
+    Returns:
+        A FieldQuery with normalized term lists.
+
+    Raises:
+        TypeError: If the value is not a mapping.
+        ValueError: If unknown operators are provided.
+    """
+    if value is None:
+        return FieldQuery()
+    if not isinstance(value, Mapping):
+        raise TypeError("Field config must be an object with AND/OR/NOT")
+    unknown = {str(k) for k in value.keys()} - _ALLOWED_OPS
+    if unknown:
+        raise ValueError(f"Unknown operator(s): {sorted(unknown)}")
+
+    and_terms = _as_str_list(value.get("AND"))
+    or_terms = _as_str_list(value.get("OR"))
+    not_terms = _as_str_list(value.get("NOT"))
+    return FieldQuery(AND=tuple(and_terms), OR=tuple(or_terms), NOT=tuple(not_terms))
+
+
+def _parse_search_query(value: Any) -> SearchQuery:
+    """Parse a query mapping into a SearchQuery object.
+
+    Args:
+        value: Mapping containing query fields and optional NAME.
+
+    Returns:
+        A SearchQuery with normalized fields.
+
+    Raises:
+        TypeError: If the value is not a mapping or fields are invalid.
+        ValueError: If required fields are missing or invalid.
+    """
+    if not isinstance(value, Mapping):
+        raise TypeError("Each query must be an object")
+
+    name = None
+    if "NAME" in value:
+        if not isinstance(value["NAME"], str):
+            raise TypeError("NAME must be a string")
+        name = value["NAME"].strip() or None
+
+    fields: dict[str, FieldQuery] = {}
+    # Shorthand: allow top-level AND/OR/NOT to mean "TEXT" (title+abstract).
+    if any(k in value for k in _ALLOWED_OPS):
+        fields["TEXT"] = _parse_field_query({op: value.get(op) for op in _ALLOWED_OPS if op in value})
+
+    for k, v in value.items():
+        if k == "NAME":
+            continue
+        if k in _ALLOWED_OPS:
+            continue
+        if not isinstance(k, str):
+            raise TypeError("Field names must be strings")
+        if k != k.upper():
+            raise ValueError(f"Field keys must be uppercase: {k}")
+        field = k.strip().upper()
+        if field not in _ALLOWED_FIELDS:
+            raise ValueError(f"Unknown field: {field}")
+        fields[field] = _parse_field_query(v)
+
+    if not fields:
+        raise ValueError("Query must include at least one field")
+    return SearchQuery(name=name, fields=fields)
+
+
+def _parse_yaml(text: str) -> dict[str, Any]:
+    """Parse YAML configuration text using PyYAML.
+
+    Args:
+        text: Raw YAML string.
+
+    Returns:
+        Parsed YAML data as a mapping.
+
+    Raises:
+        ValueError: If the YAML root is not a mapping.
+        yaml.YAMLError: If the YAML is invalid.
+    """
+    data = yaml.safe_load(text) or {}
+    if not isinstance(data, Mapping):
+        raise ValueError("Config root must be a mapping/object")
+    return dict(data)
+
+
+def _get(d: Mapping[str, Any], key: str, default: Any = None) -> Any:
+    """Get a key from a mapping with a default fallback.
+
+    Args:
+        d: Mapping to search.
+        key: Key to fetch.
+        default: Default value if missing.
+
+    Returns:
+        Value found at the key or the default.
+    """
+    if not isinstance(d, Mapping):
+        return default
+    return d.get(key, default)
+
+
+def _get_section(raw: Mapping[str, Any], key: str) -> Mapping[str, Any]:
+    """Get a nested mapping section or return an empty mapping."""
+    section = raw.get(key)
+    if isinstance(section, Mapping):
+        return section
+    return {}
+
+
+def _get_required(
+    section: Mapping[str, Any], field_name: str, config_key: str, converter: type
+) -> Any:
+    """Get a required config field with validation and conversion.
+
+    Args:
+        section: The config section mapping.
+        field_name: The field name in the section.
+        config_key: The full config key path for error messages (e.g., "log.level").
+        converter: Type converter function (str, int, bool, float).
+
+    Returns:
+        Converted field value.
+
+    Raises:
+        ValueError: If the field is missing.
+    """
+    value = _get(section, field_name)
+    if value is None:
+        raise ValueError(f"Missing required config: {config_key}")
+    return converter(value)
+
+
+def _merge_config_dicts(base: Mapping[str, Any], override: Mapping[str, Any]) -> dict[str, Any]:
+    """Deep-merge two configuration mappings.
+
+    Mapping values are merged recursively. For other types (scalars, lists),
+    the override replaces the base value.
+
+    Args:
+        base: Base configuration mapping.
+        override: Override configuration mapping.
+
+    Returns:
+        Merged configuration mapping.
+    """
+    merged: dict[str, Any] = dict(base)
+    for key, value in override.items():
+        if key in merged and isinstance(merged[key], Mapping) and isinstance(value, Mapping):
+            merged[key] = _merge_config_dicts(merged[key], value)
+        else:
+            merged[key] = value
+    return merged
