@@ -52,7 +52,7 @@ search:
 
 output:
   base_dir: output/              # Output root directory
-  formats: [console, json, markdown]             # Output formats: console, json, markdown (can select multiple)
+  formats: [console, json, markdown, html]             # Output formats: console, json, markdown, html (can select multiple)
 
   # Markdown export configuration
   markdown:
@@ -60,6 +60,12 @@ output:
     document_template: document.md       # Document-level template
     paper_template: paper.md             # Paper-level template
     paper_separator: "\n\n---\n\n"       # Separator between papers
+
+  # HTML export configuration
+  html:
+    template_dir: template/html/interactive/      # Switch to template/html/markdown-like/ for minimal style
+    document_template: document.html
+    paper_template: paper.html
 
 # LLM translation configuration
 llm:

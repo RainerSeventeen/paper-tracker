@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paper Tracker Report</title>
+  <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body class="theme-light">
+  <header class="page-header">
+    <div>
+      <h1>Paper Tracker Report</h1>
+      <p>Generated: {timestamp}</p>
+    </div>
+    <button id="theme-toggle" type="button" aria-label="切换暗色模式">切换暗色模式</button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" aria-label="查询导航"></aside>
+    <main>
+      {query_sections}
+    </main>
+  </div>
+
+  <script src="./assets/interactive.js"></script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 """独立测试脚本：测试 output_writer 输出功能
 
 该脚本使用硬编码的测试数据，独立测试各种格式的输出功能。
-测试包括：Console、JSON、Markdown 三种输出格式。
+测试包括：Console、JSON、Markdown、HTML 四种输出格式。
 不依赖外部配置文件，所有测试数据都在代码中定义。
 """
 
@@ -12,6 +12,7 @@ from PaperTracker.renderers.view_models import PaperView
 from PaperTracker.renderers.console import ConsoleOutputWriter, render_text
 from PaperTracker.renderers.json import JsonFileWriter, render_json
 from PaperTracker.renderers.markdown import MarkdownFileWriter
+from PaperTracker.renderers.html import HtmlFileWriter
 from PaperTracker.config import OutputConfig
 
 # ============================================================================
@@ -20,7 +21,7 @@ from PaperTracker.config import OutputConfig
 
 # 输出目录配置
 OUTPUT_BASE_DIR = "output/test"           # 测试输出的基础目录
-OUTPUT_FORMATS = ["console", "json", "markdown"]  # 要测试的输出格式
+OUTPUT_FORMATS = ["console", "json", "markdown", "html"]  # 要测试的输出格式
 
 # Markdown 模板配置
 MARKDOWN_TEMPLATE_DIR = "template/markdown"
@@ -28,8 +29,13 @@ MARKDOWN_DOCUMENT_TEMPLATE = "document.md"
 MARKDOWN_PAPER_TEMPLATE = "paper.md"
 MARKDOWN_PAPER_SEPARATOR = "\n\n---\n\n"
 
+# HTML 模板配置
+HTML_TEMPLATE_DIR = "template/html/interactive"
+HTML_DOCUMENT_TEMPLATE = "document.html"
+HTML_PAPER_TEMPLATE = "paper.html"
+
 # 测试数据配置
-TEST_ACTION_NAME = "search"               # 测试的命令名称（用于文件名）
+TEST_ACTION_NAME = "test"               # 测试的命令名称（用于文件名）
 
 
 def create_test_paper_views():
@@ -272,10 +278,56 @@ def test_markdown_output():
     print("\n✓ Markdown 文件输出测试完成")
 
 
+def test_html_output():
+    """测试 HTML 文件输出"""
+    print("\n" + "=" * 80)
+    print("测试 4: HTML 文件输出格式")
+    print("=" * 80)
+
+    views = create_test_paper_views()
+    queries = create_test_queries()
+
+    output_dir = Path(OUTPUT_BASE_DIR)
+    print(f"\n使用输出目录: {output_dir}")
+    print(f"使用模板目录: {HTML_TEMPLATE_DIR}")
+
+    output_config = OutputConfig(
+        formats=["html"],
+        base_dir=str(output_dir),
+        html_template_dir=HTML_TEMPLATE_DIR,
+        html_document_template=HTML_DOCUMENT_TEMPLATE,
+        html_paper_template=HTML_PAPER_TEMPLATE,
+    )
+
+    writer = HtmlFileWriter(output_config)
+
+    for view, query in zip(views, queries):
+        print(f"处理查询: {query.name}")
+        writer.write_query_result([view], query, scope=None)
+
+    writer.finalize(TEST_ACTION_NAME)
+
+    html_dir = output_dir / "html"
+    html_files = list(html_dir.glob("*.html"))
+    print(f"\n✓ 生成了 {len(html_files)} 个 HTML 文件:")
+    for f in html_files:
+        file_size = f.stat().st_size
+        print(f"  - {f.name} (大小: {file_size} 字节)")
+
+        content = f.read_text(encoding="utf-8")
+        lines = content.split("\n")
+        print(f"    行数: {len(lines)}")
+        print("    前 5 行预览:")
+        for line in lines[:5]:
+            print(f"      {line}")
+
+    print("\n✓ HTML 文件输出测试完成")
+
+
 def test_multiple_formats():
     """测试同时使用多种输出格式"""
     print("\n" + "=" * 80)
-    print("测试 4: 多种格式同时输出")
+    print("测试 5: 多种格式同时输出")
     print("=" * 80)
 
     views = create_test_paper_views()
@@ -293,7 +345,10 @@ def test_multiple_formats():
         markdown_template_dir=MARKDOWN_TEMPLATE_DIR,
         markdown_document_template=MARKDOWN_DOCUMENT_TEMPLATE,
         markdown_paper_template=MARKDOWN_PAPER_TEMPLATE,
-        markdown_paper_separator=MARKDOWN_PAPER_SEPARATOR
+        markdown_paper_separator=MARKDOWN_PAPER_SEPARATOR,
+        html_template_dir=HTML_TEMPLATE_DIR,
+        html_document_template=HTML_DOCUMENT_TEMPLATE,
+        html_paper_template=HTML_PAPER_TEMPLATE,
     )
 
     # 创建所有 writer
@@ -304,6 +359,8 @@ def test_multiple_formats():
         writers.append(JsonFileWriter(str(output_dir)))
     if "markdown" in OUTPUT_FORMATS:
         writers.append(MarkdownFileWriter(output_config))
+    if "html" in OUTPUT_FORMATS:
+        writers.append(HtmlFileWriter(output_config))
 
     # 写入数据到所有 writer
     for view, query in zip(views, queries):
@@ -322,6 +379,9 @@ def test_multiple_formats():
     if "markdown" in OUTPUT_FORMATS:
         markdown_files = list((output_dir / "markdown").glob("*.md"))
         print(f"✓ 生成了 {len(markdown_files)} 个 Markdown 文件")
+    if "html" in OUTPUT_FORMATS:
+        html_files = list((output_dir / "html").glob("*.html"))
+        print(f"✓ 生成了 {len(html_files)} 个 HTML 文件")
     if "console" in OUTPUT_FORMATS:
         print("✓ Console 输出已显示在标准输出")
 
@@ -337,6 +397,7 @@ def main():
     test_console_output()
     test_json_output()
     test_markdown_output()
+    test_html_output()
     test_multiple_formats()
 
     print("\n" + "=" * 80)

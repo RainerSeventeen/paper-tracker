@@ -12,6 +12,7 @@ from __future__ import annotations
 from PaperTracker.config import AppConfig
 from PaperTracker.renderers.base import MultiOutputWriter, OutputWriter
 from PaperTracker.renderers.console import ConsoleOutputWriter, render_text
+from PaperTracker.renderers.html import HtmlFileWriter
 from PaperTracker.renderers.json import JsonFileWriter, render_json
 from PaperTracker.renderers.markdown import MarkdownFileWriter
 
@@ -32,6 +33,8 @@ def create_output_writer(config: AppConfig) -> OutputWriter:
         writers.append(JsonFileWriter(config.output.base_dir))
     if "markdown" in config.output.formats:
         writers.append(MarkdownFileWriter(config.output))
+    if "html" in config.output.formats:
+        writers.append(HtmlFileWriter(config.output))
 
     if not writers:
         raise ValueError("No output writers configured")
@@ -43,6 +46,7 @@ __all__ = [
     "ConsoleOutputWriter",
     "JsonFileWriter",
     "MarkdownFileWriter",
+    "HtmlFileWriter",
     "MultiOutputWriter",
     "render_json",
     "render_text",
