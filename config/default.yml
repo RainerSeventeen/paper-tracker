@@ -50,7 +50,7 @@ search:
 
   # multi round fetch
   pull_every: 7               # Strict time window, unit: day
-  fill_enabled: false         # Allow fill with paper outside the strict time window
+  fill_enabled: true         # Allow fill with paper outside the strict time window
   max_lookback_days: 30       # Max length for fill window, -1 as infinite
   max_fetch_items: 125        # Max count for item tried to fetch at a time, -1 as infinite
   fetch_batch_size: 25        # Fetch count for each round

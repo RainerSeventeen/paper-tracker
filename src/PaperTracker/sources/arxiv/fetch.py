@@ -7,6 +7,7 @@ while preserving deterministic sorting and optional persistent deduplication.
 from __future__ import annotations
 
 import logging
+import time as time_module
 from collections.abc import Callable
 from datetime import datetime, timedelta, timezone
 from time import time
@@ -23,6 +24,8 @@ logger = logging.getLogger(__name__)
 ARXIV_SORT_BY = "lastUpdatedDate"
 ARXIV_SORT_ORDER = "descending"
 TIMEOUT_SECONDS = 120
+# arXiv API rate limit: wait 3 seconds between consecutive requests
+REQUEST_INTERVAL = 3.0
 
 
 def collect_papers_with_time_filter(
@@ -36,7 +39,7 @@ def collect_papers_with_time_filter(
 
     This arXiv-specific strategy uses fixed sorting (`lastUpdatedDate` +
     `descending`), fetches pages until limits are hit, filters papers by strict
-    and optional fill windows, then applies datastore deduplication.
+    and optional fill windows, then applies datastore deduplication per page.
 
     Args:
         query: Query object for this fetch task.
@@ -52,6 +55,7 @@ def collect_papers_with_time_filter(
     from PaperTracker.sources.arxiv.query import compile_search_query
 
     candidates: list[Paper] = []
+    new_items: list[Paper] = []
     page_offset = 0
     fetched_items = 0
     now = datetime.now(timezone.utc)
@@ -109,18 +113,57 @@ def collect_papers_with_time_filter(
         candidates.extend(page_candidates)
         logger.debug("Page candidates: %d (total candidates %d)", len(page_candidates), len(candidates))
 
+        if dedup_store:
+            page_new = dedup_store.filter_new(page_candidates)
+            logger.info(
+                "Page dedup stats: %d new in total %d papers",
+                len(page_new),
+                len(page_candidates),
+            )
+            new_items.extend(page_new)
+        else:
+            new_items.extend(page_candidates)
+            logger.debug(
+                "Persistent deduplication is disabled - accepted %d papers (total %d)",
+                len(page_candidates),
+                len(new_items),
+            )
+
+        # Since upstream is sorted by lastUpdatedDate descending, once the
+        # oldest paper in the current page is already outside the effective
+        # window, all later pages will also be outside and can be skipped.
+        oldest_in_page = page[-1]
+        if _is_outside_collection_window(
+            oldest_in_page,
+            pull_every_days=policy.pull_every,
+            fill_enabled=policy.fill_enabled,
+            max_lookback_days=policy.max_lookback_days,
+            now=now,
+        ):
+            oldest_ts = _resolve_timestamp(oldest_in_page)
+            logger.info(
+                "Early stop - page oldest paper is outside collection window (%s); stop",
+                oldest_ts.isoformat() if oldest_ts else "unknown timestamp",
+            )
+            break
+
+        # Stop immediately once deduplicated count reaches target.
+        if len(new_items) >= policy.max_results:
+            logger.info(
+                "Reached target after deduplication - new papers: %d (target %d); stop",
+                len(new_items),
+                policy.max_results,
+            )
+            break
+
         if policy.max_fetch_items != -1 and fetched_items >= policy.max_fetch_items:
             logger.info("Reached max_fetch_items=%d; stop", policy.max_fetch_items)
             break
 
-    if dedup_store:
-        logger.info("Run persistent deduplication for %d candidates", len(candidates))
-        new_items = dedup_store.filter_new(candidates)
-        dedup_store.mark_seen(new_items)
-        logger.info("Deduplication done - new papers: %d", len(new_items))
-    else:
-        new_items = candidates
-        logger.debug("Persistent deduplication is disabled")
+        # Rate limiting: sleep before next request (arXiv recommends 3s interval)
+        if page_num >= 1:
+            logger.debug("Sleeping %.1fs to respect arXiv rate limit", REQUEST_INTERVAL)
+            time_module.sleep(REQUEST_INTERVAL)
 
     new_items.sort(
         key=lambda paper: (
@@ -129,6 +172,10 @@ def collect_papers_with_time_filter(
         reverse=True,
     )
     result = new_items[: policy.max_results]
+
+    if dedup_store and result:
+        dedup_store.mark_seen(result)
+        logger.info("Marked returned papers as seen: %d", len(result))
 
     if len(result) < policy.max_results:
         logger.warning(
@@ -169,6 +216,36 @@ def _can_include(
     if fill_enabled and _is_in_fill_window(paper, max_lookback_days, now):
         return True
     return False
+
+
+def _is_outside_collection_window(
+    paper: Paper,
+    *,
+    pull_every_days: int,
+    fill_enabled: bool,
+    max_lookback_days: int,
+    now: datetime,
+) -> bool:
+    """Check whether a paper is outside the active collection window.
+
+    Args:
+        paper: Paper to evaluate.
+        pull_every_days: Strict window size in days.
+        fill_enabled: Whether fill mode is enabled.
+        max_lookback_days: Fill lookback size in days; `-1` means unlimited.
+        now: Current UTC timestamp.
+
+    Returns:
+        True when paper timestamp is older than the active window cutoff.
+    """
+    timestamp = _resolve_timestamp(paper)
+    if timestamp is None:
+        return False
+    if fill_enabled:
+        if max_lookback_days == -1:
+            return False
+        return timestamp < now - timedelta(days=max_lookback_days)
+    return timestamp < now - timedelta(days=pull_every_days)
 
 
 def _is_in_strict_window(paper: Paper, pull_every_days: int, now: datetime) -> bool:
