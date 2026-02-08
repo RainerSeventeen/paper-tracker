@@ -329,6 +329,7 @@ def load_config(path: Path) -> AppConfig:
     return load_config_with_defaults(path, default_path=path)
 
 
+# TODO: may merge with load config
 def load_config_with_defaults(
     config_path: Path, default_path: Path = Path("config/default.yml")
 ) -> AppConfig:
