@@ -18,9 +18,7 @@ class TestBasicQueryConfig(unittest.TestCase):
         cfg = load_config_with_defaults(config_path, default_path=default_path)
 
         self.assertEqual(cfg.log_level, "INFO")
-        self.assertEqual(cfg.max_results, 5)
-        self.assertEqual(cfg.sort_by, "submittedDate")
-        self.assertEqual(cfg.sort_order, "descending")
+        self.assertEqual(cfg.search.max_results, 5)
         self.assertEqual(cfg.output.formats, ("json",))
 
         self.assertEqual(len(cfg.queries), 1)

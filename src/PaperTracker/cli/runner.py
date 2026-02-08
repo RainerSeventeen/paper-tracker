@@ -54,8 +54,8 @@ class CommandRunner:
             # Create storage components
             db_manager, dedup_store, content_store = create_storage(self.config)
 
-            # Create service and output writer
-            search_service = create_search_service(self.config)
+            # Create service and output writer (pass dedup_store for arXiv multi-round fetching)
+            search_service = create_search_service(self.config, dedup_store=dedup_store)
             output_writer = create_output_writer(self.config)
 
             # Create LLM service if enabled

@@ -22,8 +22,6 @@ queries:
 
 search:
   max_results: 3
-  sort_by: submittedDate
-  sort_order: descending
 
 output:
   base_dir: output/
