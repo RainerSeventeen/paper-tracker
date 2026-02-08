@@ -26,24 +26,24 @@ arxiv:
 #     OR: [cs.CV]
 
 queries:
-  # - NAME: compression
-  #   OR:
-  #     - Image Compression
-  #     - Video Compression
-  - NAME: neural_video_compression
+  - NAME: 视频及图像压缩
+    OR:
+      - Image Compression
+      - Video Compression
+  - NAME: LIC 端到端
     OR:
       - Neural Video Compression
       - Learned Video Compression
       - End-to-end Video
-  - NAME: vqa
+  - NAME: 视频质量指标
     OR:
       - Video Quality Assessment
       - Perceptual Quality Assessment
-  # - NAME: vsr
-  #   OR:
-  #     - Video Super Resolution
-  #     - VSR
-  #     - Video Restoration
+  - NAME: VSR 视频超分辨率
+    OR:
+      - Video Super Resolution
+      - VSR
+      - Video Restoration
 
 search:
   max_results: 3
@@ -63,7 +63,7 @@ output:
 
   # HTML export configuration
   html:
-    template_dir: template/html/interactive/      # Switch to template/html/markdown-like/ for minimal style
+    template_dir: template/html/scholar/
     document_template: document.html
     paper_template: paper.html
 

@@ -26,7 +26,6 @@ from PaperTracker.renderers.view_models import PaperView
 from PaperTracker.utils.log import log
 
 
-
 @dataclass(frozen=True, slots=True)
 class HtmlRenderer:
     """Render paper views into HTML content."""
@@ -56,9 +55,18 @@ class HtmlRenderer:
             papers_html = '<p class="empty-state">该 query 暂无结果。</p>'
 
         safe_query_label = html.escape(query_label)
-        section = f'<section id="{query_id}" class="query-section">\n'
-        section += f"  <h2>{safe_query_label}</h2>\n"
-        section += f"  {papers_html}\n"
+        safe_query_label_attr = html.escape(query_label, quote=True)
+        paper_count = len(papers)
+        section = (
+            f'<section id="{query_id}" class="query-section"'
+            f' data-query-label="{safe_query_label_attr}"'
+            f' data-paper-count="{paper_count}">\n'
+        )
+        section += "  <header class=\"query-header\">\n"
+        section += f"    <h2>{safe_query_label}</h2>\n"
+        section += f"    <p class=\"query-count\">{paper_count} 篇</p>\n"
+        section += "  </header>\n"
+        section += f"  <div class=\"query-content\">\n{papers_html}\n  </div>\n"
         section += "</section>"
         return section
 
@@ -91,6 +99,7 @@ class HtmlFileWriter(OutputWriter):
         self.pending_sections: list[str] = []
         self.timestamp_dt: datetime | None = None
         self.query_id_counter: dict[str, int] = {}
+        self.total_papers = 0
 
     def write_query_result(
         self,
@@ -113,6 +122,7 @@ class HtmlFileWriter(OutputWriter):
         query_id = self._get_query_id(query_label)
         section = self.renderer.render_query_section(papers, query_label=query_label, query_id=query_id)
         self.pending_sections.append(section)
+        self.total_papers += len(papers)
 
     def finalize(self, action: str) -> None:
         """Write final HTML document and synchronize assets.
@@ -136,6 +146,8 @@ class HtmlFileWriter(OutputWriter):
             self.renderer.document_template,
             {
                 "timestamp": timestamp_display,
+                "query_count": str(len(self.pending_sections)),
+                "paper_count": str(self.total_papers),
                 "query_sections": all_sections,
             },
         )
@@ -272,17 +284,30 @@ def _prepare_paper_context_html(paper: PaperView, paper_number: int) -> Mapping[
     Returns:
         Placeholder mapping used by templates.
     """
+    doi_url = _build_doi_url(paper.doi)
+    pdf_url = _escape_url(paper.pdf_url or "")
+    abstract_url = _escape_url(paper.abstract_url or "")
+    has_links = bool(pdf_url or abstract_url or doi_url)
+    primary_category, secondary_categories = _build_category_display(
+        paper.primary_category,
+        paper.categories,
+    )
+    updated_display = paper.updated or paper.published or "Unknown"
+
     return {
         "paper_number": str(paper_number),
         "title": html.escape(paper.title or ""),
         "source": html.escape(paper.source or ""),
         "authors": html.escape(", ".join(paper.authors) if paper.authors else ""),
         "doi": html.escape(paper.doi or ""),
-        "updated": html.escape(paper.updated or paper.published or ""),
-        "primary_category": html.escape(paper.primary_category or ""),
+        "doi_url": doi_url,
+        "updated": html.escape(updated_display),
+        "primary_category": html.escape(primary_category),
+        "secondary_categories": html.escape(secondary_categories),
         "categories": html.escape(", ".join(paper.categories) if paper.categories else ""),
-        "pdf_url": _escape_url(paper.pdf_url or ""),
-        "abstract_url": _escape_url(paper.abstract_url or ""),
+        "pdf_url": pdf_url,
+        "abstract_url": abstract_url,
+        "links_state": "has-links" if has_links else "no-links",
         "abstract": html.escape(paper.abstract or ""),
         "abstract_translation": html.escape(paper.abstract_translation or ""),
         "tldr": html.escape(paper.tldr or ""),
@@ -291,3 +316,50 @@ def _prepare_paper_context_html(paper: PaperView, paper_number: int) -> Mapping[
         "result": html.escape(paper.result or ""),
         "conclusion": html.escape(paper.conclusion or ""),
     }
+
+
+def _build_doi_url(doi: str | None) -> str:
+    """Build an escaped DOI URL from a DOI string.
+
+    Args:
+        doi: Raw DOI string or URL.
+
+    Returns:
+        Validated DOI URL, or empty string when DOI is missing/invalid.
+    """
+    if not doi:
+        return ""
+
+    normalized = doi.strip()
+    if not normalized:
+        return ""
+
+    if normalized.startswith(("http://", "https://")):
+        return _escape_url(normalized)
+
+    return _escape_url(f"https://doi.org/{normalized}")
+
+
+def _build_category_display(
+    primary_category: str | None,
+    categories: Sequence[str],
+) -> tuple[str, str]:
+    """Build category display values with highlighted primary category.
+
+    Args:
+        primary_category: Primary category value.
+        categories: Full category list.
+
+    Returns:
+        Tuple of (primary_display, secondary_display).
+    """
+    normalized_categories = [cat.strip() for cat in categories if cat and cat.strip()]
+    normalized_primary = (primary_category or "").strip()
+
+    if not normalized_primary and normalized_categories:
+        normalized_primary = normalized_categories[0]
+
+    secondary = [cat for cat in normalized_categories if cat != normalized_primary]
+    if not secondary:
+        return normalized_primary, ""
+    return normalized_primary, " · " + " · ".join(secondary)

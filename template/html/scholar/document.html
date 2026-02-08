@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paper Tracker Daily Reading</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Crimson+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body class="theme-light">
+  <a class="skip-link" href="#main-content">跳转到正文</a>
+
+  <header class="page-header">
+    <div class="header-main">
+      <p class="header-topline">
+        POWER BY
+        <a class="powered-by-link" href="https://github.com/RainerSeventeen/paper-tracker" target="_blank" rel="noopener noreferrer">
+          RainerSeventeen/paper-tracker
+        </a>
+      </p>
+      <h1>文献阅读简报</h1>
+      <p class="header-meta">生成时间：{timestamp}</p>
+      <div class="report-stats">
+        <p><span>{query_count}</span> 个查询主题</p>
+        <p><span>{paper_count}</span> 篇候选论文</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="expand-all" type="button" aria-label="展开所有论文详情">展开全部</button>
+      <button id="collapse-all" type="button" aria-label="折叠所有论文详情">折叠全部</button>
+      <button id="theme-toggle" type="button" aria-label="切换暗色模式">切换暗色模式</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" aria-label="查询导航">
+      <p class="sidebar-title">文献目录</p>
+      <p class="sidebar-note">按查询主题快速定位</p>
+    </aside>
+    <main id="main-content" class="content">
+      {query_sections}
+    </main>
+  </div>
+
+  <script src="./assets/interactive.js"></script>
+</body>
+</html>
