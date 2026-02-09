@@ -1,9 +1,11 @@
 """Tests for layered config parsing and validation."""
 
+import os
 import sys
 import unittest
 from copy import deepcopy
 from pathlib import Path
+from unittest.mock import patch
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
@@ -91,17 +93,27 @@ class TestConfigLayering(unittest.TestCase):
         raw = _base_raw_config()
         raw["llm"]["enabled"] = True
         raw["storage"]["enabled"] = False
-        cfg = parse_config_dict(raw)
+        with patch.dict(os.environ, {"LLM_API_KEY": "test-key"}, clear=False):
+            cfg = parse_config_dict(raw)
         self.assertTrue(cfg.llm.enabled)
         self.assertFalse(cfg.storage.enabled)
+        self.assertEqual(cfg.llm.api_key, "test-key")
 
     def test_llm_enabled_allows_content_storage_disabled(self) -> None:
         raw = _base_raw_config()
         raw["llm"]["enabled"] = True
         raw["storage"]["content_storage_enabled"] = False
-        cfg = parse_config_dict(raw)
+        with patch.dict(os.environ, {"LLM_API_KEY": "test-key"}, clear=False):
+            cfg = parse_config_dict(raw)
         self.assertTrue(cfg.llm.enabled)
         self.assertFalse(cfg.storage.content_storage_enabled)
+
+    def test_llm_enabled_missing_api_key_env_error(self) -> None:
+        raw = _base_raw_config()
+        raw["llm"]["enabled"] = True
+        with patch.dict(os.environ, {}, clear=True):
+            with self.assertRaisesRegex(ValueError, "LLM enabled but LLM_API_KEY environment variable not set"):
+                parse_config_dict(raw)
 
     def test_llm_timeout_type_error_contains_key(self) -> None:
         raw = _base_raw_config()

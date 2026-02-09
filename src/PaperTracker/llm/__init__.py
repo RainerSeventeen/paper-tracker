@@ -5,8 +5,6 @@ Provides translation and other LLM-powered enhancements for papers.
 
 from __future__ import annotations
 
-import os
-
 from PaperTracker.llm.client import LLMApiClient
 from PaperTracker.llm.openai_compat import OpenAICompatProvider
 from PaperTracker.llm.provider import LLMProvider
@@ -24,27 +22,15 @@ def create_llm_service(config) -> LLMService | None:
         Configured LLMService instance, or None if LLM is disabled.
 
     Raises:
-        ValueError: If configuration is invalid (missing API key, etc.).
+        ValueError: If configuration is invalid (unsupported provider, etc.).
     """
-    from PaperTracker.config import AppConfig
-
     if not config.llm.enabled:
         return None
-
-    # Get API key from environment
-    api_key_env = config.llm.api_key_env or "OPENAI_API_KEY"
-    api_key = os.getenv(api_key_env)
-
-    if not api_key:
-        raise ValueError(
-            f"LLM enabled but {api_key_env} environment variable not set. "
-            f"Set it in your .env file or shell environment."
-        )
 
     # Create HTTP client with retry configuration
     client = LLMApiClient(
         base_url=config.llm.base_url,
-        api_key=api_key,
+        api_key=config.llm.api_key,
         timeout=config.llm.timeout,
         max_retries=config.llm.max_retries,
         retry_base_delay=config.llm.retry_base_delay,
