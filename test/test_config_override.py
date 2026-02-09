@@ -84,11 +84,11 @@ queries:
 
             cfg = load_config_with_defaults(override_path, default_path=base_path)
 
-        self.assertEqual(cfg.log_level, "DEBUG")
+        self.assertEqual(cfg.runtime.level, "DEBUG")
         self.assertEqual(cfg.search.max_results, 10)
         self.assertEqual(cfg.output.formats, ("console",))
-        self.assertEqual(len(cfg.queries), 1)
-        self.assertEqual(cfg.queries[0].name, "override")
+        self.assertEqual(len(cfg.search.queries), 1)
+        self.assertEqual(cfg.search.queries[0].name, "override")
 
     def test_empty_override_uses_defaults(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -99,10 +99,10 @@ queries:
 
             cfg = load_config_with_defaults(override_path, default_path=base_path)
 
-        self.assertEqual(cfg.log_level, "INFO")
+        self.assertEqual(cfg.runtime.level, "INFO")
         self.assertEqual(cfg.search.max_results, 5)
-        self.assertEqual(len(cfg.queries), 1)
-        self.assertEqual(cfg.queries[0].name, "base")
+        self.assertEqual(len(cfg.search.queries), 1)
+        self.assertEqual(cfg.search.queries[0].name, "base")
 
 
 if __name__ == "__main__":

@@ -37,8 +37,8 @@ def create_search_service(
     return PaperSearchService(
         source=ArxivSource(
             client=ArxivApiClient(),
-            scope=config.scope,
-            keep_version=config.arxiv_keep_version,
+            scope=config.search.scope,
+            keep_version=config.storage.keep_arxiv_version,
             search_config=config.search,
             dedup_store=dedup_store,
         )

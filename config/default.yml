@@ -2,22 +2,23 @@
 # PaperTracker example config.
 # Run: paper-tracker --config config/default.yml search
 
+# runtime domain
 log:
   level: INFO
   to_file: true
   dir: log
 
-# State management (deduplication)
+# storage domain - State management (deduplication)
 state:
   enabled: true
   db_path: database/papers.db  # Relative path (from working directory) or absolute path (starts with /)
   content_storage_enabled: true  # save full paper content (default: true)
 
-# arXiv behavior
+# storage domain - arXiv behavior
 arxiv:
   keep_version: false  # false: 2601.21922, true: 2601.21922v1
 
-# Optional global scope applied to every query.
+# search domain - Optional global scope applied to every query.
 # Field keys must be uppercase: TITLE/ABSTRACT/AUTHOR/JOURNAL/CATEGORY
 # Operator keys must be uppercase: AND/OR/NOT
 #
@@ -55,6 +56,7 @@ search:
   max_fetch_items: 125        # Max count for item tried to fetch at a time, -1 as infinite
   fetch_batch_size: 25        # Fetch count for each round
 
+# output domain
 output:
   base_dir: output/              # Output root directory
   formats: [console, json, markdown, html]             # Output formats: console, json, markdown, html (can select multiple)
@@ -72,7 +74,7 @@ output:
     document_template: document.html
     paper_template: paper.html
 
-# LLM translation configuration
+# llm domain
 llm:
   enabled: true                          # Enable/disable LLM translation features
   provider: openai-compat                 # Provider type (currently only this)
@@ -89,7 +91,7 @@ llm:
   # 2. Summary only: enable_translation=false, enable_summary=true
   # 3. Both: enable_translation=true, enable_summary=true
   enable_translation: true                # Enable abstract translation
-  enable_summary: true                   # Enable paper summary (TLDR, motivation, method, result, conclusion)
+  enable_summary: true                    # Enable paper summary (TLDR, motivation, method, result, conclusion)
                                           # Default: false (to control API costs)
 
   # Retry configuration (for handling timeouts and transient errors)

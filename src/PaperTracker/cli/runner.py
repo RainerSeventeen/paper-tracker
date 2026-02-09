@@ -45,10 +45,10 @@ class CommandRunner:
             click.Abort: When the search fails.
         """
         configure_logging(
-            level=self.config.log_level,
+            level=self.config.runtime.level,
             action=action,
-            log_to_file=self.config.log_to_file,
-            log_dir=self.config.log_dir,
+            log_to_file=self.config.runtime.to_file,
+            log_dir=self.config.runtime.dir,
         )
         try:
             # Create storage components

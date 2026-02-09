@@ -38,13 +38,13 @@ def create_storage(
     dedup_store = None
     content_store = None
 
-    if config.state_enabled:
-        db_path = Path(config.state_db_path)
+    if config.storage.enabled:
+        db_path = Path(config.storage.db_path)
         db_manager = DatabaseManager(db_path)
         dedup_store = SqliteDeduplicateStore(db_manager)
         log.info("State storage enabled: %s", db_path)
 
-        if config.content_storage_enabled:
+        if config.storage.content_storage_enabled:
             content_store = PaperContentStore(db_manager)
             log.info("Content storage enabled: %s", db_path)
 

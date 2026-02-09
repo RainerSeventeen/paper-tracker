@@ -142,13 +142,13 @@ def main():
         print("Query scope: all queries")
 
     config = load_config(config_path)
-    setup_logging(config.log_level)
+    setup_logging(config.runtime.level)
 
     # Initialize dedup store (wrapped as read-only)
     dedup_store = None
     db_manager = None
-    if ENABLE_DEDUP and config.state_enabled:
-        db_path = Path(config.state_db_path)
+    if ENABLE_DEDUP and config.storage.enabled:
+        db_path = Path(config.storage.db_path)
         if db_path.exists():
             print(f"Database path: {db_path}")
             db_manager = DatabaseManager(db_path)
@@ -166,8 +166,8 @@ def main():
     client = ArxivApiClient()
     source = ArxivSource(
         client=client,
-        scope=config.scope,
-        keep_version=config.arxiv_keep_version,
+        scope=config.search.scope,
+        keep_version=config.storage.keep_arxiv_version,
         search_config=config.search,
         dedup_store=dedup_store,
     )
@@ -175,14 +175,16 @@ def main():
     # Determine query set to run
     queries_to_run = []
     if QUERY_INDEX is not None:
-        if 0 <= QUERY_INDEX < len(config.queries):
-            queries_to_run = [config.queries[QUERY_INDEX]]
+        if 0 <= QUERY_INDEX < len(config.search.queries):
+            queries_to_run = [config.search.queries[QUERY_INDEX]]
             print(f"Running query: index {QUERY_INDEX} - {queries_to_run[0].name}")
         else:
-            print(f"ERROR: Query index out of range: {QUERY_INDEX} (total: {len(config.queries)})")
+            print(
+                f"ERROR: Query index out of range: {QUERY_INDEX} (total: {len(config.search.queries)})"
+            )
             return
     else:
-        queries_to_run = config.queries
+        queries_to_run = config.search.queries
         print(f"Running all queries: {len(queries_to_run)} total")
 
     print("\n[Search config]")
@@ -228,7 +230,7 @@ def main():
             # Convert to PaperView
             paper_views = map_papers_to_views(results)
             # Render via ConsoleOutputWriter
-            console_writer.write_query_result(paper_views, query, config.scope)
+            console_writer.write_query_result(paper_views, query, config.search.scope)
 
             all_results.extend(results)
         else:
@@ -242,7 +244,7 @@ def main():
     print(f"  Papers total: {len(all_results)}")
     print(f"  Deduplication: {'ON' if dedup_store else 'OFF'}")
 
-    if dedup_store and config.state_enabled:
+    if dedup_store and config.storage.enabled:
         print("\nOK: Database unchanged (read-only mode did not call mark_seen)")
 
     # Close database connection
