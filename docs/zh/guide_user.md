@@ -2,7 +2,7 @@
 
 这是一份面向用户的快速上手指南，只保留“必须配置才能完成检索目标”的内容，并提供可直接运行的最小示例。
 
-需要完整参数说明参见 [详细参数配置说明](./docs/zh/guide_configuration.md)
+需要完整参数说明参见 [详细参数配置说明](./guide_configuration.md)
 
 ---
 
@@ -59,8 +59,8 @@ paper-tracker --config config/custom.yml search
 
 - `scope`：对所有 query 的全局过滤（例如限定分类）
 - `output.markdown` / `output.json`：导出模板
-- `state`：去重与内容存储
-- `arxiv.keep_version`：是否保留 arXiv 版本号
+- `storage`：去重与内容存储
+- `storage.keep_arxiv_version`：是否保留 arXiv 版本号
 
 ### 3.4 只在使用 LLM 时需要
 
@@ -71,6 +71,9 @@ paper-tracker --config config/custom.yml search
 - `llm.model`: llm 服务商的模型
 - `llm.target_lang`: 输出的翻译的目标语言（例如 `zh` ）
 - `llm.enable_translation` / `llm.enable_summary`
+
+依赖关系：
+- 当 `llm.enabled: true` 时，必须同时满足 `storage.enabled: true` 与 `storage.content_storage_enabled: true`。
 
 同时需要设置环境变量：`LLM_API_KEY`（或你在 `api_key_env` 中自定义的变量名）。
 
