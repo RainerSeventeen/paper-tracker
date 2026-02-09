@@ -17,18 +17,15 @@ from PaperTracker.utils.log import log
 ARXIV_HTTPS = "https://export.arxiv.org/api/query"
 ARXIV_HTTP = "http://export.arxiv.org/api/query"
 
-DEFAULT_TIMEOUT = float(os.getenv("ARXIV_TIMEOUT", "45"))
-MAX_ATTEMPTS = int(os.getenv("ARXIV_MAX_ATTEMPTS", "6"))
-BASE_PAUSE = float(os.getenv("ARXIV_PAUSE", "1.5"))
-MAX_SLEEP = float(os.getenv("ARXIV_MAX_SLEEP", "20"))
+DEFAULT_TIMEOUT = 45.0
+MAX_ATTEMPTS = 6
+BASE_PAUSE = 1.5
+MAX_SLEEP = 20
 
 RETRYABLE_STATUS = {429, 500, 502, 503, 504}
 
 HEADERS = {
-    "User-Agent": os.getenv(
-        "ARXIV_UA",
-        "paper-tracker/0.1 (+https://github.com/colorfulandcjy0806/Arxiv-tracker)",
-    ),
+    "User-Agent": "paper-tracker/0.1 (+https://github.com/RainerSeventeen/paper-tracker)",
     "Accept": "application/atom+xml,application/xml;q=0.9,*/*;q=0.8",
 }
 
