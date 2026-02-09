@@ -7,12 +7,10 @@ log:
   to_file: true
   dir: log
 
-state:
+storage:
   enabled: true
   content_storage_enabled: true
-
-arxiv:
-  keep_version: false
+  keep_arxiv_version: false
 
 queries:
   - NAME: test_query

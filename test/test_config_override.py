@@ -34,13 +34,11 @@ output:
   base_dir: output
   formats: [console]
 
-state:
+storage:
   enabled: false
   db_path: database/papers.db
   content_storage_enabled: false
-
-arxiv:
-  keep_version: false
+  keep_arxiv_version: false
 
 llm:
   enabled: false

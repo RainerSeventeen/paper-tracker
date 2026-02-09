@@ -38,12 +38,12 @@ def _base_raw_config() -> dict:
                 "paper_template": "paper.html",
             },
         },
-        "state": {
+        "storage": {
             "enabled": True,
             "db_path": "database/papers.db",
             "content_storage_enabled": True,
+            "keep_arxiv_version": False,
         },
-        "arxiv": {"keep_version": False},
         "llm": {
             "enabled": False,
             "provider": "openai-compat",
@@ -87,18 +87,18 @@ class TestConfigLayering(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "search\\.max_lookback_days"):
             parse_config_dict(raw)
 
-    def test_llm_enabled_requires_state_enabled(self) -> None:
+    def test_llm_enabled_requires_storage_enabled(self) -> None:
         raw = _base_raw_config()
         raw["llm"]["enabled"] = True
-        raw["state"]["enabled"] = False
-        with self.assertRaisesRegex(ValueError, "state\\.enabled"):
+        raw["storage"]["enabled"] = False
+        with self.assertRaisesRegex(ValueError, "storage\\.enabled"):
             parse_config_dict(raw)
 
     def test_llm_enabled_requires_content_storage(self) -> None:
         raw = _base_raw_config()
         raw["llm"]["enabled"] = True
-        raw["state"]["content_storage_enabled"] = False
-        with self.assertRaisesRegex(ValueError, "state\\.content_storage_enabled"):
+        raw["storage"]["content_storage_enabled"] = False
+        with self.assertRaisesRegex(ValueError, "storage\\.content_storage_enabled"):
             parse_config_dict(raw)
 
     def test_llm_timeout_type_error_contains_key(self) -> None:

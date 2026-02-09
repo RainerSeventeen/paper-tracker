@@ -71,9 +71,9 @@ def load_config_with_defaults(
 def check_cross_domain(config: AppConfig) -> None:
     """Validate cross-domain constraints."""
     if config.llm.enabled and not config.storage.enabled:
-        raise ValueError("llm.enabled=true requires state.enabled=true")
+        raise ValueError("llm.enabled=true requires storage.enabled=true")
     if config.llm.enabled and not config.storage.content_storage_enabled:
-        raise ValueError("llm.enabled=true requires state.content_storage_enabled=true")
+        raise ValueError("llm.enabled=true requires storage.content_storage_enabled=true")
 
 
 def parse_yaml(text: str) -> dict[str, Any]:
@@ -93,4 +93,3 @@ def merge_config_dicts(base: Mapping[str, Any], override: Mapping[str, Any]) -> 
         else:
             merged[key] = value
     return merged
-

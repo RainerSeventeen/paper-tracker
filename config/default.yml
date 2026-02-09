@@ -8,15 +8,12 @@ log:
   to_file: true
   dir: log
 
-# storage domain - State management (deduplication)
-state:
+# storage domain
+storage:
   enabled: true
   db_path: database/papers.db  # Relative path (from working directory) or absolute path (starts with /)
   content_storage_enabled: true  # save full paper content (default: true)
-
-# storage domain - arXiv behavior
-arxiv:
-  keep_version: false  # false: 2601.21922, true: 2601.21922v1
+  keep_arxiv_version: false  # false: 2601.21922, true: 2601.21922v1
 
 # search domain - Optional global scope applied to every query.
 # Field keys must be uppercase: TITLE/ABSTRACT/AUTHOR/JOURNAL/CATEGORY

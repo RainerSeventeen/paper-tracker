@@ -25,18 +25,27 @@ class StorageConfig:
 
 def load_storage(raw: Mapping[str, Any]) -> StorageConfig:
     """Load storage domain config from raw mapping."""
-    state_section = get_section(raw, "state", required=True)
-    arxiv_section = get_section(raw, "arxiv", required=True)
+    storage_section = get_section(raw, "storage", required=True)
     return StorageConfig(
-        enabled=expect_bool(get_required_value(state_section, "enabled", "state.enabled"), "state.enabled"),
-        db_path=expect_str(get_required_value(state_section, "db_path", "state.db_path"), "state.db_path"),
+        enabled=expect_bool(
+            get_required_value(storage_section, "enabled", "storage.enabled"),
+            "storage.enabled",
+        ),
+        db_path=expect_str(
+            get_required_value(storage_section, "db_path", "storage.db_path"),
+            "storage.db_path",
+        ),
         content_storage_enabled=expect_bool(
-            get_required_value(state_section, "content_storage_enabled", "state.content_storage_enabled"),
-            "state.content_storage_enabled",
+            get_required_value(
+                storage_section, "content_storage_enabled", "storage.content_storage_enabled"
+            ),
+            "storage.content_storage_enabled",
         ),
         keep_arxiv_version=expect_bool(
-            get_required_value(arxiv_section, "keep_version", "arxiv.keep_version"),
-            "arxiv.keep_version",
+            get_required_value(
+                storage_section, "keep_arxiv_version", "storage.keep_arxiv_version"
+            ),
+            "storage.keep_arxiv_version",
         ),
     )
 
@@ -44,5 +53,4 @@ def load_storage(raw: Mapping[str, Any]) -> StorageConfig:
 def check_storage(config: StorageConfig) -> None:
     """Validate storage domain constraints."""
     if not config.db_path.strip():
-        raise ValueError("state.db_path must not be empty")
-
+        raise ValueError("storage.db_path must not be empty")
