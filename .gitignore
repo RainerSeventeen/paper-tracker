@@ -58,6 +58,7 @@ database/
 .env.*
 *.env
 !.env.example
+config/custom.yml
 
 # ---- Agents ----
 .claude/

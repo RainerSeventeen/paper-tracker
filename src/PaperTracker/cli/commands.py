@@ -73,12 +73,12 @@ class SearchCommand:
                 self.content_store.save_papers(papers)
 
             # Generate LLM enrichment.
-            if self.llm_service and self.llm_store and papers:
+            if self.llm_service and papers:
                 log.info("Generating LLM enrichment for %d papers", len(papers))
                 infos = self.llm_service.generate_batch(papers)
 
-                # Save to llm_generated table
-                if infos:
+                # Save to llm_generated table only when LLM store is available.
+                if infos and self.llm_store:
                     self.llm_store.save(infos)
 
                 # Inject enrichment data into paper.extra

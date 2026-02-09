@@ -70,10 +70,8 @@ def load_config_with_defaults(
 
 def check_cross_domain(config: AppConfig) -> None:
     """Validate cross-domain constraints."""
-    if config.llm.enabled and not config.storage.enabled:
-        raise ValueError("llm.enabled=true requires storage.enabled=true")
-    if config.llm.enabled and not config.storage.content_storage_enabled:
-        raise ValueError("llm.enabled=true requires storage.content_storage_enabled=true")
+    # No cross-domain hard constraints at the moment.
+    pass
 
 
 def parse_yaml(text: str) -> dict[str, Any]:

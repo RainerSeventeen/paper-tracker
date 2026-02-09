@@ -87,19 +87,21 @@ class TestConfigLayering(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "search\\.max_lookback_days"):
             parse_config_dict(raw)
 
-    def test_llm_enabled_requires_storage_enabled(self) -> None:
+    def test_llm_enabled_allows_storage_disabled(self) -> None:
         raw = _base_raw_config()
         raw["llm"]["enabled"] = True
         raw["storage"]["enabled"] = False
-        with self.assertRaisesRegex(ValueError, "storage\\.enabled"):
-            parse_config_dict(raw)
+        cfg = parse_config_dict(raw)
+        self.assertTrue(cfg.llm.enabled)
+        self.assertFalse(cfg.storage.enabled)
 
-    def test_llm_enabled_requires_content_storage(self) -> None:
+    def test_llm_enabled_allows_content_storage_disabled(self) -> None:
         raw = _base_raw_config()
         raw["llm"]["enabled"] = True
         raw["storage"]["content_storage_enabled"] = False
-        with self.assertRaisesRegex(ValueError, "storage\\.content_storage_enabled"):
-            parse_config_dict(raw)
+        cfg = parse_config_dict(raw)
+        self.assertTrue(cfg.llm.enabled)
+        self.assertFalse(cfg.storage.content_storage_enabled)
 
     def test_llm_timeout_type_error_contains_key(self) -> None:
         raw = _base_raw_config()

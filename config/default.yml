@@ -1,6 +1,9 @@
 
-# PaperTracker example config.
-# Run: paper-tracker --config config/default.yml search
+# WARNING:
+# Do not edit this default config directly.
+# Copy it to cofig/custom.yml and edit your personal settings there.
+# Run with: paper-tracker --config config/custom.yml search
+
 
 # runtime domain
 log:
@@ -24,31 +27,16 @@ storage:
 #     OR: [cs.CV]
 
 queries:
-  - NAME: 视频及图像压缩
+  - NAME: example
     OR:
-      - Image Compression
-      - Video Compression
-  - NAME: LIC 端到端
-    OR:
-      - Neural Video Compression
-      - Learned Video Compression
-      - End-to-end Video
-  - NAME: 视频质量指标
-    OR:
-      - Video Quality Assessment
-      - Perceptual Quality Assessment
-  - NAME: VSR 视频超分辨率
-    OR:
-      - Video Super Resolution
-      - VSR
-      - Video Restoration
+      - machine learning
 
 search:
-  max_results: 3              # max paper count for each query
+  max_results: 5              # max paper count for each query
 
   # multi round fetch
   pull_every: 7               # Strict time window, unit: day
-  fill_enabled: true         # Allow fill with paper outside the strict time window
+  fill_enabled: true          # Allow fill with paper outside the strict time window
   max_lookback_days: 30       # Max length for fill window, -1 as infinite
   max_fetch_items: 125        # Max count for item tried to fetch at a time, -1 as infinite
   fetch_batch_size: 25        # Fetch count for each round
@@ -56,7 +44,7 @@ search:
 # output domain
 output:
   base_dir: output/              # Output root directory
-  formats: [console, json, markdown, html]             # Output formats: console, json, markdown, html (can select multiple)
+  formats: [console, json]             # Output formats: console, json, markdown, html (can select multiple)
 
   # Markdown export configuration
   markdown:
@@ -73,13 +61,13 @@ output:
 
 # llm domain
 llm:
-  enabled: true                          # Enable/disable LLM translation features
+  enabled: false                          # Enable/disable LLM translation features
   provider: openai-compat                 # Provider type (currently only this)
   api_key_env: LLM_API_KEY                # Environment variable for API key
   timeout: 30                             # Request timeout (seconds)
   target_lang: zh                         # Target language (zh/en/ja/ko/fr/de/es)
   temperature: 0.0                        # Sampling temperature (0.0 = deterministic)
-  max_tokens: 1000                        # Maximum response tokens (increased for summary)
+  max_tokens: 800                         # Maximum response tokens
   max_workers: 3                          # Parallel translation workers
 
   # Feature selection
@@ -88,7 +76,7 @@ llm:
   # 2. Summary only: enable_translation=false, enable_summary=true
   # 3. Both: enable_translation=true, enable_summary=true
   enable_translation: true                # Enable abstract translation
-  enable_summary: true                    # Enable paper summary (TLDR, motivation, method, result, conclusion)
+  enable_summary: false                   # Enable paper summary (TLDR, motivation, method, result, conclusion)
                                           # Default: false (to control API costs)
 
   # Retry configuration (for handling timeouts and transient errors)
@@ -97,11 +85,8 @@ llm:
   retry_max_delay: 10.0                   # Maximum delay between retries (seconds)
   retry_timeout_multiplier: 1.0           # Timeout multiplier per retry (1.0 = no change)
 
-  # base_url: https://api.openai.com        # API base URL
-  # model: gpt-4o-mini                      # Model identifier
-
-  base_url: https://api.deepseek.com
-  model: deepseek-chat
+  base_url: https://api.openai.com        # API base URL
+  model: gpt-4o-mini                      # Model identifier
 # Provider-specific configuration examples:
 #
 # OpenAI GPT-4o-mini (recommended for cost):

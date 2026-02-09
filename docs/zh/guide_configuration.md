@@ -42,7 +42,7 @@ paper-tracker --config custom.yml search
 
 ### 2.1 `log`
 
-- `level`: 控制 CLI 日志等级; 可选值: Python `logging` 标准等级字符串，常用值为 `DEBUG` / `INFO` / `WARNING` / `ERROR` / `CRITICAL`。如果填写未知值，将退回到 `INFO`。
+- `level`: 控制 CLI 日志等级; 可选值: `DEBUG` / `INFO` / `WARNING` / `ERROR` / `CRITICAL`。如果填写未知值会报错。
 
 - `to_file`: 是否同时写入日志文件（除了控制台输出）; 可选值: `true` / `false`。
 
@@ -56,7 +56,7 @@ log:
   dir: log
 ```
 
-### 2.2 `state`（去重与内容存储）
+### 2.2 `storage`（去重与内容存储）
 
 - `enabled`: 启用后会对已见过的论文做去重，避免重复输出; 可选值: `true` / `false`。
 
@@ -64,22 +64,23 @@ log:
 
 - `content_storage_enabled`: 是否保存完整论文内容到数据库（标题、摘要、作者等），用于后续检索与复用; 可选值: `true` / `false`。
 
-示例（`state` 只给一个示例即可）：
+示例（`storage` 只给一个示例即可）：
 ```yml
-state:
+storage:
   enabled: true
   db_path: database/papers.db
   content_storage_enabled: true
+  keep_arxiv_version: false
 ```
 
-### 2.3 `arxiv`
+### 2.3 `storage.keep_arxiv_version`
 
-- `keep_version`: 是否保留 arXiv 论文 ID 的版本后缀; 可选值: `true` / `false`。
+- `storage.keep_arxiv_version`: 是否保留 arXiv 论文 ID 的版本后缀; 可选值: `true` / `false`。
 
-示例（`arxiv` 只给一个示例即可）：
+示例（只给一个示例即可）：
 ```yml
-arxiv:
-  keep_version: false
+storage:
+  keep_arxiv_version: false
 ```
 
 说明：
@@ -179,9 +180,9 @@ search:
 
 - `base_dir`: 输出根目录; 可选值: 任意合法目录路径。相对路径相对于当前工作目录。
 
-- `formats`: 输出格式列表，可同时输出多种格式; 可选值: `console` / `json` / `markdown` 的任意组合（至少一个）。
+- `formats`: 输出格式列表，可同时输出多种格式; 可选值: `console` / `json` / `markdown` / `html` 的任意组合（至少一个）。
 
-- `markdown.template_dir`: Markdown 模板目录; 可选值: 任意合法目录路径；必须位于项目根目录下，否则会报错。
+- `markdown.template_dir`: Markdown 模板目录; 可选值: 任意非空目录路径字符串。
 
 - `markdown.document_template`: 文档级模板文件名（生成整份 Markdown 文档的外层结构）; 可选值: 模板目录中的文件名。
 
@@ -201,7 +202,9 @@ output:
     paper_separator: "\n\n---\n\n"
 ```
 
-说明：只有当 `output.formats` 包含 `markdown` 时，上述 `output.markdown.*` 字段才会生效。
+说明：
+- 只有当 `output.formats` 包含 `markdown` 时，上述 `output.markdown.*` 字段才会生效。
+- 只有当 `output.formats` 包含 `html` 时，`output.html.*` 字段才会生效。
 
 ### 2.8 `llm`
 
