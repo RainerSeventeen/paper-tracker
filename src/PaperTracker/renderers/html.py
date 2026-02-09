@@ -14,12 +14,12 @@ from urllib.parse import urlparse
 from PaperTracker.config import OutputConfig
 from PaperTracker.core.query import SearchQuery
 from PaperTracker.renderers.base import OutputWriter
-from PaperTracker.renderers.markdown import (
+from PaperTracker.renderers.template_utils import (
     OutputError,
     TemplateError,
     TemplateNotFoundError,
-    _load_template,
-    _query_label,
+    load_template,
+    query_label,
 )
 from PaperTracker.renderers.template_renderer import TemplateRenderer
 from PaperTracker.renderers.view_models import PaperView
@@ -86,11 +86,11 @@ class HtmlFileWriter(OutputWriter):
 
         self.template_renderer = TemplateRenderer()
         self.renderer = HtmlRenderer(
-            document_template=_load_template(
+            document_template=load_template(
                 output_config.html_template_dir,
                 output_config.html_document_template,
             ),
-            paper_template=_load_template(
+            paper_template=load_template(
                 output_config.html_template_dir,
                 output_config.html_paper_template,
             ),
@@ -118,9 +118,9 @@ class HtmlFileWriter(OutputWriter):
         if self.timestamp_dt is None:
             self.timestamp_dt = datetime.now()
 
-        query_label = _query_label(query)
-        query_id = self._get_query_id(query_label)
-        section = self.renderer.render_query_section(papers, query_label=query_label, query_id=query_id)
+        label = query_label(query)
+        query_id = self._get_query_id(label)
+        section = self.renderer.render_query_section(papers, query_label=label, query_id=query_id)
         self.pending_sections.append(section)
         self.total_papers += len(papers)
 

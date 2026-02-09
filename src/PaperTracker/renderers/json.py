@@ -115,25 +115,6 @@ class JsonFileWriter(OutputWriter):
         log.info("JSON saved to %s", output_path)
 
 
-def _fields_payload(q: SearchQuery) -> dict[str, dict[str, list[str]]]:
-    """Convert search query fields to payload format.
-
-    Args:
-        q: SearchQuery to convert.
-
-    Returns:
-        Dictionary mapping field names to operator->terms mappings.
-    """
-    return {
-        k: {
-            "AND": list(v.AND),
-            "OR": list(v.OR),
-            "NOT": list(v.NOT),
-        }
-        for k, v in q.fields.items()
-    }
-
-
 def load_json(json_data: dict) -> PaperView:
     """Load a single paper from JSON dict into PaperView.
 
@@ -254,3 +235,22 @@ def load_query_results(filepath: str | Path) -> list[tuple[SearchQuery, list[Pap
              len(results), sum(len(papers) for _, papers in results), path)
 
     return results
+
+
+def _fields_payload(q: SearchQuery) -> dict[str, dict[str, list[str]]]:
+    """Convert search query fields to payload format.
+
+    Args:
+        q: SearchQuery to convert.
+
+    Returns:
+        Dictionary mapping field names to operator->terms mappings.
+    """
+    return {
+        k: {
+            "AND": list(v.AND),
+            "OR": list(v.OR),
+            "NOT": list(v.NOT),
+        }
+        for k, v in q.fields.items()
+    }
