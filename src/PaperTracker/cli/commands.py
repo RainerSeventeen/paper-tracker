@@ -43,20 +43,20 @@ class SearchCommand:
         ArxivSource will handle multi-round fetching with time-based filtering
         and deduplication internally.
         """
-        multiple = len(self.config.queries) > 1
+        multiple = len(self.config.search.queries) > 1
 
-        for idx, query in enumerate(self.config.queries, start=1):
+        for idx, query in enumerate(self.config.search.queries, start=1):
             log.debug(
                 "Running query %d/%d name=%s fields=%s",
                 idx,
-                len(self.config.queries),
+                len(self.config.search.queries),
                 query.name,
                 query.fields,
             )
             if multiple:
-                log.info("=== Query %d/%d ===", idx, len(self.config.queries))
-            if self.config.scope:
-                log.info("scope=%s", self.config.scope.fields)
+                log.info("=== Query %d/%d ===", idx, len(self.config.search.queries))
+            if self.config.search.scope:
+                log.info("scope=%s", self.config.search.scope.fields)
             if query.name:
                 log.info("name=%s", query.name)
             log.info("fields=%s", dict(query.fields))
@@ -87,4 +87,4 @@ class SearchCommand:
             # Map to view models for output
             paper_views = map_papers_to_views(papers)
 
-            self.output_writer.write_query_result(paper_views, query, self.config.scope)
+            self.output_writer.write_query_result(paper_views, query, self.config.search.scope)

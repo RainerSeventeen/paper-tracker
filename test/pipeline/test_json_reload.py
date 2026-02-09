@@ -27,7 +27,7 @@ from PaperTracker.config import OutputConfig
 # ============================================================================
 
 # JSON 输入文件配置
-INPUT_JSON_DIR = "database"  # 存放源 JSON 文件的目录
+INPUT_JSON_DIR = "output/test/json"  # 存放源 JSON 文件的目录
 
 # 输出目录配置
 OUTPUT_BASE_DIR = "output/test/reloaded"  # 重新输出的目录

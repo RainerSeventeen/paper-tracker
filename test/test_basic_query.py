@@ -17,12 +17,12 @@ class TestBasicQueryConfig(unittest.TestCase):
 
         cfg = load_config_with_defaults(config_path, default_path=default_path)
 
-        self.assertEqual(cfg.log_level, "INFO")
+        self.assertEqual(cfg.runtime.level, "INFO")
         self.assertEqual(cfg.search.max_results, 5)
         self.assertEqual(cfg.output.formats, ("json",))
 
-        self.assertEqual(len(cfg.queries), 1)
-        query = cfg.queries[0]
+        self.assertEqual(len(cfg.search.queries), 1)
+        query = cfg.search.queries[0]
         self.assertEqual(query.name, "basic")
         self.assertIn("TEXT", query.fields)
         text_field = query.fields["TEXT"]
