@@ -25,7 +25,18 @@ class RuntimeConfig:
 
 
 def load_runtime(raw: Mapping[str, Any]) -> RuntimeConfig:
-    """Load runtime configuration from raw mapping."""
+    """Load runtime configuration from raw mapping.
+
+    Args:
+        raw: Root configuration mapping.
+
+    Returns:
+        Parsed runtime configuration.
+
+    Raises:
+        TypeError: If config types are invalid.
+        ValueError: If required keys are missing.
+    """
     section = get_section(raw, "log", required=True)
     return RuntimeConfig(
         level=expect_str(get_required_value(section, "level", "log.level"), "log.level").upper(),
@@ -35,9 +46,15 @@ def load_runtime(raw: Mapping[str, Any]) -> RuntimeConfig:
 
 
 def check_runtime(config: RuntimeConfig) -> None:
-    """Validate runtime domain constraints."""
+    """Validate runtime domain constraints.
+
+    Args:
+        config: Parsed runtime configuration.
+
+    Raises:
+        ValueError: If values violate runtime constraints.
+    """
     if config.level not in _ALLOWED_LOG_LEVELS:
         raise ValueError(f"log.level must be one of {sorted(_ALLOWED_LOG_LEVELS)}")
     if not config.dir.strip():
         raise ValueError("log.dir must not be empty")
-

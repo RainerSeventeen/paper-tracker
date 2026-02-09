@@ -38,7 +38,18 @@ class LLMConfig:
 
 
 def load_llm(raw: Mapping[str, Any]) -> LLMConfig:
-    """Load llm domain config from raw mapping."""
+    """Load llm domain config from raw mapping.
+
+    Args:
+        raw: Root configuration mapping.
+
+    Returns:
+        Parsed LLM configuration.
+
+    Raises:
+        TypeError: If config types are invalid.
+        ValueError: If required keys are missing.
+    """
     section = get_section(raw, "llm", required=True)
     return LLMConfig(
         enabled=expect_bool(get_required_value(section, "enabled", "llm.enabled"), "llm.enabled"),
@@ -76,7 +87,14 @@ def load_llm(raw: Mapping[str, Any]) -> LLMConfig:
 
 
 def check_llm(config: LLMConfig) -> None:
-    """Validate llm domain constraints."""
+    """Validate llm domain constraints.
+
+    Args:
+        config: Parsed LLM configuration.
+
+    Raises:
+        ValueError: If values violate LLM constraints.
+    """
     _check_non_empty(config.provider, "llm.provider")
     _check_non_empty(config.base_url, "llm.base_url")
     _check_non_empty(config.model, "llm.model")
@@ -105,4 +123,3 @@ def _check_non_empty(value: str, config_key: str) -> None:
     """Validate non-empty string values."""
     if not value.strip():
         raise ValueError(f"{config_key} must not be empty")
-

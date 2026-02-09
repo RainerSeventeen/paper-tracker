@@ -24,7 +24,18 @@ class StorageConfig:
 
 
 def load_storage(raw: Mapping[str, Any]) -> StorageConfig:
-    """Load storage domain config from raw mapping."""
+    """Load storage domain config from raw mapping.
+
+    Args:
+        raw: Root configuration mapping.
+
+    Returns:
+        Parsed storage configuration.
+
+    Raises:
+        TypeError: If config types are invalid.
+        ValueError: If required keys are missing.
+    """
     storage_section = get_section(raw, "storage", required=True)
     return StorageConfig(
         enabled=expect_bool(
@@ -51,6 +62,13 @@ def load_storage(raw: Mapping[str, Any]) -> StorageConfig:
 
 
 def check_storage(config: StorageConfig) -> None:
-    """Validate storage domain constraints."""
+    """Validate storage domain constraints.
+
+    Args:
+        config: Parsed storage configuration.
+
+    Raises:
+        ValueError: If values violate storage constraints.
+    """
     if not config.db_path.strip():
         raise ValueError("storage.db_path must not be empty")

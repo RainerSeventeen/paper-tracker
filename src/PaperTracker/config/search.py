@@ -34,7 +34,18 @@ class SearchConfig:
 
 
 def load_search(raw: Mapping[str, Any]) -> SearchConfig:
-    """Load search domain config from raw mapping."""
+    """Load search domain config from raw mapping.
+
+    Args:
+        raw: Root configuration mapping.
+
+    Returns:
+        Parsed search configuration.
+
+    Raises:
+        TypeError: If config types are invalid.
+        ValueError: If required keys are missing.
+    """
     scope_obj = raw.get("scope")
     scope = parse_search_query(scope_obj, "scope") if scope_obj is not None else None
 
@@ -69,7 +80,14 @@ def load_search(raw: Mapping[str, Any]) -> SearchConfig:
 
 
 def check_search(config: SearchConfig) -> None:
-    """Validate search domain constraints."""
+    """Validate search domain constraints.
+
+    Args:
+        config: Parsed search configuration.
+
+    Raises:
+        ValueError: If values violate search constraints.
+    """
     if not config.queries:
         raise ValueError("queries must include at least one query")
     if config.max_results <= 0:
@@ -89,7 +107,19 @@ def check_search(config: SearchConfig) -> None:
 
 
 def parse_search_query(value: Any, config_key: str) -> SearchQuery:
-    """Parse a query mapping into SearchQuery."""
+    """Parse a query mapping into ``SearchQuery``.
+
+    Args:
+        value: Query mapping value.
+        config_key: Full key path used in error messages.
+
+    Returns:
+        Parsed query object.
+
+    Raises:
+        TypeError: If query shape/types are invalid.
+        ValueError: If query keys/operators are invalid.
+    """
     if not isinstance(value, Mapping):
         raise TypeError(f"{config_key} must be an object")
 
@@ -119,7 +149,19 @@ def parse_search_query(value: Any, config_key: str) -> SearchQuery:
 
 
 def _parse_field_query(value: Any, config_key: str) -> FieldQuery:
-    """Parse field-level query operators."""
+    """Parse field-level query operators.
+
+    Args:
+        value: Field query mapping.
+        config_key: Full key path used in error messages.
+
+    Returns:
+        Parsed field query object.
+
+    Raises:
+        TypeError: If field query type is invalid.
+        ValueError: If unknown operators exist.
+    """
     if value is None:
         return FieldQuery()
     if not isinstance(value, Mapping):
@@ -136,7 +178,18 @@ def _parse_field_query(value: Any, config_key: str) -> FieldQuery:
 
 
 def _as_terms(value: Any, config_key: str) -> list[str]:
-    """Normalize terms from string/list into stripped list."""
+    """Normalize terms from string/list into stripped list.
+
+    Args:
+        value: Raw terms value.
+        config_key: Full key path used in error messages.
+
+    Returns:
+        Normalized non-empty terms.
+
+    Raises:
+        TypeError: If terms are not a string/list of strings.
+    """
     if value is None:
         return []
     if isinstance(value, str):
@@ -149,4 +202,3 @@ def _as_terms(value: Any, config_key: str) -> list[str]:
         if normalized:
             out.append(normalized)
     return out
-

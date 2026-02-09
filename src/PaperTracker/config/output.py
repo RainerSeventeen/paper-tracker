@@ -32,14 +32,26 @@ class OutputConfig:
 
 
 def load_output(raw: Mapping[str, Any]) -> OutputConfig:
-    """Load output domain config from raw mapping."""
-    section = get_section(raw, "output", required=True)
-    markdown = get_section(section, "markdown", required=False)
-    html = get_section(section, "html", required=False)
+    """Load output domain config from raw mapping.
 
+    Args:
+        raw: Root configuration mapping.
+
+    Returns:
+        Parsed output configuration.
+
+    Raises:
+        TypeError: If config types are invalid.
+        ValueError: If required keys are missing.
+    """
+    section = get_section(raw, "output", required=True)
     formats = tuple(
         item.lower() for item in expect_str_list(get_required_value(section, "formats", "output.formats"), "output.formats")
     )
+
+    markdown = get_section(section, "markdown", required=False) if "markdown" in formats else {}
+    html = get_section(section, "html", required=False) if "html" in formats else {}
+
     return OutputConfig(
         base_dir=expect_str(get_required_value(section, "base_dir", "output.base_dir"), "output.base_dir"),
         formats=formats,
@@ -75,7 +87,14 @@ def load_output(raw: Mapping[str, Any]) -> OutputConfig:
 
 
 def check_output(config: OutputConfig) -> None:
-    """Validate output domain constraints."""
+    """Validate output domain constraints.
+
+    Args:
+        config: Parsed output configuration.
+
+    Raises:
+        ValueError: If values violate output constraints.
+    """
     if not config.base_dir.strip():
         raise ValueError("output.base_dir must not be empty")
     if not config.formats:
@@ -97,7 +116,14 @@ def check_output(config: OutputConfig) -> None:
 
 
 def _check_non_empty(value: str, config_key: str) -> None:
-    """Validate non-empty string values."""
+    """Validate non-empty string values.
+
+    Args:
+        value: Config value.
+        config_key: Full key path used in error messages.
+
+    Raises:
+        ValueError: If string is empty or whitespace-only.
+    """
     if not value.strip():
         raise ValueError(f"{config_key} must not be empty")
-
