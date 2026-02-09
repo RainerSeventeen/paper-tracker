@@ -67,24 +67,24 @@ class SearchCommand:
                 max_results=self.config.search.max_results,
             )
             log.info("Collected %d papers", len(papers))
-
-            # Persist full paper content before rendering outputs.
-            if self.content_store and papers:
-                self.content_store.save_papers(papers)
+            infos = None
 
             # Generate LLM enrichment.
             if self.llm_service and papers:
                 log.info("Generating LLM enrichment for %d papers", len(papers))
                 infos = self.llm_service.generate_batch(papers)
 
-                # Save to llm_generated table only when LLM store is available.
-                if infos and self.llm_store:
-                    self.llm_store.save(infos)
-
                 # Inject enrichment data into paper.extra
                 papers = self.llm_service.enrich_papers(papers, infos)
 
-            # Map to view models for output
+            # Output process
             paper_views = map_papers_to_views(papers)
-
             self.output_writer.write_query_result(paper_views, query, self.config.search.scope)
+
+            # Persist only after output is successfully rendered.
+            if self.content_store and papers:
+                self.content_store.save_papers(papers)
+            if infos and self.llm_store:
+                self.llm_store.save(infos)
+            if self.dedup_store and papers:
+                self.dedup_store.mark_seen(papers)
