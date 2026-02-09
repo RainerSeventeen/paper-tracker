@@ -5,7 +5,6 @@ Calls the arXiv Atom API over HTTP, with retry/backoff and HTTPS→HTTP fallback
 
 from __future__ import annotations
 
-import os
 import random
 import time
 from typing import Optional
@@ -40,6 +39,18 @@ class ArxivApiClient:
     def __init__(self) -> None:
         """Create an arXiv API client backed by a requests session."""
         self._session = requests.Session()
+
+    def close(self) -> None:
+        """Close underlying HTTP session and release pooled connections."""
+        self._session.close()
+
+    def __enter__(self) -> ArxivApiClient:
+        """Enter context manager."""
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        """Exit context manager and close session."""
+        self.close()
 
     def fetch_feed(
         self,
