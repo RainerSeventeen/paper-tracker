@@ -68,7 +68,7 @@ def create_llm_store(
         return None
 
     return LLMGeneratedStore(
-        conn=db_manager.conn,
+        conn=db_manager.get_connection(),
         provider=config.llm.provider,
         model=config.llm.model,
     )
