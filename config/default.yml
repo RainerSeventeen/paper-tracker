@@ -65,7 +65,7 @@ llm:
   provider: openai-compat                 # Provider type (currently only this)
   api_key_env: LLM_API_KEY                # Environment variable for API key
   timeout: 30                             # Request timeout (seconds)
-  target_lang: zh                         # Target language (zh/en/ja/ko/fr/de/es)
+  target_lang: Simplified Chinese         # Target language instruction passed to LLM
   temperature: 0.0                        # Sampling temperature (0.0 = deterministic)
   max_tokens: 800                         # Maximum response tokens
   max_workers: 3                          # Parallel translation workers

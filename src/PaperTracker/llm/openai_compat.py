@@ -28,13 +28,13 @@ class OpenAICompatProvider:
     def translate_abstract(
         self,
         abstract: str,
-        target_lang: str = "zh",
+        target_lang: str = "Simplified Chinese",
     ) -> str:
         """Translate paper abstract.
 
         Args:
             abstract: Paper abstract in English.
-            target_lang: Target language code.
+            target_lang: Target language.
 
         Returns:
             Translated abstract text.
@@ -42,24 +42,13 @@ class OpenAICompatProvider:
         Raises:
             requests.HTTPError: If API request fails.
         """
-        lang_names = {
-            "zh": "Simplified Chinese",
-            "en": "English",
-            "ja": "Japanese",
-            "ko": "Korean",
-            "fr": "French",
-            "de": "German",
-            "es": "Spanish",
-        }
-        lang_name = lang_names.get(target_lang, "Simplified Chinese")
-
         system_prompt = (
             "You are a precise academic translator. "
             "Translate faithfully without adding commentary or changing meaning. "
             "Preserve technical terms and proper nouns."
         )
 
-        user_prompt = f"""Translate the following paper abstract to {lang_name}.
+        user_prompt = f"""Translate the following paper abstract to {target_lang}.
 Return ONLY a JSON object with this exact key:
 {{"summary_translated": "..."}}
 
@@ -95,7 +84,7 @@ Abstract: {abstract}
     def generate_summary(
         self,
         abstract: str,
-        target_lang: str = "en",
+        target_lang: str = "Simplified Chinese",
     ) -> dict[str, str]:
         """Generate structured summary from paper abstract.
 
@@ -109,17 +98,6 @@ Abstract: {abstract}
         Raises:
             requests.HTTPError: If API request fails.
         """
-        lang_names = {
-            "zh": "Simplified Chinese",
-            "en": "English",
-            "ja": "Japanese",
-            "ko": "Korean",
-            "fr": "French",
-            "de": "German",
-            "es": "Spanish",
-        }
-        lang_name = lang_names.get(target_lang, "English")
-
         system_prompt = (
             "You are a professional paper analyst. "
             "You should provide concise, detailed, and precise analysis using correct terminology. "
@@ -131,7 +109,7 @@ Abstract: {abstract}
 Content:
 {abstract}
 
-Your output should be in {lang_name}.
+Your output should be in {target_lang}.
 Return ONLY a JSON object with these exact keys:
 {{
   "tldr": "generate a too long; didn't read summary",
