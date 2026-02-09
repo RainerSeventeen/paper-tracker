@@ -61,9 +61,9 @@ class CommandRunner:
             # Create LLM service if enabled
             llm_service = create_llm_service(self.config)
 
-            # Create LLM store if enabled
+            # Create LLM store only when content persistence is enabled.
             llm_store = None
-            if db_manager and llm_service:
+            if db_manager and llm_service and self.config.storage.content_storage_enabled:
                 llm_store = create_llm_store(db_manager, self.config)
 
             # Create command with dependencies injected

@@ -72,8 +72,9 @@ paper-tracker --config config/custom.yml search
 - `llm.target_lang`: 输出的翻译的目标语言（例如 `zh` ）
 - `llm.enable_translation` / `llm.enable_summary`
 
-依赖关系：
-- 当 `llm.enabled: true` 时，必须同时满足 `storage.enabled: true` 与 `storage.content_storage_enabled: true`。
+落库规则：
+- `llm.enabled: true` 可独立开启，不依赖 `storage` 前置开关。
+- 仅当 `llm.enabled: true` 且 `storage.content_storage_enabled: true` 时，才会写入 LLM 结果到 SQL。
 
 同时需要设置环境变量：`LLM_API_KEY`（或你在 `api_key_env` 中自定义的变量名）。
 

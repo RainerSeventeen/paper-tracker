@@ -62,9 +62,9 @@ def create_llm_store(
         config: Application config.
 
     Returns:
-        LLM store if LLM is enabled, None otherwise.
+        LLM store if LLM and content storage are both enabled, None otherwise.
     """
-    if not config.llm.enabled:
+    if not config.llm.enabled or not config.storage.content_storage_enabled:
         return None
 
     return LLMGeneratedStore(
