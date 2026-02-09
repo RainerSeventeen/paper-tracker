@@ -16,13 +16,13 @@ class LLMProvider(Protocol):
     def translate_abstract(
         self,
         abstract: str,
-        target_lang: str = "zh",
+        target_lang: str = "Simplified Chinese",
     ) -> str:
         """Translate paper abstract.
 
         Args:
             abstract: Paper abstract in English.
-            target_lang: Target language code (zh, en, ja, ko, fr, de, es).
+            target_lang: Target language description (for example, Simplified Chinese).
 
         Returns:
             Translated abstract text.
@@ -35,13 +35,13 @@ class LLMProvider(Protocol):
     def generate_summary(
         self,
         abstract: str,
-        target_lang: str = "en",
+        target_lang: str = "Simplified Chinese",
     ) -> dict[str, str]:
         """Generate structured summary from paper abstract.
 
         Args:
             abstract: Paper abstract in English.
-            target_lang: Target language for summary (en, zh, etc).
+            target_lang: Target language for summary.
 
         Returns:
             Dictionary with keys: tldr, motivation, method, result, conclusion.

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 """LLM domain configuration for enrichment pipeline."""
 
+import os
 from dataclasses import dataclass
 from typing import Any, Mapping
 
@@ -24,6 +25,7 @@ class LLMConfig:
     base_url: str
     model: str
     api_key_env: str
+    api_key: str
     timeout: int
     target_lang: str
     temperature: float
@@ -38,14 +40,27 @@ class LLMConfig:
 
 
 def load_llm(raw: Mapping[str, Any]) -> LLMConfig:
-    """Load llm domain config from raw mapping."""
+    """Load llm domain config from raw mapping.
+
+    Args:
+        raw: Root configuration mapping.
+
+    Returns:
+        Parsed LLM configuration.
+
+    Raises:
+        TypeError: If config types are invalid.
+        ValueError: If required keys are missing.
+    """
     section = get_section(raw, "llm", required=True)
+    api_key_env = expect_str(get_required_value(section, "api_key_env", "llm.api_key_env"), "llm.api_key_env")
     return LLMConfig(
         enabled=expect_bool(get_required_value(section, "enabled", "llm.enabled"), "llm.enabled"),
         provider=expect_str(get_required_value(section, "provider", "llm.provider"), "llm.provider"),
         base_url=expect_str(get_required_value(section, "base_url", "llm.base_url"), "llm.base_url"),
         model=expect_str(get_required_value(section, "model", "llm.model"), "llm.model"),
-        api_key_env=expect_str(get_required_value(section, "api_key_env", "llm.api_key_env"), "llm.api_key_env"),
+        api_key_env=api_key_env,
+        api_key=_load_api_key_from_env(api_key_env),
         timeout=expect_int(get_required_value(section, "timeout", "llm.timeout"), "llm.timeout"),
         target_lang=expect_str(get_required_value(section, "target_lang", "llm.target_lang"), "llm.target_lang"),
         temperature=expect_float(get_required_value(section, "temperature", "llm.temperature"), "llm.temperature"),
@@ -76,12 +91,24 @@ def load_llm(raw: Mapping[str, Any]) -> LLMConfig:
 
 
 def check_llm(config: LLMConfig) -> None:
-    """Validate llm domain constraints."""
+    """Validate llm domain constraints.
+
+    Args:
+        config: Parsed LLM configuration.
+
+    Raises:
+        ValueError: If values violate LLM constraints.
+    """
     _check_non_empty(config.provider, "llm.provider")
     _check_non_empty(config.base_url, "llm.base_url")
     _check_non_empty(config.model, "llm.model")
     _check_non_empty(config.api_key_env, "llm.api_key_env")
     _check_non_empty(config.target_lang, "llm.target_lang")
+    if config.enabled and not config.api_key:
+        raise ValueError(
+            f"LLM enabled but {config.api_key_env} environment variable not set. "
+            "Set it in your .env file or shell environment."
+        )
 
     if config.timeout <= 0:
         raise ValueError("llm.timeout must be positive")
@@ -106,3 +133,7 @@ def _check_non_empty(value: str, config_key: str) -> None:
     if not value.strip():
         raise ValueError(f"{config_key} must not be empty")
 
+
+def _load_api_key_from_env(api_key_env: str) -> str:
+    """Load API key from environment variable."""
+    return os.getenv(api_key_env, "").strip()

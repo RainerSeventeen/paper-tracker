@@ -14,6 +14,7 @@ from typing import Iterable
 
 from PaperTracker.core.query import SearchQuery
 from PaperTracker.renderers.base import OutputWriter
+from PaperTracker.renderers.template_utils import OutputError
 from PaperTracker.renderers.view_models import PaperView
 from PaperTracker.utils.log import log
 
@@ -107,31 +108,19 @@ class JsonFileWriter(OutputWriter):
             action: The CLI command name (used in filename).
         """
         payload = json.dumps(self.all_results, ensure_ascii=False, indent=2)
-        self.output_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            self.output_dir.mkdir(parents=True, exist_ok=True)
+        except OSError as exc:
+            raise OutputError(f"Failed to create output directory: {self.output_dir}") from exc
+
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"{action}_{timestamp}.json"
         output_path = self.output_dir / filename
-        output_path.write_text(payload, encoding="utf-8")
+        try:
+            output_path.write_text(payload, encoding="utf-8")
+        except OSError as exc:
+            raise OutputError(f"Failed to write JSON file: {output_path}") from exc
         log.info("JSON saved to %s", output_path)
-
-
-def _fields_payload(q: SearchQuery) -> dict[str, dict[str, list[str]]]:
-    """Convert search query fields to payload format.
-
-    Args:
-        q: SearchQuery to convert.
-
-    Returns:
-        Dictionary mapping field names to operator->terms mappings.
-    """
-    return {
-        k: {
-            "AND": list(v.AND),
-            "OR": list(v.OR),
-            "NOT": list(v.NOT),
-        }
-        for k, v in q.fields.items()
-    }
 
 
 def load_json(json_data: dict) -> PaperView:
@@ -254,3 +243,22 @@ def load_query_results(filepath: str | Path) -> list[tuple[SearchQuery, list[Pap
              len(results), sum(len(papers) for _, papers in results), path)
 
     return results
+
+
+def _fields_payload(q: SearchQuery) -> dict[str, dict[str, list[str]]]:
+    """Convert search query fields to payload format.
+
+    Args:
+        q: SearchQuery to convert.
+
+    Returns:
+        Dictionary mapping field names to operator->terms mappings.
+    """
+    return {
+        k: {
+            "AND": list(v.AND),
+            "OR": list(v.OR),
+            "NOT": list(v.NOT),
+        }
+        for k, v in q.fields.items()
+    }

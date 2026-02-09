@@ -11,20 +11,13 @@ from PaperTracker.config import OutputConfig
 from PaperTracker.core.query import SearchQuery
 from PaperTracker.renderers.base import OutputWriter
 from PaperTracker.renderers.template_renderer import TemplateRenderer
+from PaperTracker.renderers.template_utils import (
+    OutputError,
+    load_template,
+    query_label,
+)
 from PaperTracker.renderers.view_models import PaperView
 from PaperTracker.utils.log import log
-
-
-class TemplateNotFoundError(FileNotFoundError):
-    """Raised when a template file cannot be found."""
-
-
-class TemplateError(RuntimeError):
-    """Raised when a template cannot be loaded."""
-
-
-class OutputError(RuntimeError):
-    """Raised when output cannot be written."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -94,11 +87,11 @@ class MarkdownFileWriter(OutputWriter):
         self.output_dir = Path(output_config.base_dir) / "markdown"
         self.template_renderer = TemplateRenderer()
         self.renderer = MarkdownRenderer(
-            document_template=_load_template(
+            document_template=load_template(
                 output_config.markdown_template_dir,
                 output_config.markdown_document_template,
             ),
-            paper_template=_load_template(
+            paper_template=load_template(
                 output_config.markdown_template_dir,
                 output_config.markdown_paper_template,
             ),
@@ -125,8 +118,8 @@ class MarkdownFileWriter(OutputWriter):
         if self.timestamp_dt is None:
             self.timestamp_dt = datetime.now()
 
-        query_label = _query_label(query)
-        section = self.renderer.render_query_section(papers, query_label=query_label)
+        label = query_label(query)
+        section = self.renderer.render_query_section(papers, query_label=label)
         self.pending_sections.append(section)
 
     def finalize(self, action: str) -> None:
@@ -148,9 +141,17 @@ class MarkdownFileWriter(OutputWriter):
         query_separator = "\n\n---\n\n"
         all_sections = query_separator.join(self.pending_sections)
 
-        # Build final document
-        document_header = f"# Paper Tracker Report\n\n🕐 **Generated Time**: {timestamp_display}\n\n---\n\n"
-        final_content = document_header + all_sections
+        # Build final document from configured template.
+        final_content = self.template_renderer.render(
+            self.renderer.document_template,
+            {
+                "timestamp": timestamp_display,
+                "query": "all queries",
+                "papers": all_sections,
+                "query_sections": all_sections,
+                "query_count": str(len(self.pending_sections)),
+            },
+        )
 
         try:
             self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -164,34 +165,6 @@ class MarkdownFileWriter(OutputWriter):
         except OSError as exc:
             raise OutputError(f"Failed to write markdown file: {output_path}") from exc
         log.info("Markdown saved to %s", output_path)
-
-
-def _load_template(template_dir: str, filename: str) -> str:
-    """Load a template file from the configured directory."""
-    root = Path.cwd().resolve()
-    base_dir = Path(template_dir)
-    if not base_dir.is_absolute():
-        base_dir = root / base_dir
-    template_path = (base_dir / filename).resolve()
-    try:
-        template_path.relative_to(root)
-    except ValueError as exc:
-        raise TemplateError(f"Template path must be inside project root: {template_path}") from exc
-
-    if not template_path.exists():
-        raise TemplateNotFoundError(f"Template file not found: {template_path}")
-
-    try:
-        return template_path.read_text(encoding="utf-8")
-    except OSError as exc:
-        raise TemplateError(f"Failed to read template: {template_path}") from exc
-
-
-def _query_label(query: SearchQuery) -> str:
-    """Return a human-readable label for the query."""
-    if query.name:
-        return query.name
-    return "query"
 
 
 def _prepare_paper_context(paper: PaperView, paper_number: int) -> Mapping[str, str]:

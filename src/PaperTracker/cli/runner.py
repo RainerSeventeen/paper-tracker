@@ -50,6 +50,7 @@ class CommandRunner:
             log_to_file=self.config.runtime.to_file,
             log_dir=self.config.runtime.dir,
         )
+        search_service = None
         try:
             # Create storage components
             db_manager, dedup_store, content_store = create_storage(self.config)
@@ -89,3 +90,9 @@ class CommandRunner:
         except Exception as e:  # noqa: BLE001 - cli boundary
             log.error("Search failed: %s", e)
             raise click.Abort from e
+        finally:
+            source = getattr(search_service, "source", None)
+            client = getattr(source, "client", None)
+            close_func = getattr(client, "close", None)
+            if callable(close_func):
+                close_func()

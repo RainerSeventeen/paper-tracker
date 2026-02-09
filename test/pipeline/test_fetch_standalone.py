@@ -232,6 +232,10 @@ def main():
             # Render via ConsoleOutputWriter
             console_writer.write_query_result(paper_views, query, config.search.scope)
 
+            # Mark seen only after output is rendered.
+            if dedup_store:
+                dedup_store.mark_seen(results)
+
             all_results.extend(results)
         else:
             print("\nWARN: No papers matched the query")

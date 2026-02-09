@@ -174,10 +174,6 @@ def collect_papers_with_time_filter(
     )
     result = new_items[: policy.max_results]
 
-    if dedup_store and result:
-        dedup_store.mark_seen(result)
-        logger.info("Marked returned papers as seen: %d", len(result))
-
     if len(result) < policy.max_results:
         logger.warning(
             "Target not reached - target: %d, actual: %d (candidates %d, after dedup %d)",
