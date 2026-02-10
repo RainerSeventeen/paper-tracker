@@ -82,9 +82,9 @@ class SearchCommand:
             self.output_writer.write_query_result(paper_views, query, self.config.search.scope)
 
             # Persist only after output is successfully rendered.
+            if self.dedup_store and papers:
+                self.dedup_store.mark_seen(papers)
             if self.content_store and papers:
                 self.content_store.save_papers(papers)
             if infos and self.llm_store:
                 self.llm_store.save(infos)
-            if self.dedup_store and papers:
-                self.dedup_store.mark_seen(papers)
