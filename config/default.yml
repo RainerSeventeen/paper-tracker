@@ -2,7 +2,7 @@
 # WARNING:
 # Do not edit this default config directly.
 # Copy it to cofig/custom.yml and edit your personal settings there.
-# Run with: paper-tracker --config config/custom.yml search
+# Run with: paper-tracker search --config config/custom.yml
 
 
 # runtime domain

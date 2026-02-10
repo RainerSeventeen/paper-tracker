@@ -24,7 +24,7 @@ cp .env.example .env
 **3) 运行**：
 
 ```bash
-paper-tracker --config config/default.yml search
+paper-tracker search --config config/default.yml
 ```
 
 ---
@@ -38,7 +38,7 @@ paper-tracker --config config/default.yml search
 示例：
 
 ```bash
-paper-tracker --config config/custom.yml search
+paper-tracker search --config config/custom.yml
 ```
 
 ---

@@ -1,6 +1,6 @@
 
 # Test configuration with LLM translation enabled
-# Run: paper-tracker --config config/test/llm_enabled.yml search
+# Run: paper-tracker search --config config/test/llm_enabled.yml
 
 log:
   level: DEBUG
