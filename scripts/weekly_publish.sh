@@ -79,6 +79,8 @@ if [ -d output/html/assets ]; then
   cp -R output/html/assets site/assets
 fi
 cp output/html/search_*.html site/archive/
+# Ensure GitHub Pages serves files as plain static content (no Jekyll processing).
+touch site/.nojekyll
 
 # Ensure publish worktree exists.
 # If remote gh-pages exists, attach it; otherwise create a new local branch.
