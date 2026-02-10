@@ -20,6 +20,8 @@ DEFAULT_TIMEOUT = 45.0
 MAX_ATTEMPTS = 6
 BASE_PAUSE = 1.5
 MAX_SLEEP = 20
+TOO_MANY_REQUESTS_BASE_PAUSE = 5.0
+TOO_MANY_REQUESTS_MAX_SLEEP = 120.0
 
 RETRYABLE_STATUS = {429, 500, 502, 503, 504}
 
@@ -133,8 +135,10 @@ class ArxivApiClient:
         """
         timeout = timeout or DEFAULT_TIMEOUT
         last_err: Exception | None = None
+        last_status_code: int | None = None
 
         for attempt in range(1, MAX_ATTEMPTS + 1):
+            last_status_code = None
             try:
                 log.debug("arXiv request attempt %d/%d to %s", attempt, MAX_ATTEMPTS, base_url)
                 resp = self._session.get(base_url, params=params, headers=HEADERS, timeout=timeout)
@@ -153,22 +157,30 @@ class ArxivApiClient:
             except requests.exceptions.HTTPError as e:
                 last_err = e
                 st = getattr(e.response, "status_code", None)
+                last_status_code = st if isinstance(st, int) else None
                 if st not in RETRYABLE_STATUS:
                     break
 
             if attempt < MAX_ATTEMPTS:
                 log.debug("arXiv retrying after attempt %d (error=%s)", attempt, last_err)
-                self._sleep_backoff(attempt)
+                self._sleep_backoff(attempt, status_code=last_status_code)
 
         assert last_err is not None
         raise last_err
 
     @staticmethod
-    def _sleep_backoff(attempt: int) -> None:
-        """Sleep with exponential backoff plus jitter.
+    def _sleep_backoff(attempt: int, *, status_code: int | None = None) -> None:
+        """Sleep with status-aware backoff.
 
         Args:
             attempt: Current attempt index (1-based).
+            status_code: Last HTTP status code when available.
         """
+        if status_code == 429:
+            # arXiv does not provide reliable Retry-After for 429; use fixed exponential backoff.
+            delay = min(TOO_MANY_REQUESTS_BASE_PAUSE * (2 ** (attempt - 1)), TOO_MANY_REQUESTS_MAX_SLEEP)
+            time.sleep(delay)
+            return
+
         delay = min(BASE_PAUSE * (2 ** (attempt - 1)) + random.uniform(0, 0.5), MAX_SLEEP)
         time.sleep(delay)
