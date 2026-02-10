@@ -98,6 +98,7 @@ output:
 
 更多参数请看文档：
 
+- [在线文档](https://rainerseventeen.github.io/paper-tracker/) - 完整文档部署
 - [使用指南](./docs/zh/guide_user.md)
 - [详细参数配置说明](./docs/zh/guide_configuration.md)
 - [arXiv 查询语法说明](./docs/zh/source_arxiv_api_query.md)
