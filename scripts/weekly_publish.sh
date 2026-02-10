@@ -10,6 +10,7 @@ LOG_DIR="${LOG_DIR:-$BASE_DIR/logs}"
 LOCK_FILE="${LOCK_FILE:-$BASE_DIR/weekly_publish.lock}"
 BRANCH_MAIN="${BRANCH_MAIN:-main}"
 BRANCH_PAGES="${BRANCH_PAGES:-gh-pages}"
+SKIP_SEARCH="${SKIP_SEARCH:-0}"
 
 CONFIG_FILE="${CONFIG_FILE:-$REPO_DIR/config/custom.yml}"
 PT_BIN="${PT_BIN:-$REPO_DIR/.venv/bin/paper-tracker}"
@@ -38,25 +39,30 @@ echo "[INFO] start publish: $(date -Is)"
 echo "[INFO] repo_dir=$REPO_DIR"
 echo "[INFO] publish_dir=$PUBLISH_DIR"
 echo "[INFO] config_file=$CONFIG_FILE"
-
-# Fast-fail if runtime prerequisites are missing.
-test -x "$PT_BIN" || {
-  echo "[ERROR] paper-tracker executable not found: $PT_BIN"
-  exit 1
-}
-test -f "$CONFIG_FILE" || {
-  echo "[ERROR] config file not found: $CONFIG_FILE"
-  exit 1
-}
+echo "[INFO] skip_search=$SKIP_SEARCH"
 
 cd "$REPO_DIR"
 "$GIT_BIN" fetch origin
 "$GIT_BIN" checkout "$BRANCH_MAIN"
 "$GIT_BIN" pull --ff-only origin "$BRANCH_MAIN"
 
-# Run search with lower CPU/IO priority to reduce impact on shared hosts.
-"$NICE_BIN" -n 10 "$IONICE_BIN" -c2 -n7 \
-  "$PT_BIN" search --config "$CONFIG_FILE"
+if [ "$SKIP_SEARCH" != "1" ]; then
+  # Fast-fail if runtime prerequisites are missing.
+  test -x "$PT_BIN" || {
+    echo "[ERROR] paper-tracker executable not found: $PT_BIN"
+    exit 1
+  }
+  test -f "$CONFIG_FILE" || {
+    echo "[ERROR] config file not found: $CONFIG_FILE"
+    exit 1
+  }
+
+  # Run search with lower CPU/IO priority to reduce impact on shared hosts.
+  "$NICE_BIN" -n 10 "$IONICE_BIN" -c2 -n7 \
+    "$PT_BIN" search --config "$CONFIG_FILE"
+else
+  echo "[INFO] skip search, publish existing HTML files only"
+fi
 
 # Build deployable site directory from generated HTML artifacts.
 rm -rf site
@@ -85,7 +91,7 @@ if [ ! -e "$PUBLISH_DIR/.git" ]; then
 fi
 
 # Mirror site contents into publish worktree; delete stale files on destination.
-"$RSYNC_BIN" -a --delete site/ "$PUBLISH_DIR/"
+"$RSYNC_BIN" -a --delete --exclude='.git' site/ "$PUBLISH_DIR/"
 
 cd "$PUBLISH_DIR"
 "$GIT_BIN" add -A
