@@ -2,6 +2,8 @@
 
 Paper Tracker 是一个最小化的论文追踪工具，核心目标是基于关键词查询 arXiv，并按配置输出结构化结果，便于持续跟踪新论文。
 
+你可以在这里查看最新一期的抓取内容: [部署发布页](https://rainerseventeen.github.io/paper-tracker/) 
+
 ## 项目定位
 
 - 现有功能：查询 arXiv 并输出结果
