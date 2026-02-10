@@ -29,7 +29,7 @@ cp .env.example .env
 
 **3. 运行**：
 ```bash
-paper-tracker --config config/default.yml search
+paper-tracker search --config config/default.yml
 ```
 
 更多说明见 [使用指南](./docs/zh/guide_user.md)

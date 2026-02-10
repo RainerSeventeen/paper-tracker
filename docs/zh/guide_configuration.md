@@ -31,7 +31,7 @@ queries:
 
 运行：
 ```bash
-paper-tracker --config custom.yml search
+paper-tracker search --config custom.yml
 ```
 
 ---
@@ -291,5 +291,5 @@ LLM_API_KEY=sk-your-actual-api-key-here
 
 临时覆盖示例：
 ```bash
-LLM_API_KEY=sk-temp paper-tracker --config config.yml search
+LLM_API_KEY=sk-temp paper-tracker search --config config.yml
 ```
