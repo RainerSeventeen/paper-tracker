@@ -104,7 +104,7 @@ if "$GIT_BIN" diff --cached --quiet; then
 fi
 
 # Commit as automation identity and publish branch upstream.
-"$GIT_BIN" -c user.name="automation-bot" -c user.email="automation@local" \
+"$GIT_BIN" -c user.name="RainerAutomation" -c user.email="rainer@automation.local" \
   commit -m "docs: weekly publish $(date +%F)"
 "$GIT_BIN" push -u origin "$BRANCH_PAGES"
 
