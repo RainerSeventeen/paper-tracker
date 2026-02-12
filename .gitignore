@@ -61,8 +61,4 @@ database/
 config/custom.yml
 
 # ---- Agents ----
-.claude/
-.codex/
-.ai_docs/
-CLAUDE.md
-AGENTS.md
+.ai_docs/plan

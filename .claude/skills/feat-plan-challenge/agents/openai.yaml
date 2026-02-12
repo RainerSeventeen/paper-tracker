@@ -1,0 +1,4 @@
+interface:
+  display_name: "Feat计划挑战编排"
+  short_description: "主agent协调本地规则生成并挑战计划"
+  default_prompt: "请基于需求执行双subagent计划挑战流程并只上报冲突点"
