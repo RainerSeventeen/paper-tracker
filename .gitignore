@@ -60,9 +60,5 @@ database/
 !.env.example
 config/custom.yml
 
-# ---- Agents ----
-.claude/
-.codex/
-.ai_docs/
-CLAUDE.md
-AGENTS.md
+# ---- Others ---- 
+.ai_docs/plan
