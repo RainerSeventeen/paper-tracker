@@ -60,5 +60,5 @@ database/
 !.env.example
 config/custom.yml
 
-# ---- Agents ----
+# ---- Others ---- 
 .ai_docs/plan

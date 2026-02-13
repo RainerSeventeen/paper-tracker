@@ -9,6 +9,9 @@ description: 当用户提供项目计划文件并希望按计划落地代码时�
 
 将“按计划实现代码 + 规则自修复 + 结构性复审 + 主线程最小汇报”变成固定流程。
 目标是让主线程只承载高价值决策信息，不重复展开实现细节。
+其中：
+- 撰写/实现阶段统一遵守 `.ai_docs/rules/code_rules.md`。
+- 结构性审查阶段统一遵守 `.ai_docs/rules/code_review_structure_rules.md`。
 
 ## Required Inputs
 
@@ -27,6 +30,7 @@ description: 当用户提供项目计划文件并希望按计划落地代码时�
 
 对 `subagent1` 的明确要求：
 - 完整阅读计划文件，不得只读摘要
+- 开始实现前先阅读 `.ai_docs/rules/code_rules.md`，并在整个实现阶段持续遵守
 - 基于计划创建新分支并实现代码改动
 - 分支命名优先遵循计划内约定；若计划未给出，使用 `codex/<feature-summary>`
 - 在实现过程中记录：改动文件、关键设计决策、测试结果
@@ -36,9 +40,10 @@ description: 当用户提供项目计划文件并希望按计划落地代码时�
 ```text
 你负责按计划落地实现，不做结构性审查。请完成：
 1) 读取计划文件：<PLAN_PATH>
-2) 创建并切换新分支（遵循计划命名；无命名时用 codex/<feature-summary>）
-3) 按计划完成代码修改并执行必要测试
-4) 输出：分支名、变更文件列表、测试结果、剩余风险
+2) 阅读并严格遵守 .ai_docs/rules/code_rules.md
+3) 创建并切换新分支（遵循计划命名；无命名时用需要遵守 .ai_docs/rules/git_rules.md）
+4) 按计划完成代码修改并执行必要测试
+5) 输出：分支名、变更文件列表、测试结果、剩余风险
 ```
 
 ### Step 2: Subagent1 self-review by code rules and fix directly
@@ -135,7 +140,8 @@ description: 当用户提供项目计划文件并希望按计划落地代码时�
 
 ## Guardrails
 
+- Step 1 的实现必须以 `.ai_docs/rules/code_rules.md` 为编码准绳，不能跳过。
 - Step 2 必须由 `subagent1` 执行且“发现即修复”，不能跳过。
-- Step 3 必须由独立的 `subagent2` 执行，不能复用 `subagent1` 结论替代。
+- Step 3 必须以 `.ai_docs/rules/code_review_structure_rules.md` 为审查准绳，且由独立的 `subagent2` 执行，不能复用 `subagent1` 结论替代。
 - 主agent最终输出不得混入实现细节、风格性意见、或非结构问题。
 - 若 Step 3 证据不足，标记为“待确认”，不得伪造确定性结论。

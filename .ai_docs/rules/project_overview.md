@@ -1,222 +1,113 @@
-# Paper Tracker - Project Overview
+# Paper Tracker 项目概览（当前实现）
 
-## Project Identity
+## 项目定位
 
-Paper Tracker is a minimal arXiv paper tracking tool refactored from scratch, focused on keyword-based search and clean output.
+Paper Tracker 是一个最小化论文追踪工具：根据配置中的关键词查询 arXiv API，按配置输出论文列表，并可选进行去重持久化与 LLM 增强。
 
-## Architecture Layers
+## 真实入口与主调用链
 
-The codebase follows a four-layer design pattern:
+当前代码入口链路如下：
 
-### 1. CLI Layer (`cli/` package)
-
-Refactored in v0.1.1+ with dependency injection and factory pattern:
-
-- **`ui.py`**: Click command definitions (thin entry points)
-- **`runner.py`**: Component orchestration and resource lifecycle management
-- **`commands.py`**: Business logic containers (e.g., `SearchCommand`)
-- **`factories.py`**: Component factories (ServiceFactory, StorageFactory, OutputFactory)
-- **`output.py`**: Output abstraction via `OutputWriter` Protocol
-
-**Execution Flow**:
-```
-main() → cli() → search_cmd() → CommandRunner.run_search()
-  ├─ create_search_service() → PaperSearchService
-  ├─ create_storage() → (DatabaseManager, DeduplicateStore, ContentStore)
-  ├─ create_output_writer() → OutputWriter (Console or JsonFile)
-  └─ SearchCommand.execute() + writer.finalize()
+```text
+src/PaperTracker/__main__.py
+  -> PaperTracker.cli.main()
+  -> cli.ui: cli()/search_cmd()
+  -> CommandRunner.run_search(action)
+  -> SearchCommand.execute()
 ```
 
-### 2. Configuration Layer (`config/` package)
+`SearchCommand.execute()` 的每轮查询流程：
 
-- **`config/app.py`**: Root orchestration (`load_config*`, `parse_config_dict`, cross-domain checks)
-- **Domain modules**: `runtime.py`, `search.py`, `storage.py`, `output.py`, `llm.py`
-- **`AppConfig`**: Root dataclass composed of domain configs
-- **`SearchQuery`**: Structured queries with multiple `FieldQuery` objects
-
-**Constraint**: YAML files must use spaces only (no tabs).
-
-### 3. Query Compiler (`sources/arxiv/query.py`)
-
-Translates structured `SearchQuery` into arXiv Atom API query strings:
-
-- **Field Mappings**:
-  - `TEXT` → `(ti OR abs)`
-  - `TITLE` → `ti`
-  - `ABSTRACT` → `abs`
-  - `AUTHOR` → `au`
-  - `CATEGORY` → `cat`
-  - `JOURNAL` → `(jr OR co)` (best-effort)
-
-- **Auto-expansion**: Generates space/hyphen variants (e.g., "neural network" → "neural network" OR "neural-network")
-
-### 4. Data Source Layer (`sources/arxiv/`)
-
-- **`client.py`**: HTTP client with HTTPS→HTTP fallback and exponential backoff retry
-- **`parser.py`**: Parses Atom XML responses into `Paper` objects
-- **`source.py`**: Wraps client/parser as `ArxivSource`
-
-## Optional Features
-
-### State Management
-
-Enabled via `state.enabled: true`:
-- Uses SQLite to track seen papers (`storage/deduplicate.py`)
-- Auto-filters duplicates, outputs only new papers
-- Database schema: `papers` (metadata) + `paper_content` (full text)
-
-### LLM Translation (NEW in v0.1.0+)
-
-Enabled via `llm.enabled: true` + `state.content_storage_enabled: true`:
-
-**Architecture**:
-```
-src/PaperTracker/llm/
-├── __init__.py           # Factory: create_llm_service()
-├── provider.py           # Protocol: LLMProvider
-├── client.py             # LLMApiClient (HTTP client)
-├── openai_compat.py      # OpenAICompatProvider implementation
-└── service.py            # LLMService (high-level orchestration)
+```text
+SearchService.search(query)
+  -> ArxivSource.search(...)
+  -> collect_papers_with_time_filter(...)
+  -> map_papers_to_views(...)
+  -> output_writer.write_query_result(...)
+  -> dedup_store.mark_seen(...) / content_store.save_papers(...) / llm_store.save(...)
 ```
 
-**Workflow**:
-1. Search papers from arXiv
-2. Filter new papers (deduplication)
-3. Translate new papers' summaries via LLM
-4. Store papers with translations in database
-5. Output results (console or JSON)
+## 模块分层（按代码现状）
 
-**Configuration**:
-```yaml
-llm:
-  enabled: true
-  provider: openai-compat  # Currently only this provider supported
-  base_url: https://api.openai.com  # Any OpenAI-compatible endpoint
-  model: gpt-4o-mini
-  api_key_env: OPENAI_API_KEY
-  timeout: 30
-  target_lang: zh  # Supported: zh, en, ja, ko, fr, de, es
-```
+### 1. CLI 层（`src/PaperTracker/cli/`）
 
-**Output**:
-- **Text format**: Displays translated summary under "摘要(翻译):"
-- **JSON format**: Adds `extra.translation.summary_translated` field
+- `ui.py`：Click 命令定义，`search` 命令加载配置并调用 runner。
+- `runner.py`：生命周期编排（日志、依赖创建、异常边界、资源回收）。
+- `commands.py`：命令业务逻辑（`SearchCommand`）。
+- `__init__.py`：导出 `main()` 给 `__main__.py` 与 console script 使用。
 
-## Output Behavior
+### 2. 配置层（`src/PaperTracker/config/`）
 
-- **`text` format**: Outputs to console via logging system
-- **`json` format**: Writes to `<output_dir>/<action>_<timestamp>.json`
+- 根配置：`AppConfig(runtime/search/output/storage/llm)`。
+- 入口：`load_config_with_defaults()`，以 `config/default.yml` 为基线并深度合并覆盖配置。
+- 查询 DSL：`SearchQuery` + `FieldQuery`，支持 `scope` + `queries`。
 
-## Data Flow
+### 3. 服务与数据源层（`services/` + `sources/arxiv/`）
 
-```
-YAML Config → AppConfig → SearchQuery
-  ↓
-ArxivSource.search() → Query Compiler → API Request
-  ↓
-XML Response → Parser → Paper[]
-  ↓
-(Optional) LLMService.translate_batch() → Add translations
-  ↓
-(Optional) DeduplicateStore.filter_new() → New Papers
-  ↓
-OutputWriter.write_query_result() → Console/File
-```
+- `PaperSearchService`：对上提供稳定 `search()` 接口。
+- `ArxivSource`：组合 query 编译、分页拉取、解析与策略过滤。
+- `collect_papers_with_time_filter()`：按时间窗口与策略分页抓取，并在抓取阶段执行去重过滤。
+- `query.py`：将 `SearchQuery` 编译为 arXiv `search_query`（`TEXT/TITLE/ABSTRACT/AUTHOR/CATEGORY/JOURNAL` 映射）。
 
-## Design Principles
+### 4. 输出层（`src/PaperTracker/renderers/`）
 
-### Protocol-Based Abstractions
+- 抽象：`OutputWriter`。
+- 聚合：`MultiOutputWriter`（一次运行可并行写多个输出格式）。
+- 实现：`console`、`json`、`markdown`、`html`。
+- 工厂：`create_output_writer(config)` 按 `output.formats` 组装 writer 列表。
 
-- **`OutputWriter` Protocol** (`renderers/base.py`): Enables pluggable output formats
-  - Implementations: `ConsoleOutputWriter`, `JsonFileWriter`
-  - Extend by: Create new class implementing protocol → Update `create_output_writer()` factory
+### 5. 存储层（`src/PaperTracker/storage/`）
 
-- **`LLMProvider` Protocol** (`llm/provider.py`): Enables pluggable LLM backends
-  - Implementations: `OpenAICompatProvider`
-  - Future: Anthropic, Google, local models
+- `create_storage()`：根据 `storage.enabled` 创建数据库组件。
+- `SqliteDeduplicateStore`：`seen_papers` 去重状态。
+- `PaperContentStore`：`paper_content` 论文内容快照。
+- `LLMGeneratedStore`：`llm_generated` LLM 生成结果。
 
-### Factory Pattern
+### 6. LLM 层（`src/PaperTracker/llm/`）
 
-All component creation happens in module-level `__init__.py` factories:
+- `create_llm_service()`：按配置创建 provider + service。
+- `LLMService`：并发批处理，支持“仅翻译 / 仅总结 / 两者都启用”。
+- `LLMProvider`：provider 协议，目前实现为 `openai-compat`。
 
-- `services/__init__.py`: `create_search_service(config)`
-- `storage/__init__.py`: `create_storage(config)`
-- `renderers/__init__.py`: `create_output_writer(config)`
-- `llm/__init__.py`: `create_llm_service(config)`
+## 当前关键配置字段（以代码为准）
 
-**Benefit**: Decouples creation logic from usage; easy to swap implementations.
+- 存储域使用 `storage.*`（不是旧的 `state.*`）：
+  - `storage.enabled`
+  - `storage.db_path`
+  - `storage.content_storage_enabled`
+  - `storage.keep_arxiv_version`
+- 输出域使用 `output.formats` 多选：`console/json/markdown/html`。
+- LLM 域关键字段：
+  - `llm.enabled` / `llm.provider` / `llm.base_url` / `llm.model`
+  - `llm.api_key_env`（默认示例是 `LLM_API_KEY`）
+  - `llm.enable_translation` / `llm.enable_summary`
 
-### Dependency Injection
+## 数据结构与字段约定
 
-`SearchCommand` receives all dependencies via constructor:
+- `SearchQuery`：`name + fields`，`fields` 的 value 为 `FieldQuery(AND/OR/NOT)`。
+- `Paper`：统一论文模型，含 `extra` 扩展字段（只读映射）。
+- `LLMGeneratedInfo`：LLM 增强结构（翻译 + summary 五元组）。
 
-```python
-@dataclass(slots=True)
-class SearchCommand:
-    config: AppConfig
-    search_service: PaperSearchService
-    dedup_store: SqliteDeduplicateStore | None
-    content_store: PaperContentStore | None
-    llm_service: LLMService | None
-    output_writer: OutputWriter
-```
+LLM 增强在内存中写入 `Paper.extra` 的约定：
 
-**Benefit**: Zero side effects; fully testable with mocks.
+- `extra.translation.summary_translated`
+- `extra.translation.language`
+- `extra.summary.tldr|motivation|method|result|conclusion`
 
-## Extension Points
+JSON 输出（`renderers/json.py`）会将上述信息映射为顶层字段：
 
-### Add New Output Format (e.g., CSV)
+- `abstract_translation`
+- `summary.{tldr,motivation,method,result,conclusion}`
 
-1. Create `renderers/csv.py` implementing `OutputWriter`
-2. Update `create_output_writer()` in `renderers/__init__.py`
-3. Use in config: `output.format: csv`
+## 存储表结构（SQLite）
 
-### Add New Command (e.g., `export`)
+由 `storage/db.py:init_schema()` 初始化三张主表：
 
-1. Create `ExportCommand` in `commands.py`
-2. Add `run_export()` method in `runner.py`
-3. Add `@cli.command("export")` in `ui.py`
+- `seen_papers`：去重主表（source/source_id 唯一）。
+- `paper_content`：论文内容快照，关联 `seen_papers`。
+- `llm_generated`：LLM 结果，关联 `paper_content`。
 
-### Add New Data Source (e.g., Google Scholar)
+## 事实边界说明
 
-1. Create `sources/scholar/` with client/parser/source
-2. Update `create_search_service()` in `services/__init__.py`
-3. Add `source_type` field to `AppConfig`
-
-### Add New LLM Provider (e.g., Anthropic)
-
-1. Create `llm/anthropic.py` implementing `LLMProvider`
-2. Update `create_llm_service()` in `llm/__init__.py`
-3. Use in config: `llm.provider: anthropic`
-
-## Error Handling
-
-- **LLM Translation**: Single paper failures don't stop batch; failed papers returned without translation
-- **API Failures**: Exponential backoff retry (3 attempts) with timeout
-- **Database Errors**: Managed in `DatabaseManager` context manager
-- **CLI Errors**: Caught in `CommandRunner.run_search()` and converted to `click.Abort`
-
-## Testing Strategy
-
-- Test configs: `config/test/`
-- Test scripts: `test/test_*.py`
-- Run all tests: `python -m unittest discover -s test -p "test_*.py"`
-
-## Key Files to Understand
-
-1. **`cli/runner.py`**: Execution orchestration (start here)
-2. **`config/app.py`**: Configuration assembly entrypoint
-3. **`sources/arxiv/query.py`**: Query compilation logic
-4. **`services/search.py`**: Core search business logic
-5. **`llm/service.py`**: LLM translation orchestration
-6. **`renderers/base.py`**: Output abstraction
-
-## Current Status (v0.1.0)
-
-Working features:
-- ✅ arXiv keyword search
-- ✅ Query compilation with field mapping
-- ✅ Console and JSON output
-- ✅ State management (deduplication)
-- ✅ LLM translation (OpenAI-compatible APIs)
-- ✅ Content storage (abstracts + translations)
+本文件只描述“当前实现事实与调用链”，不作为编码规范文档。
+如代码与本文冲突，以代码为准，并应同步更新本文档。

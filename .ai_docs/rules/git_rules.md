@@ -1,11 +1,11 @@
 # Git Communication Rules
 
-- Git-related communication (PRs, commits, etc.) must be in English.
+- Git-related communication (PRs, commits, etc.) should be in English.
 
-## PR Summary Format (Derived from PR #5)
+## PR Summary Format
 
-- **Title line**: `<type>(<scope>): <short description> (no-changelog) #<id>`
-- **Sections**: `Summary`, `Changes`, `How to Test`, `Notes`
+- **Title line (recommended)**: `<type>(<scope>): <short description> (no-changelog) #<id>`
+- **Sections (recommended)**: `Summary`, `Changes`, `Test`, `Notes`
 - **Style**:
   - Use concise, factual sentences.
   - Changes listed as bullets with clear file/module names.
@@ -23,6 +23,9 @@
 ### Changes
 - <change 1>
 - <change 2>
+
+### Test
+- <test command / verification>
 
 ### Notes
 - <design/architecture note>

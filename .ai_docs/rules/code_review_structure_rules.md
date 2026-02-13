@@ -76,9 +76,8 @@
 
 ### 4) 工程规范一致性
 
-- 绝对导入与导入顺序符合项目规则：`*.py` 首行为模块 docstring，其后是 `from __future__ import annotations`，再后是标准库、第三方、本地模块导入。
-- `src` 下函数都有 Google 风格 docstring，文件头说明存在且为英文。
-- 函数/方法顺序遵守“公共接口在前，内部协作函数在后，下划线工具函数最后”。
+- 本项只检查“是否遵守编码规范”，不在本文重复定义细则。
+- 所有编码细则（导入顺序、docstring 策略、函数组织、CLI 约束等）统一以 `.ai_docs/rules/code_rules.md` 为唯一来源。
 
 ### 5) 副作用与资源生命周期可控
 
@@ -129,9 +128,9 @@
 - 影响：对维护、扩展、测试或稳定性的影响。
 - 建议：最小改动修复方案。
 
-## 与现有规则的关系
+## 与现有规则的关系（收敛说明）
 
 - 本文档聚焦“结构审查流程与判定标准”。
-- 编码细则（导入、docstring、函数顺序等）以 `.ai_docs/rules/code_rules.md` 为准。
+- `code_*` 中的“编码要求”已收敛到 `.ai_docs/rules/code_rules.md`，本文不再重复编码条款。
 - 架构分层认知以 `.ai_docs/rules/project_overview.md` 为准。
 - 测试执行与范围以 `.ai_docs/rules/testing_rules.md` 为准。

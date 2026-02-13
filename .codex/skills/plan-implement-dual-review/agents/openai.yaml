@@ -1,4 +1,4 @@
 interface:
-  display_name: "计划落地双审查编排"
+  display_name: "plan-implement"
   short_description: "主agent协调按计划实现并执行双重代码审查全流程"
-  default_prompt: "读取计划文件后，协调subagent完成实现、自修复和结构审查，仅向用户汇报结构性问题"
+  default_prompt: "读取计划文件后，协调subagent完成实现、自修复和结构审查：实现与自修复阶段严格遵守 .ai_docs/rules/code_rules.md，结构审查阶段严格遵守 .ai_docs/rules/code_review_structure_rules.md，主agent仅向用户汇报结构性问题"
