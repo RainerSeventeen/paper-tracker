@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Paper Tracker 是一个从零重构的最小化论文追踪工具,核心功能是根据关键词查询 arXiv API 并输出论文列表.
+Paper Tracker 是一个从零重构的最小化论文追踪工具,核心功能是根据关键词查询 arXiv API 并输出论文列表。
 
 ## 开发命令
 
@@ -41,14 +41,24 @@ python -m unittest discover -s test -p "test_*.py"
 
 - 如果你的工作涉及到了下面的模块, 可以阅读以下文档
 
-### 项目架构
+### 规则索引（按路径导入）
 
-- 如果你需要详细了解项目的架构, 阅读 `.ai_docs/rules/project_overview.md`
+- 项目架构与调用链: `.ai_docs/rules/project_overview.md`
+- 编码与实现规范（唯一编码规则来源）: `.ai_docs/rules/code_rules.md`
+- 测试策略与测试范围: `.ai_docs/rules/testing_rules.md`
+- 代码结构审查流程与分级标准: `.ai_docs/rules/code_review_structure_rules.md`
+- Git 沟通与 PR 摘要格式: `.ai_docs/rules/git_rules.md`
 
 ### 撰写新功能
 
 - 注意: 当前位于开发阶段, 不用保留前向兼容性, 保证代码逻辑最优即可
 - 撰写新功能, 或者代码时, 阅读 `.ai_docs/rules/code_rules.md`, 遵守其中的约定
+- 涉及测试设计与是否补测时, 阅读 `.ai_docs/rules/testing_rules.md`
+
+### 代码评审
+
+- 做结构性评审时, 阅读 `.ai_docs/rules/code_review_structure_rules.md`
+- 评审中的编码细则统一以 `.ai_docs/rules/code_rules.md` 为准
 
 ### git 操作
 
