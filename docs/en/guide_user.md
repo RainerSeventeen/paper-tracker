@@ -71,7 +71,7 @@ paper-tracker search --config config/custom.yml
 - `llm.api_key_env`: API KEY environment variable, which is the value set in `.env` (default `LLM_API_KEY`)
 - `llm.base_url`: URL provided by the LLM service provider
 - `llm.model`: Model name from the LLM service provider
-- `llm.target_lang`: Target language for translation output (e.g., `zh`)
+- `llm.target_lang`: Target language for translation/summary output (prefer full names, for example `Simplified Chinese`)
 - `llm.enable_translation` / `llm.enable_summary`
 
 Storage rules:
@@ -135,7 +135,7 @@ llm:
   api_key_env: LLM_API_KEY
   base_url: https://api.openai.com/v1
   model: gpt-4o-mini
-  target_lang: zh
+  target_lang: Simplified Chinese
   enable_translation: true
   enable_summary: false
 ```
@@ -175,7 +175,7 @@ output:
 #   api_key_env: LLM_API_KEY
 #   base_url: https://api.openai.com/v1
 #   model: gpt-4o-mini
-#   target_lang: zh
+#   target_lang: Simplified Chinese
 #   enable_translation: true
 #   enable_summary: false
 ```

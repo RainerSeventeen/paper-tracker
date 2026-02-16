@@ -222,7 +222,7 @@ Explanation:
 
 - `timeout`: Single request timeout (seconds); Optional values: Integer, recommended greater than 0.
 
-- `target_lang`: Target language for translation and summary output; Optional values: Any language identifier string. Recommended: `zh` / `en` / `ja` / `ko` / `fr` / `de` / `es`, etc.
+- `target_lang`: Target language for translation and summary output; Optional values: Any non-empty language description string. Prefer full names, for example `Simplified Chinese` / `English` / `Japanese`.
 
 - `temperature`: Sampling temperature, affects output randomness; Optional values: Float, commonly `0.0` ~ `2.0`.
 
@@ -251,7 +251,7 @@ llm:
   model: gpt-4o-mini
   api_key_env: LLM_API_KEY
   timeout: 30
-  target_lang: zh
+  target_lang: Simplified Chinese
   temperature: 0.2
   max_tokens: 1000
   max_workers: 3

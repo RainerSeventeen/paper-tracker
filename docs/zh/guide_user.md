@@ -69,7 +69,7 @@ paper-tracker search --config config/custom.yml
 - `llm.api_key_env`: API KEY 环境变量, 就是 `.env` 中设置的值（默认 `LLM_API_KEY`）
 - `llm.base_url`: llm 服务商提供的链接
 - `llm.model`: llm 服务商的模型
-- `llm.target_lang`: 输出的翻译的目标语言（例如 `zh` ）
+- `llm.target_lang`: 输出的翻译/摘要目标语言（建议使用全称，例如 `Simplified Chinese`）
 - `llm.enable_translation` / `llm.enable_summary`
 
 落库规则：
@@ -133,7 +133,7 @@ llm:
   api_key_env: LLM_API_KEY
   base_url: https://api.openai.com/v1
   model: gpt-4o-mini
-  target_lang: zh
+  target_lang: Simplified Chinese
   enable_translation: true
   enable_summary: false
 ```
@@ -173,7 +173,7 @@ output:
 #   api_key_env: LLM_API_KEY
 #   base_url: https://api.openai.com/v1
 #   model: gpt-4o-mini
-#   target_lang: zh
+#   target_lang: Simplified Chinese
 #   enable_translation: true
 #   enable_summary: false
 ```
