@@ -1,7 +1,5 @@
 # Paper Tracker
 
-> The following content was translated using a large language model (LLM)
-
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 [![Version](https://img.shields.io/badge/version-0.1.0-orange.svg)](https://github.com/rainerseventeen/paper-tracker/releases)
@@ -11,39 +9,36 @@
 
 **English | [中文](./README.md)**
 
-Paper Tracker is a minimal paper tracking tool with the core goal of querying arXiv based on keywords and outputting structured results according to configuration, making it easy to continuously track new papers.
+Paper Tracker is a minimal paper tracking tool. Its core goal is to query arXiv based on keywords (with more sources planned in the future) and output structured results according to configuration, so you can continuously track new papers.
 
-**If this project is helpful to you, please consider giving it a Star ⭐, thank you!**
+**If this project helps you, please consider giving it a Star ⭐. Thank you!**
 
-## ✨ Demo
+## Demo
 
-View the actual running results: [📄 Deployment Release Page](https://rainerseventeen.github.io/paper-tracker/)
+See the live result: [📄 Deployment Page](https://rainerseventeen.github.io/paper-tracker/)
 
 ![HTML Output Preview](./docs/assets/html_output_preview.png)
 
-This page showcases automatically fetched and generated paper lists based on configuration files, including:
-- 🔍 Latest papers filtered by keywords
-- 📋 Structured paper information (title, authors, abstract, links)
-- 🤖 Optional LLM-enhanced abstracts (if enabled)
+## Implemented Features
 
-## 📦 Implemented Features
+- 🔍 **Query and Filtering**:
+  - Query papers via the arXiv API
+  - Field-based search: `TITLE`, `ABSTRACT`, `AUTHOR`, `JOURNAL`, `CATEGORY`
+  - Logical operators: `AND`, `OR`, `NOT`
+  - Global `scope` support (applies to all queries)
+- 🧲 **Fetch Strategy**: Supports fetching older papers to fill the target paper count
 
-- 🔍 **Query & Filtering**:
-  - Query papers based on arXiv API
-  - Support field-specific retrieval: `TITLE`, `ABSTRACT`, `AUTHOR`, `JOURNAL`, `CATEGORY`
-  - Support logical operations: `AND`, `OR`, `NOT`
-  - Support global `scope` (applies to all queries)
-- 📥 **Fetch Strategy**: Support fetching older papers to complete the target paper count
+- 🗃️ **Deduplication and Storage**: SQLite-based deduplication, and stores paper content for later lookup
 
-- 💾 **Deduplication & Storage**: SQLite deduplication functionality, and paper content storage for future queries
+- 📤 **Output Capabilities**: Supports `json`, `markdown`, `html` output formats, and template replacement
 
-- 📤 **Output Capabilities**: Support output formats like `json`, `markdown`, `html`, support template replacement
-- 🤖 **LLM Enhancement**: Support OpenAI-compatible API calls, including abstract translation and structured summary support
-- 🌐 **Configurable Output Language**: You can customize translation/summary output language via `llm.target_lang` (for example `Simplified Chinese`, `English`, `Japanese`)
+- 🤖 **LLM Enhancement**: Supports OpenAI-compatible API calls, including abstract translation and structured summaries
 
-## 🚀 Quick Start
+- 🌐 **Configurable Output Language**: Customize translation and summary output language with `llm.target_lang` (e.g. `Simplified Chinese`, `English`, `Japanese`)
 
-It is recommended to use a virtual environment (e.g., `.venv/`):
+## Quick Start
+
+Using a virtual environment is recommended (e.g. `.venv/`):
 ```bash
 python3 -m venv .venv
 ```
@@ -54,46 +49,46 @@ python -m pip install -e .
 
 ### (Optional) Configure API Environment Variables
 
-If LLM summarization is enabled, you need to configure environment variables:
+If LLM summaries are enabled, configure environment variables:
 
 ```bash
 cp .env.example .env
 # Edit .env and fill in your LLM_API_KEY
 ```
 
-### Run Command
+### Run
 
 ```bash
 paper-tracker search --config config/default.yml
 ```
 
-## ⚙️ Custom Configuration
+## Custom Configuration
 
-> Note: The project first reads the default configuration from `config/default.yml`, then reads the file at the `--config` parameter path to override the defaults, so please do not modify `default.yml`
+> Note: The project first loads default settings from `config/default.yml`, then loads the file specified by `--config` to override defaults. So please do not modify `default.yml`.
 
 ```bash
-# Create a custom configuration file
+# Create a custom config file
 cp config/default.yml config/custom.yml
 ```
-After modifying config/custom.yml for your personal settings, execute:
+After editing `config/custom.yml` with your personal settings, run:
 
 ```bash
 paper-tracker search --config config/custom.yml
 ```
 
-You need to pay attention to at least two items:
+At minimum, pay attention to these two fields:
 
-- 🔎 `queries`: Set at least one custom query request scheme
-- 📤 `output.formats`: At least 1 output format
+- `queries`: configure at least one custom query plan
+- `output.formats`: configure at least one output format
 
-📚 Detailed guides can be found in the documentation:
+📚 Detailed docs:
 - [📖 User Guide](./docs/en/guide_user.md)
 
-- [⚙️ Detailed Parameter Configuration](./docs/en/guide_configuration.md)
+- [⚙️ Detailed Configuration Reference](./docs/en/guide_configuration.md)
 
 - [🔍 arXiv Query Syntax](./docs/en/source_arxiv_api_query.md)
 
-## Updates
+## Update
 
 To update to the latest version:
 
@@ -105,15 +100,15 @@ python -m pip install -e . --upgrade
 
 ## Feedback
 
-If you encounter any issues or have feature suggestions, please submit them at [GitHub Issues](https://github.com/rainerseventeen/paper-tracker/issues).
+If you encounter issues or have feature suggestions, please open an issue at [GitHub Issues](https://github.com/rainerseventeen/paper-tracker/issues).
 
-Please provide log information from the run (default in the `log/` directory).
+Please include runtime logs (default location: `log/`).
 
 ## License
 
 This project is licensed under the [MIT License](./LICENSE).
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 This repository is an independent implementation, inspired by the functional ideas of the following projects:
 

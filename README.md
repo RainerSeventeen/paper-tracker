@@ -13,33 +13,30 @@ Paper Tracker 是一个最小化的论文追踪工具，核心目标是基于关
 
 **如果该项目对你有帮助, 请麻烦点一个 Star ⭐, 谢谢!**
 
-## ✨ 效果展示
+## 效果展示
 
 查看实际运行效果：[📄 部署发布页](https://rainerseventeen.github.io/paper-tracker/)
 
 ![HTML 输出结果演示](./docs/assets/html_output_preview.png)
 
-该页面展示了基于配置文件自动抓取并生成的论文列表，包含：
-- 🔍 按关键词筛选的最新论文
-- 📋 结构化的论文信息（标题、作者、摘要、链接）
-- 🤖 可选的 LLM 增强摘要（如启用）
+## 已实现功能
 
-## 📦 已实现功能
-
-- 🔍 **查询与筛选**: 
+- 🔍 **查询与筛选**:
   - 基于 arXiv API 查询论文
   - 支持字段化检索：`TITLE`、`ABSTRACT`、`AUTHOR`、`JOURNAL`、`CATEGORY`
   - 支持逻辑操作：`AND`、`OR`、`NOT`
   - 支持全局 `scope`（对所有 queries 生效）
-- 📥 **拉取策略**: 支持拉取更早的论文以补全预定论文数量
+- 🧲 **拉取策略**: 支持拉取更早的论文以补全预定论文数量
 
-- 💾 **去重与存储**: SQLite 去重功能, 并存储论文内容供日后查询
+- 🗃️ **去重与存储**: SQLite 去重功能, 并存储论文内容供日后查询
 
-- 📤 **输出能力**: 支持`json`、`markdown`、`html` 等格式输出, 支持替换模板 
+- 📤 **输出能力**: 支持`json`、`markdown`、`html` 等格式输出, 支持替换模板
+
 - 🤖 **LLM 增强**: 支持 OpenAI-compatible 接口调用, 包括摘要翻译与结构化总结支持
+
 - 🌐 **输出语言可配置**: 可通过 `llm.target_lang` 自定义翻译与总结输出语言（如 `Simplified Chinese`、`English`、`Japanese`）
 
-## 🚀 快速开始
+## 快速开始
 
 建议使用虚拟环境（如 `.venv/`）：
 ```bash
@@ -65,7 +62,7 @@ cp .env.example .env
 paper-tracker search --config config/default.yml
 ```
 
-## ⚙️ 自定义配置
+## 自定义配置
 
 > 注意: 项目会首先从 `config/default.yml` 读取默认配置, 随后读取 `--config` 参数路径的文件, 对默认值进行覆盖, 所以请不要修改 `default.yml`
 
@@ -81,8 +78,8 @@ paper-tracker search --config config/custom.yml
 
 至少需要关注两项：
 
-- 🔎 `queries`：至少设置一条自定义查询请求方案
-- 📤 `output.formats`：至少 1 种输出格式
+- `queries`：至少设置一条自定义查询请求方案
+- `output.formats`：至少 1 种输出格式
 
 📚 详细指引可以查看文档:
 - [📖 使用指南](./docs/zh/guide_user.md)
@@ -111,7 +108,7 @@ python -m pip install -e . --upgrade
 
 本项目使用 [MIT License](./LICENSE)。
 
-## 🙏 致谢
+## 致谢
 
 本仓库为独立实现，参考了以下项目的功能思路：
 
