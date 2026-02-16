@@ -1,7 +1,7 @@
 
 # WARNING:
 # Do not edit this default config directly.
-# Copy it to cofig/custom.yml and edit your personal settings there.
+# Copy it to config/custom.yml and edit your personal settings there.
 # Run with: paper-tracker search --config config/custom.yml
 
 
@@ -18,7 +18,7 @@ storage:
   content_storage_enabled: true  # save full paper content (default: true)
   keep_arxiv_version: false  # false: 2601.21922, true: 2601.21922v1
 
-# search domain - Optional global scope applied to every query.
+# Global scope (optional), applied to every query.
 # Field keys must be uppercase: TITLE/ABSTRACT/AUTHOR/JOURNAL/CATEGORY
 # Operator keys must be uppercase: AND/OR/NOT
 #
@@ -38,13 +38,13 @@ search:
   pull_every: 7               # Strict time window, unit: day
   fill_enabled: true          # Allow fill with paper outside the strict time window
   max_lookback_days: 30       # Max length for fill window, -1 as infinite
-  max_fetch_items: 125        # Max count for item tried to fetch at a time, -1 as infinite
+  max_fetch_items: 125        # Max number of items to fetch, -1 means unlimited
   fetch_batch_size: 25        # Fetch count for each round
 
 # output domain
 output:
   base_dir: output/              # Output root directory
-  formats: [console, json]             # Output formats: console, json, markdown, html (can select multiple)
+  formats: [console, json, html]             # Output formats: console, json, markdown, html (can select multiple)
 
   # Markdown export configuration
   markdown:
@@ -61,7 +61,7 @@ output:
 
 # llm domain
 llm:
-  enabled: false                          # Enable/disable LLM translation features
+  enabled: false                          # Enable/disable LLM features
   provider: openai-compat                 # Provider type (currently only this)
   api_key_env: LLM_API_KEY                # Environment variable for API key
   timeout: 30                             # Request timeout (seconds)
@@ -75,7 +75,7 @@ llm:
   # 1. Translation only: enable_translation=true, enable_summary=false
   # 2. Summary only: enable_translation=false, enable_summary=true
   # 3. Both: enable_translation=true, enable_summary=true
-  enable_translation: true                # Enable abstract translation
+  enable_translation: false                # Enable abstract translation
   enable_summary: false                   # Enable paper summary (TLDR, motivation, method, result, conclusion)
                                           # Default: false (to control API costs)
 

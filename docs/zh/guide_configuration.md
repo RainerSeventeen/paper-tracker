@@ -31,7 +31,7 @@ queries:
 
 运行：
 ```bash
-paper-tracker search --config custom.yml
+paper-tracker search --config config/custom.yml
 ```
 
 ---
@@ -220,7 +220,7 @@ output:
 
 - `timeout`: 单次请求超时（秒）; 可选值: 整数，建议大于 0。
 
-- `target_lang`: 目标语言，用于翻译与摘要输出语言; 可选值: 任意语言标识字符串。推荐使用 `zh` / `en` / `ja` / `ko` / `fr` / `de` / `es` 等。
+- `target_lang`: 目标语言，用于翻译与摘要输出语言; 可选值: 任意非空语言描述字符串。建议使用全称（如 `Simplified Chinese` / `English` / `Japanese`）。
 
 - `temperature`: 采样温度，影响输出随机性; 可选值: 浮点数，常用 `0.0` ~ `2.0`。
 
@@ -249,7 +249,7 @@ llm:
   model: gpt-4o-mini
   api_key_env: LLM_API_KEY
   timeout: 30
-  target_lang: zh
+  target_lang: Simplified Chinese
   temperature: 0.2
   max_tokens: 1000
   max_workers: 3
