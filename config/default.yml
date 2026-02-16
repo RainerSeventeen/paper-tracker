@@ -1,7 +1,7 @@
 
 # WARNING:
 # Do not edit this default config directly.
-# Copy it to cofig/custom.yml and edit your personal settings there.
+# Copy it to config/custom.yml and edit your personal settings there.
 # Run with: paper-tracker search --config config/custom.yml
 
 
@@ -18,7 +18,7 @@ storage:
   content_storage_enabled: true  # save full paper content (default: true)
   keep_arxiv_version: false  # false: 2601.21922, true: 2601.21922v1
 
-# search domain - Optional global scope applied to every query.
+# Global scope (optional), applied to every query.
 # Field keys must be uppercase: TITLE/ABSTRACT/AUTHOR/JOURNAL/CATEGORY
 # Operator keys must be uppercase: AND/OR/NOT
 #
@@ -38,7 +38,7 @@ search:
   pull_every: 7               # Strict time window, unit: day
   fill_enabled: true          # Allow fill with paper outside the strict time window
   max_lookback_days: 30       # Max length for fill window, -1 as infinite
-  max_fetch_items: 125        # Max count for item tried to fetch at a time, -1 as infinite
+  max_fetch_items: 125        # Max number of items to fetch, -1 means unlimited
   fetch_batch_size: 25        # Fetch count for each round
 
 # output domain

@@ -31,7 +31,7 @@ queries:
 
 运行：
 ```bash
-paper-tracker search --config custom.yml
+paper-tracker search --config config/custom.yml
 ```
 
 ---
