@@ -9,13 +9,15 @@
 
 **[English](./README.en.md) | 中文**
 
-Paper Tracker 是一个最小化的论文追踪工具，核心目标是基于关键词查询 arXiv，并按配置输出结构化结果，便于持续跟踪新论文。
+Paper Tracker 是一个最小化的论文追踪工具，核心目标是基于关键词查询 arXiv (预计会加入更多数据来源支持)，并按配置输出结构化结果，便于持续跟踪新论文。
 
 **如果该项目对你有帮助, 请麻烦点一个 Star ⭐, 谢谢!**
 
 ## ✨ 效果展示
 
 查看实际运行效果：[📄 部署发布页](https://rainerseventeen.github.io/paper-tracker/)
+
+![HTML 输出结果演示](./docs/assets/html_output_preview.png)
 
 该页面展示了基于配置文件自动抓取并生成的论文列表，包含：
 - 🔍 按关键词筛选的最新论文
@@ -35,6 +37,7 @@ Paper Tracker 是一个最小化的论文追踪工具，核心目标是基于关
 
 - 📤 **输出能力**: 支持`json`、`markdown`、`html` 等格式输出, 支持替换模板 
 - 🤖 **LLM 增强**: 支持 OpenAI-compatible 接口调用, 包括摘要翻译与结构化总结支持
+- 🌐 **输出语言可配置**: 可通过 `llm.target_lang` 自定义翻译与总结输出语言（如 `Simplified Chinese`、`English`、`Japanese`）
 
 ## 🚀 快速开始
 

@@ -19,6 +19,8 @@ Paper Tracker is a minimal paper tracking tool with the core goal of querying ar
 
 View the actual running results: [📄 Deployment Release Page](https://rainerseventeen.github.io/paper-tracker/)
 
+![HTML Output Preview](./docs/assets/html_output_preview.png)
+
 This page showcases automatically fetched and generated paper lists based on configuration files, including:
 - 🔍 Latest papers filtered by keywords
 - 📋 Structured paper information (title, authors, abstract, links)
@@ -37,6 +39,7 @@ This page showcases automatically fetched and generated paper lists based on con
 
 - 📤 **Output Capabilities**: Support output formats like `json`, `markdown`, `html`, support template replacement
 - 🤖 **LLM Enhancement**: Support OpenAI-compatible API calls, including abstract translation and structured summary support
+- 🌐 **Configurable Output Language**: You can customize translation/summary output language via `llm.target_lang` (for example `Simplified Chinese`, `English`, `Japanese`)
 
 ## 🚀 Quick Start
 
