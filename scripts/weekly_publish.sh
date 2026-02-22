@@ -1,35 +1,39 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Directory and branch defaults; every value can be overridden via env vars.
-BASE_DIR="${BASE_DIR:-/home/automation/github_auto}"
-REPO_DIR="${REPO_DIR:-$BASE_DIR/paper-tracker}"
-PUBLISH_DIR="${PUBLISH_DIR:-$BASE_DIR/publish}"
-STATE_DIR="${STATE_DIR:-$BASE_DIR/state}"
-LOG_DIR="${LOG_DIR:-$BASE_DIR/logs}"
-LOCK_FILE="${LOCK_FILE:-$BASE_DIR/weekly_publish.lock}"
+# Parse flags.
+DRY_RUN=0
+PUBLISH_ONLY=0
+CONFIG_FILE=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --dry-run)      DRY_RUN=1; shift ;;
+    --publish-only) PUBLISH_ONLY=1; shift ;;
+    --config)       CONFIG_FILE="$2"; shift 2 ;;
+    --config=*)     CONFIG_FILE="${1#--config=}"; shift ;;
+    *) echo "[ERROR] unknown argument: $1"; exit 1 ;;
+  esac
+done
+
+test -n "$CONFIG_FILE" || { echo "[ERROR] --config <path> is required"; exit 1; }
+
+# Single env var: project root directory.
+REPO_DIR="${REPO_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
+
+# All paths derived from REPO_DIR.
+PUBLISH_DIR="$REPO_DIR/site-publish"
+LOG_DIR="$REPO_DIR/logs"
+PT_BIN="$REPO_DIR/.venv/bin/paper-tracker"
 BRANCH_MAIN="${BRANCH_MAIN:-main}"
 BRANCH_PAGES="${BRANCH_PAGES:-gh-pages}"
-SKIP_SEARCH="${SKIP_SEARCH:-0}"
-
-CONFIG_FILE="${CONFIG_FILE:-$REPO_DIR/config/custom.yml}"
-PT_BIN="${PT_BIN:-$REPO_DIR/.venv/bin/paper-tracker}"
 
 # Resolve required external binaries once.
 GIT_BIN="$(command -v git)"
 RSYNC_BIN="$(command -v rsync)"
-FLOCK_BIN="$(command -v flock)"
 NICE_BIN="$(command -v nice)"
 IONICE_BIN="$(command -v ionice)"
 
-mkdir -p "$STATE_DIR" "$LOG_DIR"
-
-# Prevent concurrent runs: exit if another publisher already holds the lock.
-exec 9>"$LOCK_FILE"
-"$FLOCK_BIN" -n 9 || {
-  echo "[WARN] another publish job is running"
-  exit 1
-}
+mkdir -p "$LOG_DIR"
 
 # Persist all output to a timestamped log file while also printing to stdout.
 LOG_FILE="$LOG_DIR/weekly_publish_$(date +%Y%m%d_%H%M%S).log"
@@ -39,14 +43,15 @@ echo "[INFO] start publish: $(date -Is)"
 echo "[INFO] repo_dir=$REPO_DIR"
 echo "[INFO] publish_dir=$PUBLISH_DIR"
 echo "[INFO] config_file=$CONFIG_FILE"
-echo "[INFO] skip_search=$SKIP_SEARCH"
+echo "[INFO] publish_only=$PUBLISH_ONLY"
+echo "[INFO] dry_run=$DRY_RUN"
 
 cd "$REPO_DIR"
 "$GIT_BIN" fetch origin
 "$GIT_BIN" checkout "$BRANCH_MAIN"
 "$GIT_BIN" pull --ff-only origin "$BRANCH_MAIN"
 
-if [ "$SKIP_SEARCH" != "1" ]; then
+if [ "$PUBLISH_ONLY" != "1" ]; then
   # Fast-fail if runtime prerequisites are missing.
   test -x "$PT_BIN" || {
     echo "[ERROR] paper-tracker executable not found: $PT_BIN"
@@ -57,11 +62,30 @@ if [ "$SKIP_SEARCH" != "1" ]; then
     exit 1
   }
 
+  # In dry-run mode, disable storage and LLM via a temporary config overlay.
+  ACTIVE_CONFIG="$CONFIG_FILE"
+  if [ "$DRY_RUN" = "1" ]; then
+    TMP_CONFIG="$(mktemp /tmp/pt_dryrun_XXXXXX.yml)"
+    trap 'rm -f "$TMP_CONFIG"' EXIT
+    PYTHON_BIN="$(dirname "$PT_BIN")/python"
+    "$PYTHON_BIN" -c "
+import yaml, sys
+with open(sys.argv[1]) as f:
+    cfg = yaml.safe_load(f) or {}
+cfg.setdefault('storage', {})['enabled'] = False
+cfg.setdefault('llm', {})['enabled'] = False
+with open(sys.argv[2], 'w') as f:
+    yaml.dump(cfg, f)
+" "$CONFIG_FILE" "$TMP_CONFIG"
+    ACTIVE_CONFIG="$TMP_CONFIG"
+    echo "[INFO] dry-run: storage and LLM disabled"
+  fi
+
   # Run search with lower CPU/IO priority to reduce impact on shared hosts.
   "$NICE_BIN" -n 10 "$IONICE_BIN" -c2 -n7 \
-    "$PT_BIN" search --config "$CONFIG_FILE"
+    "$PT_BIN" search --config "$ACTIVE_CONFIG"
 else
-  echo "[INFO] skip search, publish existing HTML files only"
+  echo "[INFO] publish-only: skipping search, using existing HTML files"
 fi
 
 # Build deployable site directory from generated HTML artifacts.
@@ -81,6 +105,12 @@ fi
 cp output/html/search_*.html site/archive/
 # Ensure GitHub Pages serves files as plain static content (no Jekyll processing).
 touch site/.nojekyll
+
+# In dry-run mode, skip all GitHub publishing steps.
+if [ "$DRY_RUN" = "1" ]; then
+  echo "[INFO] dry-run complete: HTML built at $REPO_DIR/site/, no GitHub push"
+  exit 0
+fi
 
 # Ensure publish worktree exists.
 # If remote gh-pages exists, attach it; otherwise create a new local branch.
