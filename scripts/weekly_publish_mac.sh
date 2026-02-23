@@ -31,15 +31,16 @@ BRANCH_PAGES="${BRANCH_PAGES:-gh-pages}"
 GIT_BIN="$(command -v git)"
 RSYNC_BIN="$(command -v rsync)"
 NICE_BIN="$(command -v nice)"
-IONICE_BIN="$(command -v ionice)"
+# ionice is Linux-only; macOS does not provide it.
 
 mkdir -p "$LOG_DIR"
 
 # Persist all output to a timestamped log file while also printing to stdout.
+# macOS BSD date does not support -I; use +%Y-%m-%dT%H:%M:%S instead.
 LOG_FILE="$LOG_DIR/weekly_publish_$(date +%Y%m%d_%H%M%S).log"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
-echo "[INFO] start publish: $(date -Is)"
+echo "[INFO] start publish: $(date +%Y-%m-%dT%H:%M:%S)"
 echo "[INFO] repo_dir=$REPO_DIR"
 echo "[INFO] publish_dir=$PUBLISH_DIR"
 echo "[INFO] config_file=$CONFIG_FILE"
@@ -81,8 +82,9 @@ with open(sys.argv[2], 'w') as f:
     echo "[INFO] dry-run: storage and LLM disabled"
   fi
 
-  # Run search with lower CPU/IO priority to reduce impact on shared hosts.
-  "$NICE_BIN" -n 10 "$IONICE_BIN" -c2 -n7 \
+  # Run search with lower CPU priority.
+  # macOS does not have ionice; only nice is used here.
+  "$NICE_BIN" -n 10 \
     "$PT_BIN" search --config "$ACTIVE_CONFIG"
 else
   echo "[INFO] publish-only: skipping search, using existing HTML files"
@@ -138,4 +140,4 @@ fi
   commit -m "docs: weekly publish $(date +%F)"
 "$GIT_BIN" push -u origin "$BRANCH_PAGES"
 
-echo "[INFO] publish complete: $(date -Is)"
+echo "[INFO] publish complete: $(date +%Y-%m-%dT%H:%M:%S)"
