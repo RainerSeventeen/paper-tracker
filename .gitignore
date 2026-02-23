@@ -62,3 +62,7 @@ config/custom.yml
 
 # ---- Others ---- 
 .ai_docs/plan
+
+# ---- Publish ----
+site/
+site-publish/

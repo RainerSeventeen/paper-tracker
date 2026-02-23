@@ -22,7 +22,7 @@ REPO_DIR="${REPO_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
 
 # All paths derived from REPO_DIR.
 PUBLISH_DIR="$REPO_DIR/site-publish"
-LOG_DIR="$REPO_DIR/logs"
+LOG_DIR="$REPO_DIR/log/publish"
 PT_BIN="$REPO_DIR/.venv/bin/paper-tracker"
 BRANCH_MAIN="${BRANCH_MAIN:-main}"
 BRANCH_PAGES="${BRANCH_PAGES:-gh-pages}"
