@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paper Tracker Daily Reading</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Crimson+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body class="theme-light">
+  <a class="skip-link" href="#main-content">跳转到正文</a>
+
+  <header class="page-header">
+    <div class="header-main">
+      <p class="header-topline">
+        POWER BY
+        <a class="powered-by-link" href="https://github.com/RainerSeventeen/paper-tracker" target="_blank" rel="noopener noreferrer">
+          RainerSeventeen/paper-tracker
+        </a>
+      </p>
+      <h1>文献阅读简报</h1>
+      <p class="header-meta">生成时间：2026-02-23 14:22:05</p>
+      <div class="report-stats">
+        <p><span>3</span> 个查询主题</p>
+        <p><span>9</span> 篇候选论文</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="expand-all" type="button" aria-label="展开所有论文详情">展开全部</button>
+      <button id="collapse-all" type="button" aria-label="折叠所有论文详情">折叠全部</button>
+      <button id="theme-toggle" type="button" aria-label="切换暗色模式">切换暗色模式</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" aria-label="查询导航">
+      <p class="sidebar-title">文献目录</p>
+      <p class="sidebar-note">按查询主题快速定位</p>
+    </aside>
+    <main id="main-content" class="content">
+      <section id="query-query" class="query-section" data-query-label="视频及图像压缩" data-paper-count="3">
+  <header class="query-header">
+    <h2>视频及图像压缩</h2>
+    <p class="query-count">3 篇</p>
+  </header>
+  <div class="query-content">
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 1</p>
+    <h3 class="paper-title">Convolutional Optical Encoders for Generalizable Image Compression</h3>
+    <p class="paper-authors">Yubo Zhang, Rui Chen, Zhihao Zhou, Arka Majumdar</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>来源</span>arxiv</p>
+      <p class="meta-item"><span>更新时间</span>2026-02-20</p>
+    </div>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2602.18032v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2602.18032v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>We investigate the utility of meta-optical encoders for generalizable image compression by leveraging their intrinsic shift-invariant point spread functions (PSFs). Compared with purely digital approaches, such optical encoders offer parallel and energy-efficient compression, enabling early data reduction prior to electronic processing and transmission, which is particularly attractive for resource-constrained and compact imaging systems. Although the operations realizable by a single passive optical layer remain fundamentally constrained, we systematically study several PSF encoding strategies combined with a total-variation (TV) digital reconstruction backend. Specifically, under identical compression ratios, we compare spatial binning, multi-channel random, and multi-channel orthogonal PSF based designs. Our results show that, at the same compression ratios, spatial binning achieves the highest reconstruction quality among all encoding strategies; however, it exhibits limited robustness to noise compared with multi-channel methods.</p>
+    </div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 2</p>
+    <h3 class="paper-title">TeCoNeRV: Leveraging Temporal Coherence for Compressible Neural Representations for Videos</h3>
+    <p class="paper-authors">Namitha Padmanabhan, Matthew Gwilliam, Abhinav Shrivastava</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>来源</span>arxiv</p>
+      <p class="meta-item"><span>更新时间</span>2026-02-18</p>
+    </div>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2602.16711v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2602.16711v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Implicit Neural Representations (INRs) have recently demonstrated impressive performance for video compression. However, since a separate INR must be overfit for each video, scaling to high-resolution videos while maintaining encoding efficiency remains a significant challenge. Hypernetwork-based approaches predict INR weights (hyponetworks) for unseen videos at high speeds, but with low quality, large compressed size, and prohibitive memory needs at higher resolutions. We address these fundamental limitations through three key contributions: (1) an approach that decomposes the weight prediction task spatially and temporally, by breaking short video segments into patch tubelets, to reduce the pretraining memory overhead by 20$\times$; (2) a residual-based storage scheme that captures only differences between consecutive segment representations, significantly reducing bitstream size; and (3) a temporal coherence regularization framework that encourages changes in the weight space to be correlated with video content. Our proposed method, TeCoNeRV, achieves substantial improvements of 2.47dB and 5.35dB PSNR over the baseline at 480p and 720p on UVG, with 36% lower bitrates and 1.5-3$\times$ faster encoding speeds. With our low memory usage, we are the first hypernetwork approach to demonstrate results at 480p, 720p and 1080p on UVG, HEVC and MCL-JCV. Our project page is available at https://namithap10.github.io/teconerv/ .</p>
+    </div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 3</p>
+    <h3 class="paper-title">SEG-JPEG: Simple Visual Semantic Communications for Remote Operation of Automated Vehicles over Unreliable Wireless Networks</h3>
+    <p class="paper-authors">Sebastian Donnelly, Ruth Anderson, George Economides, James Broughton, Peter Ball, Alexander Rast, Andrew Bradley</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>来源</span>arxiv</p>
+      <p class="meta-item"><span>更新时间</span>2026-02-16</p>
+    </div>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2602.15258v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2602.15258v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Remote Operation is touted as being key to the rapid deployment of automated vehicles. Streaming imagery to control connected vehicles remotely currently requires a reliable, high throughput network connection, which can be limited in real-world remote operation deployments relying on public network infrastructure. This paper investigates how the application of computer vision assisted semantic communication can be used to circumvent data loss and corruption associated with traditional image compression techniques. By encoding the segmentations of detected road users into colour coded highlights within low resolution greyscale imagery, the required data rate can be reduced by 50 \% compared with conventional techniques, while maintaining visual clarity. This enables a median glass-to-glass latency of below 200ms even when the network data rate is below 500kbit/s, while clearly outlining salient road users to enhance situational awareness of the remote operator. The approach is demonstrated in an area of variable 4G mobile connectivity using an automated last-mile delivery vehicle. With this technique, the results indicate that large-scale deployment of remotely operated automated vehicles could be possible even on the often constrained public 4G/5G mobile network, providing the potential to expedite the nationwide roll-out of automated vehicles.</p>
+    </div>
+  </details>
+</article>
+  </div>
+</section>
+
+<section id="query-lic" class="query-section" data-query-label="LIC 端到端" data-paper-count="3">
+  <header class="query-header">
+    <h2>LIC 端到端</h2>
+    <p class="query-count">3 篇</p>
+  </header>
+  <div class="query-content">
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 1</p>
+    <h3 class="paper-title">Beyond End-to-End Video Models: An LLM-Based Multi-Agent System for Educational Video Generation</h3>
+    <p class="paper-authors">Lingyong Yan, Jiulong Wu, Dong Xie, Weixian Shi, Deguo Xia, Jizhou Huang</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>来源</span>arxiv</p>
+      <p class="meta-item"><span>更新时间</span>2026-02-12</p>
+      <p class="meta-item taxonomy-item"><span>分类</span><strong class="primary-tag">cs.AI</strong> · cs.CL</p>
+    </div>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2602.11790v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2602.11790v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Although recent end-to-end video generation models demonstrate impressive performance in visually oriented content creation, they remain limited in scenarios that require strict logical rigor and precise knowledge representation, such as instructional and educational media. To address this problem, we propose LAVES, a hierarchical LLM-based multi-agent system for generating high-quality instructional videos from educational problems. The LAVES formulates educational video generation as a multi-objective task that simultaneously demands correct step-by-step reasoning, pedagogically coherent narration, semantically faithful visual demonstrations, and precise audio--visual alignment. To address the limitations of prior approaches--including low procedural fidelity, high production cost, and limited controllability--LAVES decomposes the generation workflow into specialized agents coordinated by a central Orchestrating Agent with explicit quality gates and iterative critique mechanisms. Specifically, the Orchestrating Agent supervises a Solution Agent for rigorous problem solving, an Illustration Agent that produces executable visualization codes, and a Narration Agent for learner-oriented instructional scripts. In addition, all outputs from the working agents are subject to semantic critique, rule-based constraints, and tool-based compilation checks. Rather than directly synthesizing pixels, the system constructs a structured executable video script that is deterministically compiled into synchronized visuals and narration using template-driven assembly rules, enabling fully automated end-to-end production without manual editing. In large-scale deployments, LAVES achieves a throughput exceeding one million videos per day, delivering over a 95% reduction in cost compared to current industry-standard approaches while maintaining a high acceptance rate.</p>
+    </div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 2</p>
+    <h3 class="paper-title">Reinforced Rate Control for Neural Video Compression via Inter-Frame Rate-Distortion Awareness</h3>
+    <p class="paper-authors">Wuyang Cong, Junqi Shi, Lizhong Wang, Weijing Shi, Ming Lu, Hao Chen, Zhan Ma</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>来源</span>arxiv</p>
+      <p class="meta-item"><span>更新时间</span>2026-02-01</p>
+    </div>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2601.19293v2" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2601.19293v2" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Neural video compression (NVC) has demonstrated superior compression efficiency, yet effective rate control remains a significant challenge due to complex temporal dependencies. Existing rate control schemes typically leverage frame content to capture distortion interactions, overlooking inter-frame rate dependencies arising from shifts in per-frame coding parameters. This often leads to suboptimal bitrate allocation and cascading parameter decisions. To address this, we propose a reinforcement-learning (RL)-based rate control framework that formulates the task as a frame-by-frame sequential decision process. At each frame, an RL agent observes a spatiotemporal state and selects coding parameters to optimize a long-term reward that reflects rate-distortion (R-D) performance and bitrate adherence. Unlike prior methods, our approach jointly determines bitrate allocation and coding parameters in a single step, independent of group of pictures (GOP) structure. Extensive experiments across diverse NVC architectures show that our method reduces the average relative bitrate error to 1.20% and achieves up to 13.45% bitrate savings at typical GOP sizes, outperforming existing approaches. In addition, our framework demonstrates improved robustness to content variation and bandwidth fluctuations with lower coding overhead, making it highly suitable for practical deployment.</p>
+    </div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 3</p>
+    <h3 class="paper-title">Recent Advances of End-to-End Video Coding Technologies for AVS Standard Development</h3>
+    <p class="paper-authors">Xihua Sheng, Xiongzhuang Liang, Chuanbo Tang, Zhirui Zuo, Yifan Bian, Yutao Xie, Zhuoyuan Li, Yuqi Li, Hui Xiang, Li Li, Dong Liu</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>来源</span>arxiv</p>
+      <p class="meta-item"><span>更新时间</span>2026-01-31</p>
+      <p class="meta-item taxonomy-item"><span>分类</span><strong class="primary-tag">eess.IV</strong> · cs.CV · cs.MM</p>
+    </div>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2602.00483v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2602.00483v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Video coding standards are essential to enable the interoperability and widespread adoption of efficient video compression technologies. In pursuit of greater video compression efficiency, the AVS video coding working group launched the standardization exploration of end-to-end intelligent video coding, establishing the AVS End-to-End Intelligent Video Coding Exploration Model (AVS-EEM) project. A core design principle of AVS-EEM is its focus on practical deployment, featuring inherently low computational complexity and requiring strict adherence to the common test conditions of conventional video coding. This paper details the development history of AVS-EEM and provides a systematic introduction to its key technical framework, covering model architectures, training strategies, and inference optimizations. These innovations have collectively driven the project&#x27;s rapid performance evolution, enabling continuous and significant gains under strict complexity constraints. Through over two years of iterative refinement and collaborative effort, the coding performance of AVS-EEM has seen substantial improvement. Experimental results demonstrate that its latest model achieves superior compression efficiency compared to the conventional AVS3 reference software, marking a significant step toward a deployable intelligent video coding standard.</p>
+    </div>
+  </details>
+</article>
+  </div>
+</section>
+
+<section id="query-vsr" class="query-section" data-query-label="VSR 视频超分辨率" data-paper-count="3">
+  <header class="query-header">
+    <h2>VSR 视频超分辨率</h2>
+    <p class="query-count">3 篇</p>
+  </header>
+  <div class="query-content">
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 1</p>
+    <h3 class="paper-title">Visual Self-Refine: A Pixel-Guided Paradigm for Accurate Chart Parsing</h3>
+    <p class="paper-authors">Jinsong Li, Xiaoyi Dong, Yuhang Zang, Yuhang Cao, Jiaqi Wang, Dahua Lin</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>来源</span>arxiv</p>
+      <p class="meta-item"><span>更新时间</span>2026-02-18</p>
+    </div>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2602.16455v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2602.16455v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>While Large Vision-Language Models (LVLMs) have demonstrated remarkable capabilities for reasoning and self-correction at the textual level, these strengths provide minimal benefits for complex tasks centered on visual perception, such as Chart Parsing. Existing models often struggle with visually dense charts, leading to errors like data omission, misalignment, and hallucination. Inspired by the human strategy of using a finger as a ``visual anchor&#x27;&#x27; to ensure accuracy when reading complex charts, we propose a new paradigm named Visual Self-Refine (VSR). The core idea of VSR is to enable a model to generate pixel-level localization outputs, visualize them, and then feed these visualizations back to itself, allowing it to intuitively inspect and correct its own potential visual perception errors. We instantiate the VSR paradigm in the domain of Chart Parsing by proposing ChartVSR. This model decomposes the parsing process into two stages: a Refine Stage, where it iteratively uses visual feedback to ensure the accuracy of all data points&#x27; Pixel-level Localizations, and a Decode Stage, where it uses these verified localizations as precise visual anchors to parse the final structured data. To address the limitations of existing benchmarks, we also construct ChartP-Bench, a new and highly challenging benchmark for chart parsing. Our work also highlights VSR as a general-purpose visual feedback mechanism, offering a promising new direction for enhancing accuracy on a wide range of vision-centric tasks.</p>
+    </div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 2</p>
+    <h3 class="paper-title">FANVID: A Benchmark for Face and License Plate Recognition in Low-Resolution Videos</h3>
+    <p class="paper-authors">Kavitha Viswanathan, Vrinda Goel, Shlesh Gholap, Devayan Ghosh, Madhav Gupta, Dhruvi Ganatra, Sanket Potdar, Amit Sethi</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>来源</span>arxiv</p>
+      <p class="meta-item"><span>更新时间</span>2026-02-10</p>
+    </div>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2506.07304v2" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2506.07304v2" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Real-world surveillance often renders faces and license plates unrecognizable in individual low-resolution (LR) frames, hindering reliable identification. To advance temporal recognition models, we present FANVID, a novel video-based benchmark comprising nearly 1,463 LR clips (180 x 320, 20--60 FPS) featuring 63 identities and 49 license plates from three English-speaking countries. Each video includes distractor faces and plates, increasing task difficulty and realism. The dataset contains 31,096 manually verified bounding boxes and labels.
+  FANVID defines two tasks: (1) face matching -- detecting LR faces and matching them to high-resolution mugshots, and (2) license plate recognition -- extracting text from LR plates without a predefined database. Videos are downsampled from high-resolution sources to ensure that faces and text are indecipherable in single frames, requiring models to exploit temporal information. We introduce evaluation metrics adapted from mean Average Precision at IoU &gt; 0.5, prioritizing identity correctness for faces and character-level accuracy for text.
+  A baseline method with pre-trained video super-resolution, detection, and recognition achieved performance scores of 0.58 (face matching) and 0.42 (plate recognition), highlighting both the feasibility and challenge of the tasks. FANVID&#x27;s selection of faces and plates balances diversity with recognition challenge. We release the software for data access, evaluation, baseline, and annotation to support reproducibility and extension. FANVID aims to catalyze innovation in temporal modeling for LR recognition, with applications in surveillance, forensics, and autonomous vehicles.</p>
+    </div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 3</p>
+    <h3 class="paper-title">D$^2$-VR: Degradation-Robust and Distilled Video Restoration with Synergistic Optimization Strategy</h3>
+    <p class="paper-authors">Jianfeng Liang, Shaocheng Shen, Botao Xu, Qiang Hu, Xiaoyun Zhang</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>来源</span>arxiv</p>
+      <p class="meta-item"><span>更新时间</span>2026-02-09</p>
+    </div>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2602.08395v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2602.08395v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>The integration of diffusion priors with temporal alignment has emerged as a transformative paradigm for video restoration, delivering fantastic perceptual quality, yet the practical deployment of such frameworks is severely constrained by prohibitive inference latency and temporal instability when confronted with complex real-world degradations. To address these limitations, we propose \textbf{D$^2$-VR}, a single-image diffusion-based video-restoration framework with low-step inference. To obtain precise temporal guidance under severe degradation, we first design a Degradation-Robust Flow Alignment (DRFA) module that leverages confidence-aware attention to filter unreliable motion cues. We then incorporate an adversarial distillation paradigm to compress the diffusion sampling trajectory into a rapid few-step regime. Finally, a synergistic optimization strategy is devised to harmonize perceptual quality with rigorous temporal consistency. Extensive experiments demonstrate that D$^2$-VR achieves state-of-the-art performance while accelerating the sampling process by \textbf{12$\times$}</p>
+    </div>
+  </details>
+</article>
+  </div>
+</section>
+    </main>
+  </div>
+
+  <script src="./assets/interactive.js"></script>
+</body>
+</html>
