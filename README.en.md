@@ -41,6 +41,8 @@ See the live result: [📄 Deployment Page](https://rainerseventeen.github.io/pa
 Using a virtual environment is recommended (e.g. `.venv/`):
 ```bash
 python3 -m venv .venv
+source .venv/bin/activate      # macOS / Linux
+# .venv\Scripts\activate       # Windows
 ```
 Install:
 ```bash

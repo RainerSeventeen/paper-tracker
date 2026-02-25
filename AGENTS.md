@@ -21,7 +21,7 @@ cp .env.example .env
 
 ### 运行
 ```bash
-paper-tracker --config config/default.yml search
+paper-tracker search --config config/default.yml
 ```
 
 配置文件为 YAML 格式,参考 `config/default.yml`。
