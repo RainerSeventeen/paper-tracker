@@ -41,6 +41,8 @@ Paper Tracker 是一个最小化的论文追踪工具，核心目标是基于关
 建议使用虚拟环境（如 `.venv/`）：
 ```bash
 python3 -m venv .venv
+source .venv/bin/activate      # macOS / Linux
+# .venv\Scripts\activate       # Windows
 ```
 执行安装
 ```bash
