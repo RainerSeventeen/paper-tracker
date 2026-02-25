@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """LLM domain configuration for enrichment pipeline."""
+
+from __future__ import annotations
 
 import os
 from dataclasses import dataclass

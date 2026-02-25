@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Search domain configuration and query DSL parsing."""
+
+from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any, Mapping

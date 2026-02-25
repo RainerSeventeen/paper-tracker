@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Storage domain configuration for persistence and arXiv id behavior."""
+
+from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any, Mapping
