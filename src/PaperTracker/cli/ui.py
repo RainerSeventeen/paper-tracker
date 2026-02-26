@@ -34,7 +34,7 @@ def cli(ctx: click.Context) -> None:
     "--config",
     "config_path",
     type=click.Path(path_type=Path, dir_okay=False),
-    default=Path("config/default.yml"),
+    default=Path("config/example.yml"),
     show_default=True,
     help="Path to YAML config file (overrides defaults).",
 )

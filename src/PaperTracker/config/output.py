@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Output domain configuration for multi-format rendering."""
+
+from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any, Mapping

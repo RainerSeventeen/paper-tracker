@@ -11,6 +11,9 @@
 **1) 安装**（推荐虚拟环境）：
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate      # macOS / Linux
+# .venv\Scripts\activate       # Windows
 python -m pip install -e .
 ```
 
@@ -21,25 +24,28 @@ cp .env.example .env
 # 编辑 .env 文件，填入 LLM_API_KEY
 ```
 
-**3) 运行**：
+**3) 创建并运行配置**：
 
 ```bash
-paper-tracker search --config config/default.yml
+cp config/example.yml config/custom.yml
+# 编辑 config/custom.yml，填入查询关键词
+paper-tracker search --config config/custom.yml
 ```
 
 ---
 
 ## 2. 配置文件与默认配置的关系
 
-`config/default.yml` 是**默认配置项**，请**不要**修改它。
+程序内置了默认配置（`src/PaperTracker/config/defaults.yml`），用户只需提供**覆盖项**，未写的字段会自动使用默认值。
 
-如果你要自定义配置，请新建一个文件（例如 `config/custom.yml`），然后在 CLI 中使用它。程序会把你提供的配置与默认配置合并：你写的字段覆盖默认值，未写的字段继续使用默认值。
-
-示例：
+`config/example.yml` 是提供的配置示例模板，可以直接复制后修改：
 
 ```bash
+cp config/example.yml config/custom.yml
 paper-tracker search --config config/custom.yml
 ```
+
+合并规则：mapping 递归合并，列表与标量整体覆盖。
 
 ---
 

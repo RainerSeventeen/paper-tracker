@@ -13,9 +13,8 @@ from PaperTracker.config import load_config_with_defaults
 class TestBasicQueryConfig(unittest.TestCase):
     def test_basic_query_config_parsing(self) -> None:
         config_path = REPO_ROOT / "config" / "test" / "basic_query.yml"
-        default_path = REPO_ROOT / "config" / "default.yml"
 
-        cfg = load_config_with_defaults(config_path, default_path=default_path)
+        cfg = load_config_with_defaults(config_path)
 
         self.assertEqual(cfg.runtime.level, "INFO")
         self.assertEqual(cfg.search.max_results, 5)

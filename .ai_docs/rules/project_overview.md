@@ -39,7 +39,7 @@ SearchService.search(query)
 ### 2. 配置层（`src/PaperTracker/config/`）
 
 - 根配置：`AppConfig(runtime/search/output/storage/llm)`。
-- 入口：`load_config_with_defaults()`，以 `config/default.yml` 为基线并深度合并覆盖配置。
+- 入口：`load_config_with_defaults()`，以包内置 `defaults.yml`（通过 `importlib.resources` 读取）为基线，深度合并用户传入的覆盖配置。
 - 查询 DSL：`SearchQuery` + `FieldQuery`，支持 `scope` + `queries`。
 
 ### 3. 服务与数据源层（`services/` + `sources/arxiv/`）

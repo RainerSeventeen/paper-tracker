@@ -9,7 +9,7 @@
 
 **English | [中文](./README.md)**
 
-Paper Tracker is a minimal paper tracking tool. Its core goal is to query arXiv based on keywords (with more sources planned in the future) and output structured results according to configuration, so you can continuously track new papers.
+Paper Tracker is a minimal paper tracking tool. Its core goal is to query arXiv by keywords (with more data sources planned) and output structured results based on configuration, so you can continuously track new papers.
 
 **If this project helps you, please consider giving it a Star ⭐. Thank you!**
 
@@ -28,7 +28,7 @@ See the live result: [📄 Deployment Page](https://rainerseventeen.github.io/pa
   - Global `scope` support (applies to all queries)
 - 🧲 **Fetch Strategy**: Supports fetching older papers to fill the target paper count
 
-- 🗃️ **Deduplication and Storage**: SQLite-based deduplication, and stores paper content for later lookup
+- 🗃️ **Deduplication and Storage**: SQLite-based deduplication and paper content storage for later lookup
 
 - 📤 **Output Capabilities**: Supports `json`, `markdown`, `html` output formats, and template replacement
 
@@ -43,45 +43,37 @@ Using a virtual environment is recommended (e.g. `.venv/`):
 python3 -m venv .venv
 source .venv/bin/activate      # macOS / Linux
 # .venv\Scripts\activate       # Windows
+python -m pip install -e .     # Install
 ```
-Install:
+
+Run directly with the built-in example config:
 ```bash
-python -m pip install -e .
+paper-tracker search --config config/example.yml
 ```
 
-### (Optional) Configure API Environment Variables
+## Custom Configuration
 
-If LLM summaries are enabled, configure environment variables:
+Copy the example config, edit it as needed, then run:
+
+```bash
+cp config/example.yml config/custom.yml
+# Edit fields in config/custom.yml
+paper-tracker search --config config/custom.yml
+```
+
+**Required fields:**
+
+- `queries`: at least one query must be configured
+- `llm.base_url` / `llm.model`: required when `llm.enabled: true`
+
+### (Optional) Configure LLM Environment Variables
+
+If LLM summary translation is enabled, configure your API key:
 
 ```bash
 cp .env.example .env
 # Edit .env and fill in your LLM_API_KEY
 ```
-
-### Run
-
-```bash
-paper-tracker search --config config/default.yml
-```
-
-## Custom Configuration
-
-> Note: The project first loads default settings from `config/default.yml`, then loads the file specified by `--config` to override defaults. So please do not modify `default.yml`.
-
-```bash
-# Create a custom config file
-cp config/default.yml config/custom.yml
-```
-After editing `config/custom.yml` with your personal settings, run:
-
-```bash
-paper-tracker search --config config/custom.yml
-```
-
-At minimum, pay attention to these two fields:
-
-- `queries`: configure at least one custom query plan
-- `output.formats`: configure at least one output format
 
 📚 Detailed docs:
 - [📖 User Guide](./docs/en/guide_user.md)

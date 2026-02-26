@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Runtime domain configuration (logging, process behavior)."""
+
+from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any, Mapping

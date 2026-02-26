@@ -1,7 +1,8 @@
-from __future__ import annotations
-
 """Application config orchestration and YAML loading entrypoints."""
 
+from __future__ import annotations
+
+import importlib.resources
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
@@ -51,18 +52,17 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
     return config
 
 
-def load_config(path: Path) -> AppConfig:
-    """Load YAML config file without default merge."""
-    return load_config_with_defaults(path, default_path=path)
-
-
 def load_config_with_defaults(
-    config_path: Path, default_path: Path = Path("config/default.yml")
+    config_path: Path, _defaults_text: str | None = None
 ) -> AppConfig:
-    """Load config by merging defaults and optional override."""
-    base = parse_yaml(default_path.read_text(encoding="utf-8"))
-    if config_path == default_path:
-        return parse_config_dict(base)
+    """Load config by merging internal defaults with user override.
+
+    Args:
+        config_path: Path to user config file.
+        _defaults_text: Optional defaults YAML text (for testing only).
+    """
+    defaults_text = _defaults_text if _defaults_text is not None else _load_defaults_text()
+    base = parse_yaml(defaults_text)
     override = parse_yaml(config_path.read_text(encoding="utf-8"))
     merged = merge_config_dicts(base, override)
     return parse_config_dict(merged)
@@ -91,3 +91,9 @@ def merge_config_dicts(base: Mapping[str, Any], override: Mapping[str, Any]) -> 
         else:
             merged[key] = value
     return merged
+
+
+def _load_defaults_text() -> str:
+    """Read bundled default config from package resources."""
+    pkg = importlib.resources.files("PaperTracker.config")
+    return (pkg / "defaults.yml").read_text(encoding="utf-8")

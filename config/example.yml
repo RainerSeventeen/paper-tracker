@@ -1,0 +1,54 @@
+# Paper Tracker example config
+# Copy this file and modify it, then run: paper-tracker search --config config/custom.yml
+# For all available options and defaults, see: src/PaperTracker/config/defaults.yml
+
+# Search queries (required - replace with your topics of interest)
+#
+# Full-text OR/NOT: match any OR term, exclude any NOT term
+# Field filters: TITLE / ABSTRACT / AUTHOR / JOURNAL / CATEGORY
+#   each field supports AND / OR / NOT independently
+queries:
+  - NAME: Deep Learning
+    OR:
+      - deep learning
+      - neural network
+    NOT:
+      - survey
+    CATEGORY:
+      OR:
+        - cs.LG
+        - cs.CV
+
+  - NAME: LLM Research
+    OR:
+      - large language model
+      - LLM
+    NOT:
+      - law             # exclude "LLM" as Master of Laws
+      - legal
+    CATEGORY:
+      OR:
+        - cs.CL
+        - cs.AI
+
+# Output formats (options: console, json, markdown, html)
+output:
+  formats: [console, markdown, html]
+
+llm:
+# OpenAI GPT-4o-mini (recommended for cost):
+  # enabled: true
+  # base_url: https://api.openai.com
+  # model: gpt-4o-mini
+
+# DeepSeek (very cost-effective):
+  # enabled: true
+  # base_url: https://api.deepseek.com
+  # model: deepseek-chat
+
+# SiliconFlow (free tier available):
+  # enabled: true
+  # base_url: https://api.siliconflow.cn
+  # model: Qwen/Qwen2.5-7B-Instruct
+
+

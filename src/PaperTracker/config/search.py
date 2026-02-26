@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Search domain configuration and query DSL parsing."""
+
+from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any, Mapping
@@ -50,6 +50,8 @@ def load_search(raw: Mapping[str, Any]) -> SearchConfig:
     scope = parse_search_query(scope_obj, "scope") if scope_obj is not None else None
 
     queries_obj = raw.get("queries")
+    if queries_obj is None:
+        raise ValueError("Missing required config: queries")
     if not isinstance(queries_obj, list):
         raise TypeError("queries must be a list")
     queries = tuple(parse_search_query(item, f"queries[{idx}]") for idx, item in enumerate(queries_obj))
