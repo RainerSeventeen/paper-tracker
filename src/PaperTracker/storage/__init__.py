@@ -13,6 +13,7 @@ from PaperTracker.storage.content import PaperContentStore
 from PaperTracker.storage.db import DatabaseManager
 from PaperTracker.storage.deduplicate import ReadOnlyDeduplicateStore, SqliteDeduplicateStore
 from PaperTracker.storage.llm import LLMGeneratedStore
+from PaperTracker.storage.migration import run_migrations
 from PaperTracker.utils.log import log
 
 if TYPE_CHECKING:
@@ -80,6 +81,7 @@ __all__ = [
     "ReadOnlyDeduplicateStore",
     "PaperContentStore",
     "LLMGeneratedStore",
+    "run_migrations",
     "create_storage",
     "create_llm_store",
 ]
