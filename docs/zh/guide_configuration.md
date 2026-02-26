@@ -1,7 +1,7 @@
 # 配置与环境
 
 本文档覆盖两部分：
-1. `config/default.yml` 的**每个字段**说明与配置方式
+1. 内置默认配置（`src/PaperTracker/config/defaults.yml`）的**每个字段**说明与配置方式
 2. `.env` 的配置方法
 
 ---
@@ -12,7 +12,7 @@
 
 - 配置为 YAML 嵌套结构，不支持 `log.level` 这类扁平键
 
-- `config/default.yml` 是默认配置, 请不要修改
+- 默认配置内置于包中（`src/PaperTracker/config/defaults.yml`），请不要修改
 
 - 合并规则：mapping 递归合并，列表与标量整体覆盖
 
@@ -36,9 +36,9 @@ paper-tracker search --config config/custom.yml
 
 ---
 
-## 2. `default.yml` 字段说明
+## 2. 默认配置字段说明
 
-以下按 `config/default.yml` 的结构逐项说明。每个字段均包含：功能说明、可选范围、示例。
+以下按内置默认配置的结构逐项说明。每个字段均包含：功能说明、可选范围、示例。
 
 ### 2.1 `log`
 

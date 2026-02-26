@@ -246,7 +246,7 @@ cp .env.example .env
 ### Step 4: 创建自定义配置
 
 ```bash
-cp config/default.yml config/custom.yml
+cp config/example.yml config/custom.yml
 # 编辑 custom.yml，修改查询关键词等
 ```
 
