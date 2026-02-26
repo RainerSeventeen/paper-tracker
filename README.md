@@ -43,45 +43,36 @@ Paper Tracker 是一个最小化的论文追踪工具，核心目标是基于关
 python3 -m venv .venv
 source .venv/bin/activate      # macOS / Linux
 # .venv\Scripts\activate       # Windows
+python -m pip install -e .     # Install
 ```
-执行安装
+
+用内置示例配置直接运行：
 ```bash
-python -m pip install -e .
+paper-tracker search --config config/example.yml
+```
+## 自定义配置
+
+复制示例配置，按需修改后运行：
+
+```bash
+cp config/example.yml config/custom.yml
+# 修改 config/custom.yml 字段
+paper-tracker search --config config/custom.yml
 ```
 
-### (可选)配置 API 环境变量
+**以下为必填字段：**
 
-如果启用 llm 总结则需要配置环境变量
+- `queries`：至少设置一条查询
+- `llm.base_url` / `llm.model`：当 `llm.enabled: true` 时必须指定
+
+### (可选) 配置 LLM 环境变量
+
+启用 LLM 摘要翻译时需要配置 API Key：
 
 ```bash
 cp .env.example .env
 # 编辑 .env，填入你的 LLM_API_KEY
 ```
-
-### 运行命令
-
-```bash
-paper-tracker search --config config/default.yml
-```
-
-## 自定义配置
-
-> 注意: 项目会首先从 `config/default.yml` 读取默认配置, 随后读取 `--config` 参数路径的文件, 对默认值进行覆盖, 所以请不要修改 `default.yml`
-
-```bash
-# 创建自定义的配置文件
-cp config/default.yml config/custom.yml
-```
-修改 config/custom.yml 为个人设置后, 执行:
-
-```bash
-paper-tracker search --config config/custom.yml
-```
-
-至少需要关注两项：
-
-- `queries`：至少设置一条自定义查询请求方案
-- `output.formats`：至少 1 种输出格式
 
 📚 详细指引可以查看文档:
 - [📖 使用指南](./docs/zh/guide_user.md)
