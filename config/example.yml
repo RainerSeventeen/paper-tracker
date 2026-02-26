@@ -31,11 +31,30 @@ queries:
         - cs.CL
         - cs.AI
 
+search:
+  max_results: 3              # max paper count for each query
+
+  # multi round fetch
+  pull_every: 7               # Strict time window, unit: day
+  fill_enabled: true          # Allow fill with paper outside the strict time window
+  max_lookback_days: 30       # Max length for fill window, -1 as infinite
+
+storage:
+  enabled: true
+  db_path: database/papers.db     # Relative path (from working directory) or absolute path (starts with /)
+  content_storage_enabled: true   # save full paper content (default: true)
+  keep_arxiv_version: false       # false: 2601.21922, true: 2601.21922v1
+
 # Output formats (options: console, json, markdown, html)
 output:
+  base_dir: output/
   formats: [console, markdown, html]
 
 llm:
+  enabled: false
+  enable_translation: false                # Enable abstract translation
+  enable_summary: false                   # Enable paper summary (TLDR, motivation, method, result, conclusion)
+  target_lang: Simplified Chinese
 # OpenAI GPT-4o-mini (recommended for cost):
   # enabled: true
   # base_url: https://api.openai.com
