@@ -11,6 +11,7 @@ from PaperTracker.config.common import (
     expect_float,
     expect_int,
     expect_str,
+    get_optional_value,
     get_required_value,
     get_section,
 )
@@ -57,8 +58,8 @@ def load_llm(raw: Mapping[str, Any]) -> LLMConfig:
     return LLMConfig(
         enabled=expect_bool(get_required_value(section, "enabled", "llm.enabled"), "llm.enabled"),
         provider=expect_str(get_required_value(section, "provider", "llm.provider"), "llm.provider"),
-        base_url=expect_str(get_required_value(section, "base_url", "llm.base_url"), "llm.base_url"),
-        model=expect_str(get_required_value(section, "model", "llm.model"), "llm.model"),
+        base_url=expect_str(get_optional_value(section, "base_url", ""), "llm.base_url"),
+        model=expect_str(get_optional_value(section, "model", ""), "llm.model"),
         api_key_env=api_key_env,
         api_key=_load_api_key_from_env(api_key_env),
         timeout=expect_int(get_required_value(section, "timeout", "llm.timeout"), "llm.timeout"),
@@ -100,15 +101,18 @@ def check_llm(config: LLMConfig) -> None:
         ValueError: If values violate LLM constraints.
     """
     _check_non_empty(config.provider, "llm.provider")
-    _check_non_empty(config.base_url, "llm.base_url")
-    _check_non_empty(config.model, "llm.model")
     _check_non_empty(config.api_key_env, "llm.api_key_env")
     _check_non_empty(config.target_lang, "llm.target_lang")
-    if config.enabled and not config.api_key:
-        raise ValueError(
-            f"LLM enabled but {config.api_key_env} environment variable not set. "
-            "Set it in your .env file or shell environment."
-        )
+    if config.enabled:
+        if not config.base_url.strip():
+            raise ValueError("llm.base_url is required when llm.enabled is true")
+        if not config.model.strip():
+            raise ValueError("llm.model is required when llm.enabled is true")
+        if not config.api_key:
+            raise ValueError(
+                f"LLM enabled but {config.api_key_env} environment variable not set. "
+                "Set it in your .env file or shell environment."
+            )
 
     if config.timeout <= 0:
         raise ValueError("llm.timeout must be positive")

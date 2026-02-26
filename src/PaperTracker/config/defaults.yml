@@ -20,12 +20,7 @@ storage:
 # scope:
 #   CATEGORY:
 #     OR: [cs.CV]
-
-queries:
-  - NAME: example
-    OR:
-      - machine learning
-
+# queries are required to be set by user.
 search:
   max_results: 5              # max paper count for each query
 
@@ -80,24 +75,21 @@ llm:
   retry_max_delay: 10.0                   # Maximum delay between retries (seconds)
   retry_timeout_multiplier: 1.0           # Timeout multiplier per retry (1.0 = no change)
 
-  base_url: https://api.openai.com        # API base URL
-  model: gpt-4o-mini                      # Model identifier
+  # base_url and model are required when llm.enabled is true.
 # Provider-specific configuration examples:
 #
 # OpenAI GPT-4o-mini (recommended for cost):
-# llm:
+
 #   enabled: true
 #   base_url: https://api.openai.com
 #   model: gpt-4o-mini
 #
 # DeepSeek (very cost-effective):
-# llm:
 #   enabled: true
 #   base_url: https://api.deepseek.com
 #   model: deepseek-chat
 #
 # SiliconFlow (free tier available):
-# llm:
 #   enabled: true
 #   base_url: https://api.siliconflow.cn
 #   model: Qwen/Qwen2.5-7B-Instruct
