@@ -7,7 +7,7 @@ Usage:
     python test/pipeline/test_fetch_standalone.py [--config CONFIG_PATH]
 
 Args:
-    --config: Config file path (default: config/default.yml)
+    --config: Config file path (default: config/example.yml)
 """
 
 import argparse
@@ -15,7 +15,7 @@ import logging
 from datetime import datetime, timezone
 from pathlib import Path
 
-from PaperTracker.config import load_config
+from PaperTracker.config import load_config_with_defaults
 from PaperTracker.renderers.console import ConsoleOutputWriter
 from PaperTracker.renderers.mapper import map_papers_to_views
 from PaperTracker.sources.arxiv.client import ArxivApiClient
@@ -120,8 +120,8 @@ def main():
     parser.add_argument(
         "--config",
         type=str,
-        default="config/default.yml",
-        help="Config file path (default: config/default.yml)",
+        default="config/example.yml",
+        help="Config file path (default: config/example.yml)",
     )
     args = parser.parse_args()
 
@@ -141,7 +141,7 @@ def main():
     else:
         print("Query scope: all queries")
 
-    config = load_config(config_path)
+    config = load_config_with_defaults(config_path)
     setup_logging(config.runtime.level)
 
     # Initialize dedup store (wrapped as read-only)

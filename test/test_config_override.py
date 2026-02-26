@@ -75,12 +75,10 @@ queries:
       - Override Query
 """
         with tempfile.TemporaryDirectory() as tmp:
-            base_path = Path(tmp) / "base.yml"
             override_path = Path(tmp) / "override.yml"
-            base_path.write_text(_BASE_YAML, encoding="utf-8")
             override_path.write_text(override_yaml, encoding="utf-8")
 
-            cfg = load_config_with_defaults(override_path, default_path=base_path)
+            cfg = load_config_with_defaults(override_path, _defaults_text=_BASE_YAML)
 
         self.assertEqual(cfg.runtime.level, "DEBUG")
         self.assertEqual(cfg.search.max_results, 10)
@@ -90,12 +88,10 @@ queries:
 
     def test_empty_override_uses_defaults(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            base_path = Path(tmp) / "base.yml"
             override_path = Path(tmp) / "override.yml"
-            base_path.write_text(_BASE_YAML, encoding="utf-8")
             override_path.write_text("{}", encoding="utf-8")
 
-            cfg = load_config_with_defaults(override_path, default_path=base_path)
+            cfg = load_config_with_defaults(override_path, _defaults_text=_BASE_YAML)
 
         self.assertEqual(cfg.runtime.level, "INFO")
         self.assertEqual(cfg.search.max_results, 5)
