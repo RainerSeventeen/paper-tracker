@@ -52,11 +52,6 @@ def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
     return config
 
 
-def load_config(path: Path) -> AppConfig:
-    """Load YAML config file, merging with internal defaults."""
-    return load_config_with_defaults(path)
-
-
 def load_config_with_defaults(
     config_path: Path, _defaults_text: str | None = None
 ) -> AppConfig:

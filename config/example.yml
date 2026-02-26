@@ -1,0 +1,18 @@
+# Paper Tracker example config
+# Copy this file and modify it, then run: paper-tracker search --config config/custom.yml
+
+# Search queries (required - replace with your topics of interest)
+queries:
+  - NAME: example query
+    OR:
+      - machine learning
+
+# Output formats (options: console, json, markdown, html)
+output:
+  formats: [console]
+
+# LLM translation/summary (optional, disabled by default)
+# llm:
+#   enabled: true
+#   base_url: https://api.openai.com
+#   model: gpt-4o-mini

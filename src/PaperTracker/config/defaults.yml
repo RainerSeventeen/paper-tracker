@@ -1,9 +1,4 @@
-
-# WARNING:
-# Do not edit this default config directly.
-# Copy it to config/custom.yml and edit your personal settings there.
-# Run with: paper-tracker search --config config/custom.yml
-
+# Internal defaults — do not expose to users. Managed by package maintainers.
 
 # runtime domain
 log:

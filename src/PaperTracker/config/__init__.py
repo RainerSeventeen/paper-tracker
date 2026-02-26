@@ -5,7 +5,6 @@ from __future__ import annotations
 from PaperTracker.config.app import (
     AppConfig,
     check_cross_domain,
-    load_config,
     load_config_with_defaults,
     parse_config_dict,
 )
@@ -22,7 +21,6 @@ __all__ = [
     "OutputConfig",
     "LLMConfig",
     "AppConfig",
-    "load_config",
     "load_config_with_defaults",
     "parse_config_dict",
     "check_cross_domain",
