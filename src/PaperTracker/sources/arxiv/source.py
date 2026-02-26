@@ -100,3 +100,7 @@ class ArxivSource:
             sort_order=sort_order,
         )
         return list(parse_arxiv_feed(xml, keep_version=self.keep_version))
+
+    def close(self) -> None:
+        """Close source resources."""
+        self.client.close()

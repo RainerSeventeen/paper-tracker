@@ -31,6 +31,7 @@ storage:
 #     OR: [cs.CV]
 
 search:
+  sources: [arxiv]           # enabled search sources (arxiv, crossref)
   max_results: 5              # max paper count for each query
 
   # multi round fetch

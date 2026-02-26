@@ -17,6 +17,7 @@ from PaperTracker.core.query import FieldQuery, SearchQuery
 
 _ALLOWED_FIELDS = {"TITLE", "ABSTRACT", "AUTHOR", "JOURNAL", "CATEGORY"}
 _ALLOWED_OPS = {"AND", "OR", "NOT"}
+_ALLOWED_SOURCES = {"arxiv", "crossref"}
 
 
 @dataclass(frozen=True, slots=True)
@@ -31,6 +32,7 @@ class SearchConfig:
     max_lookback_days: int
     max_fetch_items: int
     fetch_batch_size: int
+    sources: tuple[str, ...]
 
 
 def load_search(raw: Mapping[str, Any]) -> SearchConfig:
@@ -57,6 +59,7 @@ def load_search(raw: Mapping[str, Any]) -> SearchConfig:
     queries = tuple(parse_search_query(item, f"queries[{idx}]") for idx, item in enumerate(queries_obj))
 
     section = get_section(raw, "search", required=True)
+    sources = _parse_sources(section.get("sources", ["arxiv"]))
     return SearchConfig(
         scope=scope,
         queries=queries,
@@ -78,6 +81,7 @@ def load_search(raw: Mapping[str, Any]) -> SearchConfig:
             get_required_value(section, "fetch_batch_size", "search.fetch_batch_size"),
             "search.fetch_batch_size",
         ),
+        sources=sources,
     )
 
 
@@ -106,6 +110,42 @@ def check_search(config: SearchConfig) -> None:
         raise ValueError("search.max_fetch_items must be -1 or positive")
     if config.fetch_batch_size <= 0:
         raise ValueError("search.fetch_batch_size must be positive")
+    if not config.sources:
+        raise ValueError("search.sources must include at least one source")
+
+
+def _parse_sources(value: Any) -> tuple[str, ...]:
+    """Parse and normalize configured source names.
+
+    Args:
+        value: Raw list value from ``search.sources``.
+
+    Returns:
+        Normalized, unique source names in configured order.
+
+    Raises:
+        TypeError: If value is not a string list.
+        ValueError: If list is empty after normalization or contains unknown sources.
+    """
+    items = expect_str_list(value, "search.sources")
+
+    normalized: list[str] = []
+    seen: set[str] = set()
+    for idx, item in enumerate(items):
+        source = expect_str(item, f"search.sources[{idx}]").strip().lower()
+        if not source:
+            continue
+        if source not in _ALLOWED_SOURCES:
+            raise ValueError(f"search.sources has unknown source: {source}")
+        if source in seen:
+            continue
+        seen.add(source)
+        normalized.append(source)
+
+    if not normalized:
+        raise ValueError("search.sources must include at least one source")
+
+    return tuple(normalized)
 
 
 def parse_search_query(value: Any, config_key: str) -> SearchQuery:
