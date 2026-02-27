@@ -5,6 +5,7 @@ from __future__ import annotations
 import random
 import time
 from typing import Any
+from typing import Mapping
 
 import requests
 
@@ -34,11 +35,17 @@ class CrossrefApiClient:
         """Close underlying HTTP session."""
         self._session.close()
 
-    def fetch_works(self, *, query_text: str, max_results: int, timeout: float | None = None) -> list[dict[str, Any]]:
+    def fetch_works(
+        self,
+        *,
+        query_params: Mapping[str, str] | None,
+        max_results: int,
+        timeout: float | None = None,
+    ) -> list[dict[str, Any]]:
         """Fetch work items from Crossref.
 
         Args:
-            query_text: Compiled full-text query.
+            query_params: Compiled Crossref ``query.*`` parameters.
             max_results: Number of items to request.
             timeout: Request timeout in seconds.
 
@@ -50,8 +57,13 @@ class CrossrefApiClient:
             "sort": "updated",
             "order": "desc",
         }
-        if query_text.strip():
-            params["query.bibliographic"] = query_text
+        if query_params:
+            for key, value in query_params.items():
+                normalized_key = str(key).strip()
+                normalized_value = str(value).strip()
+                if not normalized_key or not normalized_value:
+                    continue
+                params[normalized_key] = normalized_value
 
         response = self._get_with_retry(params=params, timeout=timeout or DEFAULT_TIMEOUT)
         response.raise_for_status()
