@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING, Sequence
 
 from PaperTracker.core.models import Paper
@@ -9,6 +10,8 @@ from PaperTracker.utils.log import log
 
 if TYPE_CHECKING:
     from PaperTracker.storage.db import DatabaseManager
+
+_DOI_PREFIX_RE = re.compile(r"^(https?://(dx\.)?doi\.org/|doi:)", re.IGNORECASE)
 
 
 class SqliteDeduplicateStore:
@@ -35,21 +38,62 @@ class SqliteDeduplicateStore:
         if not papers:
             return []
 
-        placeholders = ",".join("?" * len(papers))
-        query = f"""
-            SELECT source_id FROM seen_papers
-            WHERE source = ? AND source_id IN ({placeholders})
-        """
+        source_to_ids: dict[str, list[str]] = {}
+        for paper in papers:
+            source_to_ids.setdefault(paper.source, []).append(paper.id)
 
-        cursor = self.conn.execute(
-            query,
-            [papers[0].source] + [p.id for p in papers]
-        )
-        seen_ids = {row[0] for row in cursor}
+        seen_pairs = self._fetch_seen_pairs(source_to_ids)
+        seen_doi_norms = self._fetch_seen_doi_norms(papers)
 
-        new_papers = [p for p in papers if p.id not in seen_ids]
+        new_papers: list[Paper] = []
+        for paper in papers:
+            if (paper.source, paper.id) in seen_pairs:
+                continue
+            doi_norm = normalize_doi(paper.doi)
+            if doi_norm and doi_norm in seen_doi_norms:
+                continue
+            new_papers.append(paper)
+
         log.debug("Filtered %d new papers out of %d total", len(new_papers), len(papers))
         return new_papers
+
+    def _fetch_seen_pairs(self, source_to_ids: dict[str, list[str]]) -> set[tuple[str, str]]:
+        """Fetch persisted `(source, source_id)` keys for candidates."""
+        clauses: list[str] = []
+        params: list[str] = []
+        for source, ids in source_to_ids.items():
+            if not ids:
+                continue
+            placeholders = ",".join("?" for _ in ids)
+            clauses.append(f"(source = ? AND source_id IN ({placeholders}))")
+            params.append(source)
+            params.extend(ids)
+
+        if not clauses:
+            return set()
+
+        query = "SELECT source, source_id FROM seen_papers WHERE " + " OR ".join(clauses)
+        cursor = self.conn.execute(query, params)
+        return {(row[0], row[1]) for row in cursor}
+
+    def _fetch_seen_doi_norms(self, papers: Sequence[Paper]) -> set[str]:
+        """Fetch persisted normalized DOI values for candidates."""
+        doi_norms_set: set[str] = set()
+        for paper in papers:
+            doi_norm = normalize_doi(paper.doi)
+            if doi_norm:
+                doi_norms_set.add(doi_norm)
+        doi_norms = sorted(doi_norms_set)
+        if not doi_norms:
+            return set()
+
+        placeholders = ",".join("?" for _ in doi_norms)
+        query = f"""
+            SELECT doi_norm FROM seen_papers
+            WHERE doi_norm IN ({placeholders})
+        """
+        cursor = self.conn.execute(query, doi_norms)
+        return {row[0] for row in cursor if isinstance(row[0], str) and row[0]}
 
     def mark_seen(self, papers: Sequence[Paper]) -> None:
         """Mark papers as seen in the state store.
@@ -96,7 +140,8 @@ class ReadOnlyDeduplicateStore:
             real_store: The real deduplication store.
         """
         self.real_store = real_store
-        self.session_seen: set[str] = set()
+        self.session_seen_pairs: set[tuple[str, str]] = set()
+        self.session_seen_doi_norms: set[str] = set()
 
     def filter_new(self, papers: Sequence[Paper]) -> list[Paper]:
         """Filter papers using both DB state and session cache.
@@ -109,7 +154,14 @@ class ReadOnlyDeduplicateStore:
         """
         new_from_db = self.real_store.filter_new(papers)
 
-        result = [p for p in new_from_db if p.id not in self.session_seen]
+        result: list[Paper] = []
+        for paper in new_from_db:
+            if (paper.source, paper.id) in self.session_seen_pairs:
+                continue
+            doi_norm = normalize_doi(paper.doi)
+            if doi_norm and doi_norm in self.session_seen_doi_norms:
+                continue
+            result.append(paper)
 
         log.debug(
             "Read-only filter: %d papers → %d new from DB → %d after session filter",
@@ -130,9 +182,21 @@ class ReadOnlyDeduplicateStore:
             return
 
         for paper in papers:
-            self.session_seen.add(paper.id)
+            self.session_seen_pairs.add((paper.source, paper.id))
+            doi_norm = normalize_doi(paper.doi)
+            if doi_norm:
+                self.session_seen_doi_norms.add(doi_norm)
 
         log.info(
             "[read-only] Marked %d papers as seen (memory only, no DB write)",
             len(papers),
         )
+
+
+def normalize_doi(doi: str | None) -> str:
+    """Normalize DOI text into canonical value used by deduplication checks."""
+    if doi is None:
+        return ""
+    normalized = doi.strip().lower()
+    normalized = _DOI_PREFIX_RE.sub("", normalized)
+    return normalized.strip()

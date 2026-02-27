@@ -82,6 +82,7 @@ queries:
 
         self.assertEqual(cfg.runtime.level, "DEBUG")
         self.assertEqual(cfg.search.max_results, 10)
+        self.assertEqual(cfg.search.sources, ("arxiv",))
         self.assertEqual(cfg.output.formats, ("console",))
         self.assertEqual(len(cfg.search.queries), 1)
         self.assertEqual(cfg.search.queries[0].name, "override")
@@ -95,6 +96,7 @@ queries:
 
         self.assertEqual(cfg.runtime.level, "INFO")
         self.assertEqual(cfg.search.max_results, 5)
+        self.assertEqual(cfg.search.sources, ("arxiv",))
         self.assertEqual(len(cfg.search.queries), 1)
         self.assertEqual(cfg.search.queries[0].name, "base")
 

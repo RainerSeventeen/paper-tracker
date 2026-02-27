@@ -74,6 +74,7 @@ class TestConfigLayering(unittest.TestCase):
         self.assertEqual(cfg.search.max_results, 5)
         self.assertEqual(cfg.storage.db_path, "database/papers.db")
         self.assertEqual(cfg.search.queries[0].name, "q1")
+        self.assertEqual(cfg.search.sources, ("arxiv",))
 
     def test_output_unknown_format_error_contains_key(self) -> None:
         raw = _base_raw_config()
@@ -141,6 +142,24 @@ class TestConfigLayering(unittest.TestCase):
         self.assertIsNotNone(cfg.search.scope)
         assert cfg.search.scope is not None
         self.assertIn("CATEGORY", cfg.search.scope.fields)
+
+    def test_search_sources_normalization(self) -> None:
+        raw = deepcopy(_base_raw_config())
+        raw["search"]["sources"] = ["ArXiv", "arxiv"]
+        cfg = parse_config_dict(raw)
+        self.assertEqual(cfg.search.sources, ("arxiv",))
+
+    def test_search_sources_unknown_value(self) -> None:
+        raw = deepcopy(_base_raw_config())
+        raw["search"]["sources"] = ["arxiv", "unknown"]
+        with self.assertRaisesRegex(ValueError, "search\\.sources"):
+            parse_config_dict(raw)
+
+    def test_search_sources_empty_after_normalization(self) -> None:
+        raw = deepcopy(_base_raw_config())
+        raw["search"]["sources"] = ["  "]
+        with self.assertRaisesRegex(ValueError, "search\\.sources"):
+            parse_config_dict(raw)
 
 
 if __name__ == "__main__":

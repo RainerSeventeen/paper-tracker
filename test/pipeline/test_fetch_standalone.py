@@ -169,7 +169,6 @@ def main():
         scope=config.search.scope,
         keep_version=config.storage.keep_arxiv_version,
         search_config=config.search,
-        dedup_store=dedup_store,
     )
 
     # Determine query set to run

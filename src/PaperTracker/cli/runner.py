@@ -91,8 +91,9 @@ class CommandRunner:
             log.error("Search failed: %s", e)
             raise click.Abort from e
         finally:
-            source = getattr(search_service, "source", None)
-            client = getattr(source, "client", None)
-            close_func = getattr(client, "close", None)
+            close_func = getattr(search_service, "close", None)
             if callable(close_func):
-                close_func()
+                try:
+                    close_func()
+                except Exception as e:  # noqa: BLE001 - cli boundary
+                    log.warning("Search service close failed at CLI boundary: %s", e)
