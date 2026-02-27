@@ -5,14 +5,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import re
-from typing import TYPE_CHECKING, Protocol, Sequence
+from typing import Protocol, Sequence
 
 from PaperTracker.core.models import Paper
 from PaperTracker.core.query import SearchQuery
 from PaperTracker.utils.log import log
-
-if TYPE_CHECKING:
-    from PaperTracker.storage.deduplicate import SqliteDeduplicateStore
 
 _TITLE_WS_RE = re.compile(r"\s+")
 _TITLE_STRIP_RE = re.compile(r"[^a-z0-9 ]")
@@ -44,7 +41,6 @@ class PaperSearchService:
     """Application service that searches papers across configured sources."""
 
     sources: tuple[PaperSource, ...]
-    dedup_store: SqliteDeduplicateStore | None = None
 
     def search(
         self,
@@ -83,8 +79,6 @@ class PaperSearchService:
 
         ranked = self._sort_papers(aggregated)
         unique_papers = self._deduplicate_in_batch(ranked)
-        if self.dedup_store:
-            unique_papers = self.dedup_store.filter_new(unique_papers)
         return unique_papers[:max_results]
 
     def close(self) -> None:

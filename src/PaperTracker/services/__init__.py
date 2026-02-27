@@ -34,7 +34,7 @@ def create_search_service(
         for source_name in config.search.sources
     ]
 
-    return PaperSearchService(sources=tuple(sources), dedup_store=dedup_store)
+    return PaperSearchService(sources=tuple(sources))
 
 
 __all__ = [

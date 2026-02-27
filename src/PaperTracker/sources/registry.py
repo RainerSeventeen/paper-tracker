@@ -44,7 +44,6 @@ def _source_builders() -> dict[str, SourceBuilder]:
 
 def _build_arxiv_source(config: AppConfig, dedup_store: SqliteDeduplicateStore | None) -> PaperSource:
     """Build arXiv source."""
-    del dedup_store
     from PaperTracker.sources.arxiv.client import ArxivApiClient
     from PaperTracker.sources.arxiv.source import ArxivSource
 
@@ -53,6 +52,7 @@ def _build_arxiv_source(config: AppConfig, dedup_store: SqliteDeduplicateStore |
         scope=config.search.scope,
         keep_version=config.storage.keep_arxiv_version,
         search_config=config.search,
+        dedup_store=dedup_store,
     )
 
 
