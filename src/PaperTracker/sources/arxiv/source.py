@@ -17,6 +17,7 @@ from PaperTracker.sources.arxiv.parser import parse_arxiv_feed
 
 if TYPE_CHECKING:
     from PaperTracker.config import SearchConfig
+    from PaperTracker.storage.deduplicate import SqliteDeduplicateStore
 
 
 @dataclass(slots=True)
@@ -33,6 +34,7 @@ class ArxivSource:
     scope: SearchQuery | None = None
     keep_version: bool = False
     search_config: SearchConfig | None = None
+    dedup_store: SqliteDeduplicateStore | None = None
 
     def search(
         self,
@@ -67,7 +69,7 @@ class ArxivSource:
             scope=self.scope,
             policy=policy,
             fetch_page_func=self._fetch_page,
-            dedup_store=None,
+            dedup_store=self.dedup_store,
         )
 
     def _fetch_page(
