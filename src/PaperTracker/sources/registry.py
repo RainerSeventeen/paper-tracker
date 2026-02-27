@@ -36,7 +36,9 @@ def _source_builders() -> dict[str, SourceBuilder]:
     """Return source builder registry."""
     return {
         "arxiv": _build_arxiv_source,
-        "crossref": _build_crossref_source,
+        # NOTE: crossref is temporarily disabled — data quality issues.
+        # To re-enable, uncomment the entry below and the _build_crossref_source function.
+        # "crossref": _build_crossref_source,
     }
 
 
@@ -54,13 +56,15 @@ def _build_arxiv_source(config: AppConfig, dedup_store: SqliteDeduplicateStore |
     )
 
 
-def _build_crossref_source(config: AppConfig, dedup_store: SqliteDeduplicateStore | None) -> PaperSource:
-    """Build Crossref source."""
-    del dedup_store
-    from PaperTracker.sources.crossref.client import CrossrefApiClient
-    from PaperTracker.sources.crossref.source import CrossrefSource
-
-    return CrossrefSource(
-        client=CrossrefApiClient(),
-        scope=config.search.scope,
-    )
+# NOTE: crossref is temporarily disabled — data quality issues.
+# Preserved for future use. To re-enable, register in _source_builders above.
+# def _build_crossref_source(config: AppConfig, dedup_store: SqliteDeduplicateStore | None) -> PaperSource:
+#     """Build Crossref source."""
+#     del dedup_store
+#     from PaperTracker.sources.crossref.client import CrossrefApiClient
+#     from PaperTracker.sources.crossref.source import CrossrefSource
+#
+#     return CrossrefSource(
+#         client=CrossrefApiClient(),
+#         scope=config.search.scope,
+#     )

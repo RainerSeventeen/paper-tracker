@@ -145,9 +145,9 @@ class TestConfigLayering(unittest.TestCase):
 
     def test_search_sources_normalization(self) -> None:
         raw = deepcopy(_base_raw_config())
-        raw["search"]["sources"] = ["ArXiv", "crossref", "arxiv"]
+        raw["search"]["sources"] = ["ArXiv", "arxiv"]
         cfg = parse_config_dict(raw)
-        self.assertEqual(cfg.search.sources, ("arxiv", "crossref"))
+        self.assertEqual(cfg.search.sources, ("arxiv",))
 
     def test_search_sources_unknown_value(self) -> None:
         raw = deepcopy(_base_raw_config())

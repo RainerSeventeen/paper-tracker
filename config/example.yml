@@ -14,7 +14,7 @@ storage:
   keep_arxiv_version: false       # false: 2601.21922, true: 2601.21922v1
 
 search:
-  sources: [arxiv, crossref] # optional, default: [arxiv]
+  sources: [arxiv] # optional, default: [arxiv]
   max_results: 3              # max paper count for each query
   pull_every: 7               # Strict time window filter[now - <pull_every>, now], unit: day
   fill_enabled: true          # Allow fill with paper outside the strict time window
