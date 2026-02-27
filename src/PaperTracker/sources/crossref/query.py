@@ -1,7 +1,8 @@
-"""Crossref query compiler."""
+"""Crossref query compiler and post-fetch filters."""
 
 from __future__ import annotations
 
+from PaperTracker.core.models import Paper
 from PaperTracker.core.query import SearchQuery
 
 
@@ -24,6 +25,30 @@ def compile_crossref_query(*, query: SearchQuery, scope: SearchQuery | None = No
     parts = [term for term in unique_positive]
     parts.extend(f"-{term}" for term in unique_negative)
     return " ".join(parts).strip()
+
+
+def extract_not_terms(*, query: SearchQuery, scope: SearchQuery | None = None) -> frozenset[str]:
+    """Extract all NOT terms from query and optional scope for post-fetch filtering."""
+    not_terms: list[str] = []
+    for source_query in (scope, query):
+        if source_query is None:
+            continue
+        for field_query in source_query.fields.values():
+            not_terms.extend(_normalize_terms(field_query.NOT))
+    return frozenset(term.casefold() for term in not_terms)
+
+
+def apply_not_filter(papers: list[Paper], not_terms: frozenset[str]) -> list[Paper]:
+    """Filter out papers whose title or abstract contains any NOT term (case-insensitive)."""
+    if not not_terms:
+        return papers
+    return [p for p in papers if not _paper_matches_not_term(p, not_terms)]
+
+
+def _paper_matches_not_term(paper: Paper, not_terms: frozenset[str]) -> bool:
+    """Return True if paper title or abstract contains any NOT term."""
+    haystack = f"{paper.title} {paper.abstract}".casefold()
+    return any(term in haystack for term in not_terms)
 
 
 def _normalize_terms(terms: object) -> list[str]:
