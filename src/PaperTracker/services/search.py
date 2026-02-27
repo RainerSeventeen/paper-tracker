@@ -89,10 +89,18 @@ class PaperSearchService:
 
     def close(self) -> None:
         """Close all sources and release external resources."""
+        failed_sources: list[str] = []
         for source in self.sources:
             close_func = getattr(source, "close", None)
             if callable(close_func):
-                close_func()
+                source_name = getattr(source, "name", "unknown")
+                try:
+                    close_func()
+                except Exception as error:  # noqa: BLE001 - close failure must be isolated
+                    failed_sources.append(source_name)
+                    log.warning("Search source close failed: source=%s error=%s", source_name, error)
+        if failed_sources:
+            log.warning("Search service close completed with failures: %s", ", ".join(failed_sources))
 
     def _deduplicate_in_batch(self, papers: Sequence[Paper]) -> list[Paper]:
         """Deduplicate papers inside a single search batch."""

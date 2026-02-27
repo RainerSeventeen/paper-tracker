@@ -31,6 +31,18 @@ class _StubSource:
         return
 
 
+class _CloseStubSource(_StubSource):
+    def __init__(self, *, name: str, should_fail_close: bool = False) -> None:
+        super().__init__(name=name, papers=[])
+        self.should_fail_close = should_fail_close
+        self.closed = False
+
+    def close(self) -> None:
+        self.closed = True
+        if self.should_fail_close:
+            raise RuntimeError(f"{self.name} close failed")
+
+
 class TestPaperSearchServiceMultiSource(unittest.TestCase):
     def test_dedup_by_doi_prefers_source_priority(self) -> None:
         query = SearchQuery(name="q", fields={})
@@ -151,6 +163,16 @@ class TestPaperSearchServiceMultiSource(unittest.TestCase):
 
         with self.assertRaisesRegex(RuntimeError, "All search sources failed"):
             service.search(query, max_results=10)
+
+    def test_close_isolates_source_errors(self) -> None:
+        healthy = _CloseStubSource(name="arxiv")
+        failing = _CloseStubSource(name="crossref", should_fail_close=True)
+        service = PaperSearchService(sources=(failing, healthy))
+
+        service.close()
+
+        self.assertTrue(failing.closed)
+        self.assertTrue(healthy.closed)
 
 
 if __name__ == "__main__":

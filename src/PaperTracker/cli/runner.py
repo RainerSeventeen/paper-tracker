@@ -93,4 +93,7 @@ class CommandRunner:
         finally:
             close_func = getattr(search_service, "close", None)
             if callable(close_func):
-                close_func()
+                try:
+                    close_func()
+                except Exception as e:  # noqa: BLE001 - cli boundary
+                    log.warning("Search service close failed at CLI boundary: %s", e)

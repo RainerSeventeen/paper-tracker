@@ -13,11 +13,12 @@ from PaperTracker.config.common import (
     get_required_value,
     get_section,
 )
+from PaperTracker.sources.registry import supported_source_names
 from PaperTracker.core.query import FieldQuery, SearchQuery
 
 _ALLOWED_FIELDS = {"TITLE", "ABSTRACT", "AUTHOR", "JOURNAL", "CATEGORY"}
 _ALLOWED_OPS = {"AND", "OR", "NOT"}
-_ALLOWED_SOURCES = {"arxiv", "crossref"}
+_ALLOWED_SOURCES = frozenset(supported_source_names())
 
 
 @dataclass(frozen=True, slots=True)
