@@ -18,7 +18,7 @@ _ALLOWED_FORMATS = {"console", "json", "markdown", "html"}
 
 @dataclass(frozen=True, slots=True)
 class OutputConfig:
-    """Output configuration."""
+    """Store validated settings for output rendering and templates."""
 
     base_dir: str
     formats: tuple[str, ...]

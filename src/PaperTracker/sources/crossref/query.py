@@ -16,7 +16,15 @@ _FIELD_TO_PARAMS: dict[str, tuple[str, ...]] = {
 
 
 def compile_crossref_params(*, query: SearchQuery, scope: SearchQuery | None = None) -> dict[str, str]:
-    """Compile internal query structure into Crossref ``query.*`` params."""
+    """Compile structured search conditions into Crossref ``query.*`` parameters.
+
+    Args:
+        query: User-level structured query containing field-level AND/OR/NOT terms.
+        scope: Optional source-level query constraints merged with ``query``.
+
+    Returns:
+        A mapping of Crossref parameter names to compiled query strings.
+    """
     positive_by_param: dict[str, list[str]] = {}
     negative_by_param: dict[str, list[str]] = {}
 
@@ -46,7 +54,15 @@ def compile_crossref_params(*, query: SearchQuery, scope: SearchQuery | None = N
 
 
 def extract_not_terms(*, query: SearchQuery, scope: SearchQuery | None = None) -> frozenset[str]:
-    """Extract all NOT terms from query and optional scope for post-fetch filtering."""
+    """Collect normalized NOT terms for post-fetch content filtering.
+
+    Args:
+        query: User-level structured query containing field-level NOT terms.
+        scope: Optional source-level query constraints merged with ``query``.
+
+    Returns:
+        A casefolded set of NOT terms used for local filtering.
+    """
     not_terms: list[str] = []
     for source_query in (scope, query):
         if source_query is None:
@@ -57,7 +73,15 @@ def extract_not_terms(*, query: SearchQuery, scope: SearchQuery | None = None) -
 
 
 def apply_not_filter(papers: list[Paper], not_terms: frozenset[str]) -> list[Paper]:
-    """Filter out papers whose title or abstract contains any NOT term (case-insensitive)."""
+    """Remove papers whose title or abstract contains any NOT term.
+
+    Args:
+        papers: Candidate papers returned from Crossref.
+        not_terms: Case-insensitive NOT terms to exclude from results.
+
+    Returns:
+        A filtered list of papers that do not match any NOT term.
+    """
     if not not_terms:
         return papers
     return [p for p in papers if not _paper_matches_not_term(p, not_terms)]

@@ -15,7 +15,7 @@ from PaperTracker.config.common import (
 
 @dataclass(frozen=True, slots=True)
 class StorageConfig:
-    """Storage configuration."""
+    """Store validated persistence and arXiv ID handling settings."""
 
     enabled: bool
     db_path: str

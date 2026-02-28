@@ -17,7 +17,7 @@ _ALLOWED_LOG_LEVELS = {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}
 
 @dataclass(frozen=True, slots=True)
 class RuntimeConfig:
-    """Runtime configuration."""
+    """Store validated runtime behavior settings."""
 
     level: str
     to_file: bool

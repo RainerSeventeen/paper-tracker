@@ -20,7 +20,19 @@ class OutputError(RuntimeError):
 
 
 def load_template(template_dir: str, filename: str) -> str:
-    """Load a template file from the configured directory."""
+    """Load a template file from the configured template directory.
+
+    Args:
+        template_dir: Base template directory from configuration.
+        filename: Template file name relative to ``template_dir``.
+
+    Returns:
+        Template content decoded as UTF-8 text.
+
+    Raises:
+        TemplateError: If the resolved path escapes project root or file reading fails.
+        TemplateNotFoundError: If the target template file does not exist.
+    """
     root = Path.cwd().resolve()
     base_dir = Path(template_dir)
     if not base_dir.is_absolute():
@@ -41,7 +53,14 @@ def load_template(template_dir: str, filename: str) -> str:
 
 
 def query_label(query: SearchQuery) -> str:
-    """Return a human-readable label for the query."""
+    """Build a display label for a query in rendered outputs.
+
+    Args:
+        query: Search query object to label.
+
+    Returns:
+        The query name when available, otherwise ``"query"``.
+    """
     if query.name:
         return query.name
     return "query"

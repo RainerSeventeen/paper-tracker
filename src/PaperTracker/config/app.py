@@ -18,7 +18,7 @@ from PaperTracker.config.storage import StorageConfig, check_storage, load_stora
 
 @dataclass(frozen=True, slots=True)
 class AppConfig:
-    """Application root configuration."""
+    """Aggregate all domain configurations for the application."""
 
     runtime: RuntimeConfig
     search: SearchConfig
@@ -28,7 +28,14 @@ class AppConfig:
 
 
 def parse_config_dict(raw: Mapping[str, Any]) -> AppConfig:
-    """Parse normalized mapping into AppConfig."""
+    """Parse a root mapping into a validated application configuration.
+
+    Args:
+        raw: Root configuration mapping loaded from YAML.
+
+    Returns:
+        AppConfig: Parsed and validated application configuration.
+    """
     runtime = load_runtime(raw)
     search = load_search(raw)
     output = load_output(raw)
@@ -69,7 +76,11 @@ def load_config_with_defaults(
 
 
 def check_cross_domain(config: AppConfig) -> None:
-    """Validate cross-domain constraints."""
+    """Validate constraints that span multiple configuration domains.
+
+    Args:
+        config: Parsed application configuration to validate.
+    """
     # No cross-domain hard constraints at the moment.
     pass
 

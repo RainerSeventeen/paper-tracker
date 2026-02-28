@@ -19,7 +19,7 @@ from PaperTracker.config.common import (
 
 @dataclass(frozen=True, slots=True)
 class LLMConfig:
-    """LLM configuration."""
+    """Store validated LLM settings for enrichment tasks."""
 
     enabled: bool
     provider: str

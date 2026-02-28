@@ -53,11 +53,21 @@ class MultiOutputWriter(OutputWriter):
         query: SearchQuery,
         scope: SearchQuery | None,
     ) -> None:
-        """Send query results to all writers."""
+        """Dispatch a query result to every configured output writer.
+
+        Args:
+            papers: Paper view models produced by the current query.
+            query: The query whose result is being written.
+            scope: Optional global scope merged into query execution.
+        """
         for writer in self.writers:
             writer.write_query_result(papers, query, scope)
 
     def finalize(self, action: str) -> None:
-        """Finalize all writers."""
+        """Finalize all delegated writers for the current command.
+
+        Args:
+            action: CLI action name used by writers during finalization.
+        """
         for writer in self.writers:
             writer.finalize(action)

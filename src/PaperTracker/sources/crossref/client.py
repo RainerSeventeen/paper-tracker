@@ -25,14 +25,16 @@ HEADERS = {
 
 
 class CrossrefApiClient:
-    """Low-level HTTP client for Crossref REST API."""
+    """Low-level HTTP client for the Crossref REST API."""
 
     def __init__(self) -> None:
-        """Initialize Crossref client with a reusable HTTP session."""
+        """Initialize the client with a reusable HTTP session.
+        """
         self._session = requests.Session()
 
     def close(self) -> None:
-        """Close underlying HTTP session."""
+        """Close the underlying HTTP session.
+        """
         self._session.close()
 
     def fetch_works(

@@ -85,7 +85,15 @@ class LLMService:
         papers: Sequence[Paper],
         infos: Sequence[LLMGeneratedInfo],
     ) -> list[Paper]:
-        """Attach LLM-generated info into paper extra fields."""
+        """Merge generated LLM information into paper ``extra`` payloads.
+
+        Args:
+            papers: Original papers to enrich.
+            infos: Generated LLM outputs keyed by source and paper id.
+
+        Returns:
+            A new list of papers where matched items contain translation and summary data.
+        """
         info_map = {(info.source, info.source_id): info for info in infos}
 
         enriched: list[Paper] = []

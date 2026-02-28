@@ -78,5 +78,8 @@ class ConsoleOutputWriter(OutputWriter):
             log.info(line)
 
     def finalize(self, action: str) -> None:
-        """No-op for console output."""
+        """Finalize console output writer.
 
+        Args:
+            action: CLI action name for interface consistency with file writers.
+        """
