@@ -23,7 +23,7 @@ _ALLOWED_SOURCES = frozenset(supported_source_names())
 
 @dataclass(frozen=True, slots=True)
 class SearchConfig:
-    """Search domain configuration."""
+    """Store validated search behavior, sources, and query settings."""
 
     scope: SearchQuery | None
     queries: tuple[SearchQuery, ...]

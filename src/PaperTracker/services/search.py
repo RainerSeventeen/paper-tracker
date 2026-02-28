@@ -28,11 +28,20 @@ class PaperSource(Protocol):
         *,
         max_results: int,
     ) -> Sequence[Paper]:
-        """Search papers using this source."""
+        """Search papers from this source using a structured query.
+
+        Args:
+            query: Source-agnostic query object describing search terms and fields.
+            max_results: Maximum number of papers to return for this call.
+
+        Returns:
+            A sequence of normalized ``Paper`` objects from this source.
+        """
         raise NotImplementedError
 
     def close(self) -> None:
-        """Close resources held by source."""
+        """Release resources held by this source implementation.
+        """
         raise NotImplementedError
 
 
@@ -82,7 +91,8 @@ class PaperSearchService:
         return unique_papers[:max_results]
 
     def close(self) -> None:
-        """Close all sources and release external resources."""
+        """Close all configured sources and release external resources.
+        """
         failed_sources: list[str] = []
         for source in self.sources:
             close_func = getattr(source, "close", None)

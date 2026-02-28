@@ -39,11 +39,13 @@ class ArxivApiClient:
     """
 
     def __init__(self) -> None:
-        """Create an arXiv API client backed by a requests session."""
+        """Initialize the client with a reusable HTTP session.
+        """
         self._session = requests.Session()
 
     def close(self) -> None:
-        """Close underlying HTTP session and release pooled connections."""
+        """Close the underlying HTTP session and release pooled connections.
+        """
         self._session.close()
 
     def __enter__(self) -> ArxivApiClient:

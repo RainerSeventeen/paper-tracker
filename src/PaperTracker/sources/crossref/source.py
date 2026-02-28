@@ -13,14 +13,22 @@ from PaperTracker.sources.crossref.query import apply_not_filter, compile_crossr
 
 @dataclass(slots=True)
 class CrossrefSource:
-    """Crossref-backed paper source implementation."""
+    """Crossref-backed source adapter that returns normalized papers."""
 
     client: CrossrefApiClient
     scope: SearchQuery | None = None
     name: str = "crossref"
 
     def search(self, query: SearchQuery, *, max_results: int) -> list[Paper]:
-        """Search papers from Crossref REST API."""
+        """Search papers from Crossref and normalize the result set.
+
+        Args:
+            query: Structured user query to compile into Crossref parameters.
+            max_results: Maximum number of items requested from Crossref.
+
+        Returns:
+            A list of normalized ``Paper`` objects filtered by NOT terms.
+        """
         query_params = compile_crossref_params(query=query, scope=self.scope)
         items = self.client.fetch_works(query_params=query_params, max_results=max_results)
         papers = parse_crossref_items(items)
@@ -28,5 +36,6 @@ class CrossrefSource:
         return apply_not_filter(papers, not_terms)
 
     def close(self) -> None:
-        """Close source resources."""
+        """Close resources held by the Crossref source adapter.
+        """
         self.client.close()

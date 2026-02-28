@@ -102,5 +102,6 @@ class ArxivSource:
         return list(parse_arxiv_feed(xml, keep_version=self.keep_version))
 
     def close(self) -> None:
-        """Close source resources."""
+        """Close resources held by the arXiv source adapter.
+        """
         self.client.close()

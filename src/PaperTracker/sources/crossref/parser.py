@@ -16,7 +16,14 @@ _WHITESPACE_RE = re.compile(r"\s+")
 
 
 def parse_crossref_items(items: Sequence[Mapping[str, Any]]) -> list[Paper]:
-    """Parse Crossref work items into unified Paper objects."""
+    """Convert Crossref work payloads into normalized ``Paper`` objects.
+
+    Args:
+        items: Crossref ``message.items`` records represented as mapping objects.
+
+    Returns:
+        A list of ``Paper`` objects in the internal unified schema.
+    """
     papers: list[Paper] = []
 
     for item in items:

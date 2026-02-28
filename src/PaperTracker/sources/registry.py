@@ -19,7 +19,19 @@ def build_source(
     config: AppConfig,
     dedup_store: SqliteDeduplicateStore | None,
 ) -> PaperSource:
-    """Build one source instance by registry name."""
+    """Build a paper source instance from the registered source name.
+
+    Args:
+        source_name: Source identifier from ``search.sources``.
+        config: Parsed application configuration.
+        dedup_store: Optional deduplication store shared by sources.
+
+    Returns:
+        PaperSource: Initialized source implementation for the given name.
+
+    Raises:
+        ValueError: If ``source_name`` is not registered.
+    """
     registry = _source_builders()
     builder = registry.get(source_name)
     if builder is None:
@@ -28,7 +40,11 @@ def build_source(
 
 
 def supported_source_names() -> tuple[str, ...]:
-    """Return all supported source names."""
+    """Return all source names that can be built by the registry.
+
+    Returns:
+        tuple[str, ...]: Source names in registry order.
+    """
     return tuple(_source_builders().keys())
 
 

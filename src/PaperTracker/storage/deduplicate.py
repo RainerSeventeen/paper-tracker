@@ -194,7 +194,14 @@ class ReadOnlyDeduplicateStore:
 
 
 def normalize_doi(doi: str | None) -> str:
-    """Normalize DOI text into canonical value used by deduplication checks."""
+    """Normalize DOI text into a canonical key for deduplication.
+
+    Args:
+        doi: Raw DOI value that may include URL or ``doi:`` prefixes.
+
+    Returns:
+        Lower-cased DOI without known prefixes, or an empty string when input is missing.
+    """
     if doi is None:
         return ""
     normalized = doi.strip().lower()
