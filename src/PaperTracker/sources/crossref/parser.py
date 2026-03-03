@@ -54,6 +54,7 @@ def parse_crossref_items(items: Sequence[Mapping[str, Any]]) -> list[Paper]:
                 categories=subjects,
                 links=PaperLinks(abstract=_safe_str(item.get("URL")) or None),
                 doi=doi,
+                extra={"work_type": _extract_work_type(item)},
             )
         )
 
@@ -194,6 +195,16 @@ def _extract_year(item: Mapping[str, Any]) -> int | None:
         ):
             return date_parts[0][0]
     return None
+
+
+def _extract_work_type(item: Mapping[str, Any]) -> str:
+    """Map Crossref record type into dedup-oriented coarse class."""
+    raw_type = _safe_str(item.get("type")).casefold()
+    if raw_type in {"journal-article", "proceedings-article", "book-chapter", "article"}:
+        return "article"
+    if raw_type in {"posted-content", "preprint"}:
+        return "preprint"
+    return "unknown"
 
 
 def _clean_abstract(text: str) -> str:

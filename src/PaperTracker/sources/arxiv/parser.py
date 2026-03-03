@@ -70,6 +70,7 @@ def parse_arxiv_feed(xml_text: str, *, keep_version: bool = False) -> Sequence[P
                 categories=categories,
                 links=PaperLinks(abstract=abstract_url, pdf=pdf_url),
                 doi=doi,
+                extra={"work_type": "preprint"},
             )
         )
     return items

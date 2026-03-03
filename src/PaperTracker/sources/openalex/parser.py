@@ -46,6 +46,7 @@ def parse_openalex_works(items: Sequence[Mapping[str, Any]]) -> list[Paper]:
                 categories=categories,
                 links=PaperLinks(abstract=abstract_url, pdf=pdf_url),
                 doi=doi or None,
+                extra={"work_type": _extract_work_type(item)},
             )
         )
 
@@ -188,6 +189,16 @@ def _extract_links(item: Mapping[str, Any]) -> tuple[str | None, str | None]:
             abstract_url = oa_url
 
     return abstract_url, pdf_url
+
+
+def _extract_work_type(item: Mapping[str, Any]) -> str:
+    """Map OpenAlex work type into dedup-oriented coarse class."""
+    raw_type = _safe_str(item.get("type")).casefold()
+    if raw_type in {"article", "journal-article", "proceedings-article", "book-chapter"}:
+        return "article"
+    if raw_type in {"preprint", "posted-content"}:
+        return "preprint"
+    return "unknown"
 
 
 def _rebuild_abstract(raw_index: Any) -> str:
