@@ -3,7 +3,8 @@
 - 📚 **Source**: {source}
 - ✍️ **Authors**: {authors}
 - 🆔 **DOI**: {doi}
-- 📅 **Date**: {updated}
+- 📅 **Published**: {published}
+- 🔄 **Updated**: {updated}
 - 🏷️ **Categories**: **{primary_category}**; {categories}
 - 📥 **PDF**: {pdf_url}
 
