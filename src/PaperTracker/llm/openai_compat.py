@@ -1,4 +1,7 @@
-"""OpenAI-compatible LLM provider implementation."""
+"""OpenAI-Compatible Provider Implementation.
+
+Builds prompts and parses structured JSON outputs for translation and summary generation with an OpenAI-compatible provider.
+"""
 
 from __future__ import annotations
 

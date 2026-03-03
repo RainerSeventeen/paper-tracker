@@ -1,4 +1,7 @@
-"""Crossref payload parser."""
+"""Crossref Payload Parsing.
+
+Converts raw Crossref `message.items` payloads into normalized paper models, including metadata cleanup and datetime extraction.
+"""
 
 from __future__ import annotations
 

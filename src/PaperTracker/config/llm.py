@@ -1,4 +1,7 @@
-"""LLM domain configuration for enrichment pipeline."""
+"""LLM Domain Configuration.
+
+Defines loading and validation for LLM settings used by the enrichment pipeline, including provider, model, and retry behavior.
+"""
 
 from __future__ import annotations
 

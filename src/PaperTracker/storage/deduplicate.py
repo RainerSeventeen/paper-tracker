@@ -1,4 +1,7 @@
-"""Deduplication store implementation."""
+"""Deduplication persistence layer.
+
+Tracks seen papers in SQLite and filters incoming batches using source identifiers and normalized DOI values.
+"""
 
 from __future__ import annotations
 

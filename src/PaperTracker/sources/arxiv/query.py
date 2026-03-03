@@ -1,22 +1,6 @@
-"""arXiv query compiler.
+"""arXiv Query Compilation.
 
-Compiles the internal, structured `SearchQuery` into an arXiv Atom API
-`search_query` string.
-
-Rules
-- Field names in the internal schema are semantic and uppercase:
-  TITLE / ABSTRACT / AUTHOR / JOURNAL / CATEGORY
-- Terms without special syntax are treated as raw values.
-- For a given field, the config supports three explicit operators:
-  AND / OR / NOT
-
-Mapping to arXiv fields
-- TEXT     -> (ti OR abs)
-- TITLE    -> ti
-- ABSTRACT -> abs
-- AUTHOR   -> au
-- CATEGORY -> cat
-- JOURNAL  -> (jr OR co)  (best-effort; arXiv does not have a strict journal field)
+Compiles internal structured search queries into arXiv Atom API `search_query` expressions with field mapping and operator handling.
 """
 
 from __future__ import annotations

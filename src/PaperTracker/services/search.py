@@ -1,4 +1,7 @@
-"""Search service layer for multi-source paper aggregation."""
+"""Paper Search Service Layer.
+
+Orchestrates querying multiple paper sources, then sorts and deduplicates aggregated results.
+"""
 
 from __future__ import annotations
 

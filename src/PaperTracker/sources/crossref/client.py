@@ -1,4 +1,7 @@
-"""Crossref API client."""
+"""Crossref API Client.
+
+Provides a low-level HTTP client for the Crossref works endpoint with parameter handling and retry logic.
+"""
 
 from __future__ import annotations
 

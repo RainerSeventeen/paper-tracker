@@ -1,4 +1,7 @@
-"""Markdown output renderers."""
+"""Markdown rendering components.
+
+Renders paper view models into Markdown sections and complete documents, and persists rendered output files.
+"""
 
 from __future__ import annotations
 

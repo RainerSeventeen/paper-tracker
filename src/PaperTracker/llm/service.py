@@ -1,4 +1,7 @@
-"""LLM service for batch paper enrichment."""
+"""LLM Enrichment Service.
+
+Coordinates batch enrichment with concurrency, calls provider operations, and merges generated outputs into paper objects.
+"""
 
 from __future__ import annotations
 

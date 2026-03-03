@@ -1,4 +1,7 @@
-"""SQLite database utilities."""
+"""SQLite database management.
+
+Manages SQLite connection lifecycle and initialization, ensures database files exist, and applies migrations on startup.
+"""
 
 from __future__ import annotations
 

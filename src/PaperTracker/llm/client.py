@@ -1,4 +1,7 @@
-"""HTTP client for OpenAI-compatible chat completion APIs."""
+"""OpenAI-Compatible API Client.
+
+Implements low-level HTTP calls for chat completion endpoints, including endpoint normalization, retries, and JSON extraction helpers.
+"""
 
 from __future__ import annotations
 

@@ -1,4 +1,7 @@
-"""Search domain configuration and query DSL parsing."""
+"""Search Domain Configuration.
+
+Parses search configuration and converts query DSL payloads into validated structured query objects.
+"""
 
 from __future__ import annotations
 

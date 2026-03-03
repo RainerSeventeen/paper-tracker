@@ -1,4 +1,7 @@
-"""Application config orchestration and YAML loading entrypoints."""
+"""Application Configuration Composition.
+
+Loads YAML configuration, merges defaults with user overrides, and builds validated application-wide settings across domains.
+"""
 
 from __future__ import annotations
 

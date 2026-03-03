@@ -1,4 +1,7 @@
-"""Template rendering utilities for markdown output."""
+"""Template rendering engine.
+
+Applies placeholder substitution and conditional line rendering for text templates used by output renderers.
+"""
 
 from __future__ import annotations
 

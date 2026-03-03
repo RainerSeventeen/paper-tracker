@@ -1,4 +1,7 @@
-"""Crossref source adapter."""
+"""Crossref Source Adapter.
+
+Wires query compilation, API fetching, payload parsing, and post-filtering into a Crossref source adapter.
+"""
 
 from __future__ import annotations
 

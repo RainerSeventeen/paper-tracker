@@ -1,4 +1,7 @@
-"""Runtime domain configuration (logging, process behavior)."""
+"""Runtime Domain Configuration.
+
+Loads and validates runtime behavior settings for logging level, file output, and log directory configuration.
+"""
 
 from __future__ import annotations
 

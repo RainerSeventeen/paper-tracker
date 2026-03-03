@@ -1,4 +1,7 @@
-"""Crossref query compiler and post-fetch filters."""
+"""Crossref Query Compilation and Filtering.
+
+Compiles structured search conditions into Crossref query parameters and applies local NOT-term filtering.
+"""
 
 from __future__ import annotations
 

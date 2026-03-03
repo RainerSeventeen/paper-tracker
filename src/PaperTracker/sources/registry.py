@@ -1,4 +1,7 @@
-"""Source registry and builders for search sources."""
+"""Search Source Registry.
+
+Defines source builder registration and factory helpers for creating configured source instances and listing supported sources.
+"""
 
 from __future__ import annotations
 

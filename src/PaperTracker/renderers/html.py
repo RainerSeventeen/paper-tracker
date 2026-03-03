@@ -1,4 +1,7 @@
-"""HTML output renderers."""
+"""HTML rendering components.
+
+Renders paper view models into HTML sections and full documents, and writes rendered artifacts to files.
+"""
 
 from __future__ import annotations
 

@@ -1,4 +1,7 @@
-"""Storage domain configuration for persistence and arXiv id behavior."""
+"""Storage Domain Configuration.
+
+Defines loading and validation for persistence settings, including database path, content flags, and arXiv identifier behavior.
+"""
 
 from __future__ import annotations
 

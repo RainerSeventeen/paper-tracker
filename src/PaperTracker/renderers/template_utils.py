@@ -1,4 +1,7 @@
-"""Shared helpers and errors for template-based renderers."""
+"""Template utility helpers.
+
+Defines shared exceptions and helper utilities for template loading safeguards and query labeling behavior.
+"""
 
 from __future__ import annotations
 

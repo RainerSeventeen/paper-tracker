@@ -1,4 +1,7 @@
-"""Output domain configuration for multi-format rendering."""
+"""Output Domain Configuration.
+
+Parses and validates output settings for supported render formats and their template paths.
+"""
 
 from __future__ import annotations
 

@@ -1,14 +1,6 @@
-"""Schema migration mechanism for PaperTracker's SQLite database.
+"""SQLite schema migration runner.
 
-Provides versioned, ordered migrations that are applied automatically at
-DatabaseManager initialization time. Each migration runs in an explicit
-transaction; failures roll back atomically, leaving the database in a safe
-state.
-
-Migration SQL lives in individual modules under the ``migrations/`` sub-package
-(one file per version, named ``vNNN_<description>.py``).  Each module exposes a
-single ``MIGRATION`` constant of type :class:`Migration`.  Add a new version by
-dropping a new file into that directory — no changes to this module required.
+Discovers versioned migration definitions and applies pending schema updates in order with transactional execution.
 """
 
 from __future__ import annotations

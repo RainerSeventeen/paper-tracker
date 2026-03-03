@@ -1,6 +1,9 @@
-from __future__ import annotations
+"""Configuration Parsing Utilities.
 
-"""Shared helpers for configuration loading and validation."""
+Provides shared helpers to read config sections and validate primitive types so domain loaders keep consistent error handling.
+"""
+
+from __future__ import annotations
 
 from typing import Any, Mapping
 
@@ -92,4 +95,3 @@ def expect_str_list(value: Any, config_key: str) -> list[str]:
             raise TypeError(f"{config_key}[{idx}] must be a string")
         out.append(item)
     return out
-

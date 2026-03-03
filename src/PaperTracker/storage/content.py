@@ -1,4 +1,7 @@
-"""Paper content storage implementation."""
+"""Paper content storage layer.
+
+Persists full paper metadata and source content into SQLite-backed tables while keeping enrichment storage separate.
+"""
 
 from __future__ import annotations
 

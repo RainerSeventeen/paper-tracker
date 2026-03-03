@@ -27,8 +27,19 @@
 - 禁止相对导入。
 
 ### 2.2 模块头与导入顺序
-- 除 `__init__.py` 外，`*.py` 文件应以模块 docstring 开头（说明模块职责）。
-- `__init__.py` 不强制模块 docstring。
+- `src/` 下有业务职责或流程逻辑的 `*.py` 文件，必须以两段式模块 docstring 开头，第一段为简短标题，第二段为 1-2 句职责说明。
+- 模块 docstring 统一采用如下格式（空一行分段）：
+  ```python
+  """arXiv API client.
+
+  Calls the arXiv Atom API over HTTP, with retry/backoff and HTTPS→HTTP fallback.
+  """
+  ```
+- 职责段禁止使用 `This module ...` 句式，必须直接描述功能（例如：`Renders ...`、`Parses ...`、`Builds ...`）。
+- 以下文件可不强制两段式模块 docstring：
+  - `__init__.py`
+  - `__main__.py`（CLI 入口薄封装）
+  - 纯声明文件（仅常量/类型/数据模型声明，无实质流程逻辑）
 - `from __future__ import annotations` 必须放在模块 docstring 之后。
 - 导入顺序统一为：
   - `from __future__ import annotations`

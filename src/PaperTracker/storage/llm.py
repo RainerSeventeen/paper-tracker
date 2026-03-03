@@ -1,4 +1,7 @@
-"""LLM generated data storage."""
+"""LLM enrichment storage layer.
+
+Stores and retrieves LLM-generated enrichment fields bound to paper content entries with latest-result lookup.
+"""
 
 from __future__ import annotations
 
