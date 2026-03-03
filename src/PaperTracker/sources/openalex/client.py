@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import random
 import time
+from collections.abc import Iterator
 from typing import Any
 from typing import Mapping
 
@@ -57,33 +58,85 @@ class OpenAlexApiClient:
         if max_results <= 0:
             return []
 
-        query_params = self._normalize_params(params)
-        request_timeout = timeout or DEFAULT_TIMEOUT
-
         items: list[dict[str, Any]] = []
-        page = 1
-        while len(items) < max_results:
-            page_size = min(MAX_PER_PAGE, max_results - len(items))
-            page_params = {
-                **query_params,
-                "per-page": str(page_size),
-                "page": str(page),
-                "sort": OPENALEX_SORT,
-            }
-            response = self._get_with_retry(params=page_params, timeout=request_timeout)
-            response.raise_for_status()
+        for batch in self.iter_works_pages(params=params, max_results=max_results, timeout=timeout):
+            items.extend(batch)
+            if len(items) >= max_results:
+                break
+        return items[:max_results]
 
-            payload = response.json()
-            batch = _extract_results(payload)
+    def iter_works_pages(
+        self,
+        *,
+        params: Mapping[str, str] | None,
+        max_results: int,
+        timeout: float | None = None,
+    ) -> Iterator[list[dict[str, Any]]]:
+        """Iterate OpenAlex works payload pages.
+
+        Args:
+            params: Compiled OpenAlex query parameters.
+            max_results: Maximum number of raw upstream items to fetch.
+            timeout: Optional request timeout in seconds.
+
+        Yields:
+            OpenAlex raw work payloads per page.
+        """
+        if max_results <= 0:
+            return
+
+        fetched = 0
+        page = 1
+        while fetched < max_results:
+            page_size = min(MAX_PER_PAGE, max_results - fetched)
+            batch = self.fetch_works_page(
+                params=params,
+                page=page,
+                page_size=page_size,
+                timeout=timeout,
+            )
             if not batch:
                 break
 
-            items.extend(batch)
+            fetched += len(batch)
+            yield batch
             if len(batch) < page_size:
                 break
             page += 1
 
-        return items[:max_results]
+    def fetch_works_page(
+        self,
+        *,
+        params: Mapping[str, str] | None,
+        page: int,
+        page_size: int,
+        timeout: float | None = None,
+    ) -> list[dict[str, Any]]:
+        """Fetch one OpenAlex works page.
+
+        Args:
+            params: Compiled OpenAlex query parameters.
+            page: One-based page index.
+            page_size: Number of items requested in this page.
+            timeout: Optional request timeout in seconds.
+
+        Returns:
+            A list of OpenAlex work payload mappings.
+        """
+        if page <= 0 or page_size <= 0:
+            return []
+
+        query_params = self._normalize_params(params)
+        request_timeout = timeout or DEFAULT_TIMEOUT
+        page_params = {
+            **query_params,
+            "per-page": str(min(MAX_PER_PAGE, page_size)),
+            "page": str(page),
+            "sort": OPENALEX_SORT,
+        }
+        response = self._get_with_retry(params=page_params, timeout=request_timeout)
+        response.raise_for_status()
+        return _extract_results(response.json())
 
     def _get_with_retry(self, *, params: dict[str, str], timeout: float) -> requests.Response:
         """Issue GET request with retries for transient failures."""
