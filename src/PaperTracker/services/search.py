@@ -5,18 +5,19 @@ Orchestrates querying multiple paper sources, then sorts and deduplicates aggreg
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
-import re
 from typing import Protocol, Sequence
 
+from PaperTracker.core.dedup import (
+    build_title_author_year_fingerprint,
+    normalize_doi,
+    resolve_timestamp,
+)
 from PaperTracker.core.models import Paper
 from PaperTracker.core.query import SearchQuery
 from PaperTracker.utils.log import log
 
-_TITLE_WS_RE = re.compile(r"\s+")
-_TITLE_STRIP_RE = re.compile(r"[^a-z0-9 ]")
-_TITLE_DEDUP_MIN_LEN = 24
 _EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)
 
 
@@ -52,9 +53,9 @@ class PaperSource(Protocol):
 class PaperSearchService:
     """Application service that searches papers across configured sources.
 
-    The service does not infer source-level temporal semantics. It only
-    consumes protocol fields (`Paper.published` / `Paper.updated`) with a
-    fixed ordering strategy: published-first, then updated fallback.
+    The service does not infer source-level temporal semantics or source
+    pagination behavior. It only coordinates cross-source aggregation,
+    sorting, and in-batch deduplication using protocol fields.
     """
 
     sources: tuple[PaperSource, ...]
@@ -115,37 +116,93 @@ class PaperSearchService:
             log.warning("Search service close completed with failures: %s", ", ".join(failed_sources))
 
     def _deduplicate_in_batch(self, papers: Sequence[Paper]) -> list[Paper]:
-        """Deduplicate papers inside a single search batch."""
-        winners: dict[tuple[str, ...], Paper] = {}
-        ordered_keys: list[tuple[str, ...]] = []
+        """Deduplicate one aggregated batch across sources.
+
+        Source adapters own deduplication while paging within their own fetch
+        loops. This method only coordinates duplicate resolution after papers
+        from all configured sources have been aggregated.
+        """
+        source_rank = self._source_order_map()
+        groups: dict[int, _DedupGroup] = {}
+        key_to_group_id: dict[tuple[str, ...], int] = {}
+        ordered_group_ids: list[int] = []
+        next_group_id = 0
+        dedup_hit_doi = 0
+        dedup_hit_fingerprint = 0
+        dedup_article_win_count = 0
 
         for paper in papers:
-            dedup_key = _paper_dedup_key(paper)
-            if dedup_key is None:
-                unique_key = ("unique", paper.source, paper.id)
-                if unique_key in winners:
-                    winners[unique_key] = self._pick_winner(winners[unique_key], paper)
+            keys = build_dedup_keys(paper)
+            matched_group_ids: list[int] = []
+            doi_hit = False
+            fingerprint_hit = False
+
+            for key in keys:
+                group_id = key_to_group_id.get(key)
+                if group_id is None or group_id not in groups:
                     continue
-                ordered_keys.append(unique_key)
-                winners[unique_key] = paper
+                if key[0] == "doi":
+                    doi_hit = True
+                if key[0] == "fingerprint":
+                    fingerprint_hit = True
+                if group_id not in matched_group_ids:
+                    matched_group_ids.append(group_id)
+
+            if not matched_group_ids:
+                group_id = next_group_id
+                next_group_id += 1
+                groups[group_id] = _DedupGroup(winner=paper, keys=set(keys))
+                ordered_group_ids.append(group_id)
+                for key in keys:
+                    key_to_group_id[key] = group_id
                 continue
 
-            existing = winners.get(dedup_key)
-            if existing is None:
-                winners[dedup_key] = paper
-                ordered_keys.append(dedup_key)
-                continue
+            if doi_hit:
+                dedup_hit_doi += 1
+            elif fingerprint_hit:
+                dedup_hit_fingerprint += 1
 
-            winners[dedup_key] = self._pick_winner(existing, paper)
+            primary_group_id = matched_group_ids[0]
+            primary_group = groups[primary_group_id]
 
-        return [winners[key] for key in ordered_keys]
+            for other_group_id in matched_group_ids[1:]:
+                other_group = groups.pop(other_group_id, None)
+                if other_group is None:
+                    continue
+                primary_group.keys.update(other_group.keys)
+                merged, article_win = _pick_winner_with_merge(
+                    primary_group.winner,
+                    other_group.winner,
+                    source_rank=source_rank,
+                )
+                primary_group.winner = merged
+                if article_win:
+                    dedup_article_win_count += 1
+                for key in other_group.keys:
+                    key_to_group_id[key] = primary_group_id
 
-    def _pick_winner(self, left: Paper, right: Paper) -> Paper:
-        """Pick deterministic winner between two duplicate papers."""
-        source_order = self._source_order_map()
-        left_rank = _paper_rank(left, source_order=source_order)
-        right_rank = _paper_rank(right, source_order=source_order)
-        return left if left_rank <= right_rank else right
+            merged, article_win = _pick_winner_with_merge(
+                primary_group.winner,
+                paper,
+                source_rank=source_rank,
+            )
+            primary_group.winner = merged
+            if article_win:
+                dedup_article_win_count += 1
+            primary_group.keys.update(keys)
+            for key in primary_group.keys:
+                key_to_group_id[key] = primary_group_id
+
+        result = [groups[group_id].winner for group_id in ordered_group_ids if group_id in groups]
+        log.info(
+            "Batch dedup stats: input=%d output=%d dedup_hit_doi=%d dedup_hit_fingerprint=%d dedup_article_win_count=%d",
+            len(papers),
+            len(result),
+            dedup_hit_doi,
+            dedup_hit_fingerprint,
+            dedup_article_win_count,
+        )
+        return result
 
     def _source_order_map(self) -> dict[str, int]:
         """Return source priority map from configured source order."""
@@ -157,57 +214,118 @@ class PaperSearchService:
         return sorted(
             papers,
             key=lambda paper: (
-                -int((paper.published or paper.updated or _EPOCH).timestamp()),
+                -int((resolve_timestamp(paper) or _EPOCH).timestamp()),
                 source_order.get(paper.source, len(source_order)),
                 paper.id,
             ),
         )
 
 
-def _paper_dedup_key(paper: Paper) -> tuple[str, ...] | None:
-    """Build per-batch dedup key for a paper."""
-    doi_norm = _normalize_doi(paper.doi)
+@dataclass(slots=True)
+class _DedupGroup:
+    """Mutable in-batch dedup group state."""
+
+    winner: Paper
+    keys: set[tuple[str, ...]]
+
+
+def build_dedup_keys(paper: Paper) -> tuple[tuple[str, ...], ...]:
+    """Build all eligible dedup keys for one paper."""
+    keys: list[tuple[str, ...]] = []
+    doi_norm = normalize_doi(paper.doi)
     if doi_norm:
-        return ("doi", doi_norm)
+        keys.append(("doi", doi_norm))
 
-    title_norm = _normalize_title(paper.title)
-    if len(title_norm) < _TITLE_DEDUP_MIN_LEN:
-        return None
+    fingerprint = build_title_author_year_fingerprint(paper)
+    if fingerprint:
+        keys.append(("fingerprint", fingerprint))
 
-    year = _paper_year(paper)
-    if year is None:
-        return None
-
-    return ("title", title_norm, str(year))
+    if not keys:
+        keys.append(("unique", paper.source, paper.id))
+    return tuple(keys)
 
 
-def _paper_rank(paper: Paper, *, source_order: dict[str, int]) -> tuple[int, int, str]:
-    """Build ranking tuple for deterministic duplicate winner selection."""
-    source_rank = source_order.get(paper.source, len(source_order))
-    timestamp = paper.published or paper.updated or _EPOCH
-    return (source_rank, -int(timestamp.timestamp()), paper.id)
+def compare_paper_priority(left: Paper, right: Paper, source_rank: dict[str, int]) -> int:
+    """Compare two papers and return negative when left has higher priority.
+
+    Priority order: work-type tier, source order, timestamp recency, stable key.
+    """
+    left_rank = _paper_rank(left, source_rank=source_rank)
+    right_rank = _paper_rank(right, source_rank=source_rank)
+    if left_rank < right_rank:
+        return -1
+    if left_rank > right_rank:
+        return 1
+    return 0
 
 
-def _paper_year(paper: Paper) -> int | None:
-    """Extract comparable year from paper timestamp fields."""
-    timestamp = paper.published or paper.updated
-    return timestamp.year if timestamp is not None else None
+def _pick_winner_with_merge(
+    left: Paper,
+    right: Paper,
+    *,
+    source_rank: dict[str, int],
+) -> tuple[Paper, bool]:
+    """Pick winner and backfill winner's missing fields from loser."""
+    if compare_paper_priority(left, right, source_rank) <= 0:
+        winner = left
+        loser = right
+    else:
+        winner = right
+        loser = left
+    article_win = _work_type_tier(winner) == 0 and _work_type_tier(loser) != 0
+    return _merge_missing_fields(winner, loser), article_win
 
 
-def _normalize_doi(doi: str | None) -> str:
-    """Normalize DOI for matching across providers."""
-    if doi is None:
-        return ""
-    normalized = doi.strip().lower()
-    for prefix in ("https://doi.org/", "http://doi.org/", "https://dx.doi.org/", "http://dx.doi.org/", "doi:"):
-        if normalized.startswith(prefix):
-            normalized = normalized[len(prefix):]
-            break
-    return normalized.strip()
+def _paper_rank(paper: Paper, *, source_rank: dict[str, int]) -> tuple[int, int, int, str, str]:
+    """Build deterministic ranking tuple for duplicate winner selection."""
+    timestamp = resolve_timestamp(paper)
+    if timestamp is None:
+        time_rank = 10**18
+    else:
+        time_rank = -int(timestamp.timestamp())
+    return (
+        _work_type_tier(paper),
+        source_rank.get(paper.source, len(source_rank)),
+        time_rank,
+        paper.source,
+        paper.id,
+    )
 
 
-def _normalize_title(title: str) -> str:
-    """Normalize title for conservative fallback deduplication."""
-    lowered = title.casefold()
-    no_punctuation = _TITLE_STRIP_RE.sub(" ", lowered)
-    return _TITLE_WS_RE.sub(" ", no_punctuation).strip()
+def _work_type_tier(paper: Paper) -> int:
+    """Return work-type tier where lower value means higher priority."""
+    work_type = str(paper.extra.get("work_type", "")).strip().lower()
+    has_doi = bool(normalize_doi(paper.doi))
+    if work_type == "article" and has_doi:
+        return 0
+    if work_type == "preprint" and not has_doi:
+        return 1
+    return 2
+
+
+def _merge_missing_fields(winner: Paper, loser: Paper) -> Paper:
+    """Backfill winner's missing fields from loser without overriding winner values."""
+    merged_doi = winner.doi or loser.doi
+    merged_authors = winner.authors or loser.authors
+    merged_primary_category = winner.primary_category or loser.primary_category
+    merged_categories = winner.categories or loser.categories
+
+    merged_links = winner.links
+    if winner.links.abstract is None and loser.links.abstract is not None:
+        merged_links = replace(merged_links, abstract=loser.links.abstract)
+    if merged_links.pdf is None and loser.links.pdf is not None:
+        merged_links = replace(merged_links, pdf=loser.links.pdf)
+
+    merged_extra = dict(winner.extra)
+    if "work_type" not in merged_extra and "work_type" in loser.extra:
+        merged_extra["work_type"] = loser.extra["work_type"]
+
+    return replace(
+        winner,
+        doi=merged_doi,
+        authors=merged_authors,
+        primary_category=merged_primary_category,
+        categories=merged_categories,
+        links=merged_links,
+        extra=merged_extra,
+    )

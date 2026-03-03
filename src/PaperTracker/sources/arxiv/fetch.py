@@ -35,7 +35,7 @@ def collect_papers_with_time_filter(
     fetch_page_func: Callable[[str, int, int, str, str], list[Paper]],
     dedup_store: SqliteDeduplicateStore | None,
 ) -> list[Paper]:
-    """Collect papers with time filtering and optional persistent deduplication.
+    """Collect papers with time filtering and optional source-local deduplication.
 
     This arXiv-specific strategy uses fixed sorting (`lastUpdatedDate` +
     `descending`) and always fetches by pages until stop conditions are met.
@@ -47,10 +47,10 @@ def collect_papers_with_time_filter(
         scope: Optional global scope merged into query compilation.
         policy: Fetch policy limits and time window configuration.
         fetch_page_func: Paged fetch callback with arXiv API parameters.
-        dedup_store: Optional deduplication store.
+        dedup_store: Optional deduplication store for paged fetch within arXiv.
 
     Returns:
-        Filtered and deduplicated papers sorted by timestamp descending,
+        Filtered and source-locally deduplicated papers sorted by timestamp descending,
         capped at `policy.max_results`.
     """
     from PaperTracker.sources.arxiv.query import compile_search_query
@@ -115,7 +115,7 @@ def collect_papers_with_time_filter(
         logger.debug("Page candidates: %d (total candidates %d)", len(page_candidates), candidate_count)
 
         if dedup_store:
-            page_new = dedup_store.filter_new(page_candidates)
+            page_new = dedup_store.filter_new_in_source("arxiv", page_candidates)
             logger.info(
                 "Page dedup stats: %d new in total %d papers",
                 len(page_new),

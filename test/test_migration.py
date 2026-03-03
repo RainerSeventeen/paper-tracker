@@ -13,6 +13,7 @@ import sqlite3
 import sys
 import tempfile
 import unittest
+from datetime import datetime, timezone
 from pathlib import Path
 from unittest.mock import patch
 
@@ -20,6 +21,8 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 import PaperTracker.storage.migration as migration_module
+from PaperTracker.core.dedup import build_title_author_year_fingerprint
+from PaperTracker.core.models import Paper
 from PaperTracker.storage.migration import MIGRATIONS, Migration, run_migrations
 
 
@@ -162,6 +165,77 @@ class TestLegacyDatabase(unittest.TestCase):
         self.assertEqual(_current_version(self._conn), _LATEST_VERSION)
 
 
+class TestFingerprintBackfillConsistency(unittest.TestCase):
+    """v002 backfill fingerprint should match runtime dedup normalization."""
+
+    _LEGACY_DDL = TestLegacyDatabase._LEGACY_DDL
+
+    def setUp(self):
+        self._tmpdir = tempfile.TemporaryDirectory()
+        db_path = Path(self._tmpdir.name) / "legacy_fingerprint.db"
+        self._conn = _connect(db_path)
+        self._conn.executescript(self._LEGACY_DDL)
+        self._conn.execute(
+            "INSERT INTO seen_papers (source, source_id, title) VALUES (?, ?, ?)",
+            (
+                "openalex",
+                "W123",
+                "Fallback title before content sync",
+            ),
+        )
+        seen_id = self._conn.execute(
+            "SELECT id FROM seen_papers WHERE source = ? AND source_id = ?",
+            ("openalex", "W123"),
+        ).fetchone()[0]
+
+        published_at = int(datetime(2024, 5, 9, tzinfo=timezone.utc).timestamp())
+        self._conn.execute(
+            """
+            INSERT INTO paper_content (
+              seen_paper_id, source, source_id, title, authors, abstract, published_at, fetched_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                seen_id,
+                "openalex",
+                "W123",
+                "Graph-Driven,  AI:   A/B Testing (v2)",
+                '["Alice, B. Smith"]',
+                "test abstract",
+                published_at,
+                published_at + 1,
+            ),
+        )
+        self._conn.commit()
+
+    def tearDown(self):
+        self._conn.close()
+        self._tmpdir.cleanup()
+
+    def test_v002_backfill_matches_runtime_fingerprint(self):
+        run_migrations(self._conn)
+        actual = self._conn.execute(
+            """
+            SELECT title_author_year_fingerprint
+            FROM seen_papers
+            WHERE source = ? AND source_id = ?
+            """,
+            ("openalex", "W123"),
+        ).fetchone()[0]
+
+        paper = Paper(
+            source="openalex",
+            id="W123",
+            title="Graph-Driven,  AI:   A/B Testing (v2)",
+            authors=("Alice, B. Smith",),
+            abstract="test abstract",
+            published=datetime(2024, 5, 9, tzinfo=timezone.utc),
+            updated=None,
+        )
+        expected = build_title_author_year_fingerprint(paper)
+        self.assertEqual(actual, expected)
+
+
 # ---------------------------------------------------------------------------
 # Scenario 3: 版本已最新
 # ---------------------------------------------------------------------------
@@ -200,7 +274,7 @@ class TestNewMigration(unittest.TestCase):
     """Simulated v2 migration applied to a v1 database."""
 
     _V2 = Migration(
-        version=2,
+        version=_LATEST_VERSION + 1,
         description="Add tags column to seen_papers",
         sql="ALTER TABLE seen_papers ADD COLUMN tags TEXT;",
     )
@@ -225,7 +299,7 @@ class TestNewMigration(unittest.TestCase):
     def test_version_advances_to_v2(self):
         with patch.object(migration_module, "MIGRATIONS", list(MIGRATIONS) + [self._V2]):
             run_migrations(self._conn)
-        self.assertEqual(_current_version(self._conn), 2)
+        self.assertEqual(_current_version(self._conn), _LATEST_VERSION + 1)
 
     def test_new_column_exists(self):
         with patch.object(migration_module, "MIGRATIONS", list(MIGRATIONS) + [self._V2]):
@@ -255,7 +329,7 @@ class TestRollbackOnError(unittest.TestCase):
     """Bad migration SQL causes exception; version number must not change."""
 
     _BAD_V2 = Migration(
-        version=2,
+        version=_LATEST_VERSION + 1,
         description="Intentionally broken migration",
         sql="THIS IS NOT VALID SQL;",
     )

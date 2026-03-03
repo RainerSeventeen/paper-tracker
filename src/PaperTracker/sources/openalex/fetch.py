@@ -40,17 +40,17 @@ def collect_papers_with_time_filter_openalex(
     fetch_page_func: Callable[[dict[str, str], int, int], list[dict[str, Any]]],
     dedup_store: SqliteDeduplicateStore | None,
 ) -> list[Paper]:
-    """Collect OpenAlex papers with paged filtering and optional deduplication.
+    """Collect OpenAlex papers with paged filtering and optional source-local deduplication.
 
     Args:
         query: Query object for this fetch task.
         scope: Optional global scope merged into query compilation.
         policy: Fetch policy limits and time window configuration.
         fetch_page_func: Callback to fetch one page of OpenAlex works payloads.
-        dedup_store: Optional deduplication store.
+        dedup_store: Optional deduplication store for paged fetch within OpenAlex.
 
     Returns:
-        Filtered and deduplicated papers sorted by unified timestamp descending,
+        Filtered and source-locally deduplicated papers sorted by unified timestamp descending,
         capped at `policy.max_results`.
     """
     now = datetime.now(timezone.utc)
@@ -90,7 +90,7 @@ def collect_papers_with_time_filter_openalex(
         page_papers = _apply_time_window(papers=page_papers, search_config=policy, now=now)
 
         if dedup_store is not None:
-            page_papers = dedup_store.filter_new(page_papers)
+            page_papers = dedup_store.filter_new_in_source("openalex", page_papers)
 
         collected.extend(page_papers)
 
