@@ -40,8 +40,7 @@ class SearchCommand:
 
         Iterates through queries, applies filtering, and delegates
         output to the configured OutputWriter. Search behavior uses `config.search`.
-        ArxivSource will handle multi-round fetching with time-based filtering
-        and deduplication internally.
+        Source-specific fetch strategies are encapsulated by each source adapter.
         """
         multiple = len(self.config.search.queries) > 1
 
@@ -61,7 +60,7 @@ class SearchCommand:
                 log.info("name=%s", query.name)
             log.info("fields=%s", dict(query.fields))
 
-            # Search papers; ArxivSource chooses strategy based on search config.
+            # Search papers; source adapters decide their own fetch strategy.
             papers = self.search_service.search(
                 query,
                 max_results=self.config.search.max_results,

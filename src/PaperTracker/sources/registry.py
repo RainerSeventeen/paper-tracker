@@ -55,6 +55,7 @@ def _source_builders() -> dict[str, SourceBuilder]:
     """Return source builder registry."""
     return {
         "arxiv": _build_arxiv_source,
+        "openalex": _build_openalex_source,
         # NOTE: crossref is temporarily disabled — data quality issues.
         # To re-enable, uncomment the entry below and the _build_crossref_source function.
         # "crossref": _build_crossref_source,
@@ -72,6 +73,18 @@ def _build_arxiv_source(config: AppConfig, dedup_store: SqliteDeduplicateStore |
         keep_version=config.storage.keep_arxiv_version,
         search_config=config.search,
         dedup_store=dedup_store,
+    )
+
+
+def _build_openalex_source(config: AppConfig, dedup_store: SqliteDeduplicateStore | None) -> PaperSource:
+    """Build OpenAlex source."""
+    del dedup_store
+    from PaperTracker.sources.openalex.client import OpenAlexApiClient
+    from PaperTracker.sources.openalex.source import OpenAlexSource
+
+    return OpenAlexSource(
+        client=OpenAlexApiClient(),
+        scope=config.search.scope,
     )
 
 
