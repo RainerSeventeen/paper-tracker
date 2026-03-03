@@ -149,6 +149,12 @@ class TestConfigLayering(unittest.TestCase):
         cfg = parse_config_dict(raw)
         self.assertEqual(cfg.search.sources, ("arxiv",))
 
+    def test_search_sources_support_openalex(self) -> None:
+        raw = deepcopy(_base_raw_config())
+        raw["search"]["sources"] = ["OpenAlex", "arxiv", "openalex"]
+        cfg = parse_config_dict(raw)
+        self.assertEqual(cfg.search.sources, ("openalex", "arxiv"))
+
     def test_search_sources_unknown_value(self) -> None:
         raw = deepcopy(_base_raw_config())
         raw["search"]["sources"] = ["arxiv", "unknown"]

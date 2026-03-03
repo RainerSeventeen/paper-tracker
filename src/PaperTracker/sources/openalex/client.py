@@ -18,7 +18,7 @@ BASE_PAUSE = 0.8
 MAX_SLEEP = 8.0
 RETRYABLE_STATUS = {429, 500, 502, 503, 504}
 MAX_PER_PAGE = 200
-OPENALEX_SORT = "relevance_score:desc,publication_date:desc"
+OPENALEX_SORT = "publication_date:desc"
 
 HEADERS = {
     "User-Agent": "paper-tracker/0.1 (+https://github.com/RainerSeventeen/paper-tracker)",

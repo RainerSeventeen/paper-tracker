@@ -85,6 +85,7 @@ def _build_openalex_source(config: AppConfig, dedup_store: SqliteDeduplicateStor
     return OpenAlexSource(
         client=OpenAlexApiClient(),
         scope=config.search.scope,
+        search_config=config.search,
     )
 
 
