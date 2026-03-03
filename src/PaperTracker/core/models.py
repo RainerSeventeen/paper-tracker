@@ -1,3 +1,5 @@
+"""Core domain models shared across sources, services, and renderers."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -24,7 +26,7 @@ class PaperLinks:
 class Paper:
     """Internal canonical paper model.
 
-    This is the unified data format that all external sources must map to.
+    This is the protocol model that all external sources must map to.
 
     Attributes:
         source: Source identifier (e.g. "arxiv").
@@ -32,8 +34,8 @@ class Paper:
         title: Paper title.
         authors: Author names.
         abstract: Abstract text.
-        published: First publication datetime if known.
-        updated: Last update datetime if known.
+        published: First-public datetime chosen by source mapping.
+        updated: Subsequent update datetime chosen by source mapping.
         primary_category: Primary category/field if provided by the source.
         categories: Additional categories/tags.
         links: Common link URLs.

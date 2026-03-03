@@ -47,7 +47,12 @@ class PaperSource(Protocol):
 
 @dataclass(slots=True)
 class PaperSearchService:
-    """Application service that searches papers across configured sources."""
+    """Application service that searches papers across configured sources.
+
+    The service does not infer source-level temporal semantics. It only
+    consumes protocol fields (`Paper.published` / `Paper.updated`) with a
+    fixed ordering strategy: published-first, then updated fallback.
+    """
 
     sources: tuple[PaperSource, ...]
 
@@ -149,7 +154,7 @@ class PaperSearchService:
         return sorted(
             papers,
             key=lambda paper: (
-                -int((paper.updated or paper.published or _EPOCH).timestamp()),
+                -int((paper.published or paper.updated or _EPOCH).timestamp()),
                 source_order.get(paper.source, len(source_order)),
                 paper.id,
             ),
@@ -176,7 +181,7 @@ def _paper_dedup_key(paper: Paper) -> tuple[str, ...] | None:
 def _paper_rank(paper: Paper, *, source_order: dict[str, int]) -> tuple[int, int, str]:
     """Build ranking tuple for deterministic duplicate winner selection."""
     source_rank = source_order.get(paper.source, len(source_order))
-    timestamp = paper.updated or paper.published or _EPOCH
+    timestamp = paper.published or paper.updated or _EPOCH
     return (source_rank, -int(timestamp.timestamp()), paper.id)
 
 

@@ -32,8 +32,8 @@ def parse_crossref_items(items: Sequence[Mapping[str, Any]]) -> list[Paper]:
             title = "Untitled"
 
         source_id = _build_source_id(item, fallback_title=title)
-        published = _extract_datetime(item, preferred_keys=("published-print", "published-online", "issued", "created"))
-        updated = _extract_datetime(item, preferred_keys=("updated", "indexed", "created", "issued"))
+        published = _extract_published_datetime(item)
+        updated = _extract_updated_datetime(item)
         abstract = _clean_abstract(_safe_str(item.get("abstract")))
         doi = _safe_str(item.get("DOI")) or None
 
@@ -55,6 +55,19 @@ def parse_crossref_items(items: Sequence[Mapping[str, Any]]) -> list[Paper]:
         )
 
     return papers
+
+
+def _extract_published_datetime(item: Mapping[str, Any]) -> datetime | None:
+    """Extract first-public datetime from Crossref payload."""
+    return _extract_datetime(
+        item,
+        preferred_keys=("published-print", "published-online", "issued", "created"),
+    )
+
+
+def _extract_updated_datetime(item: Mapping[str, Any]) -> datetime | None:
+    """Extract post-publication update datetime from Crossref payload."""
+    return _extract_datetime(item, preferred_keys=("updated", "indexed"))
 
 
 def _build_source_id(item: Mapping[str, Any], *, fallback_title: str) -> str:

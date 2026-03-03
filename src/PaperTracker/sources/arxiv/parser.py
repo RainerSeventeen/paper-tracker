@@ -31,6 +31,9 @@ def parse_arxiv_feed(xml_text: str, *, keep_version: bool = False) -> Sequence[P
     for entry in feed.entries:
         title = (entry.title or "").replace("\n", " ").strip()
         authors = [a.get("name", "") for a in entry.get("authors", [])] if "authors" in entry else []
+        # arXiv Atom semantics:
+        # - published: first publication timestamp of this record.
+        # - updated: latest revision/update timestamp.
         published = _parse_dt(entry.get("published"))
         updated = _parse_dt(entry.get("updated"))
 

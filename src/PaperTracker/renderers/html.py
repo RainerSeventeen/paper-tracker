@@ -292,7 +292,8 @@ def _prepare_paper_context_html(paper: PaperView, paper_number: int) -> Mapping[
         paper.primary_category,
         paper.categories,
     )
-    updated_display = paper.updated or paper.published or "Unknown"
+    published_display = paper.published or "Unknown"
+    updated_display = paper.updated or "Unknown"
 
     return {
         "paper_number": str(paper_number),
@@ -301,6 +302,7 @@ def _prepare_paper_context_html(paper: PaperView, paper_number: int) -> Mapping[
         "authors": html.escape(", ".join(paper.authors) if paper.authors else ""),
         "doi": html.escape(paper.doi or ""),
         "doi_url": doi_url,
+        "published": html.escape(published_display),
         "updated": html.escape(updated_display),
         "primary_category": html.escape(primary_category),
         "secondary_categories": html.escape(secondary_categories),
