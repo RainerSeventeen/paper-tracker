@@ -78,7 +78,6 @@ def _build_arxiv_source(config: AppConfig, dedup_store: SqliteDeduplicateStore |
 
 def _build_openalex_source(config: AppConfig, dedup_store: SqliteDeduplicateStore | None) -> PaperSource:
     """Build OpenAlex source."""
-    del dedup_store
     from PaperTracker.sources.openalex.client import OpenAlexApiClient
     from PaperTracker.sources.openalex.source import OpenAlexSource
 
@@ -86,6 +85,7 @@ def _build_openalex_source(config: AppConfig, dedup_store: SqliteDeduplicateStor
         client=OpenAlexApiClient(),
         scope=config.search.scope,
         search_config=config.search,
+        dedup_store=dedup_store,
     )
 
 
