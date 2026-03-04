@@ -63,6 +63,7 @@ paper-tracker search --config config/custom.yml
 
 ### 3.3 按需配置
 
+- `search.sources`：检索来源列表，默认 `[arxiv]`；可选 `[arxiv, openalex]` 同时启用双源
 - `scope`：对所有 query 的全局过滤（例如限定分类）
 - `output.markdown` / `output.json`：导出模板
 - `storage`：去重与内容存储
@@ -104,6 +105,8 @@ queries:
 
 操作符必须大写：
 - `OR` / `AND` / `NOT`
+
+> **注意**：`CATEGORY` 字段仅在使用 arXiv 时有效（如 `cs.CV`、`cs.LG`）。若启用了 OpenAlex，`CATEGORY` 在 OpenAlex 中会被完全跳过（编译和本地过滤阶段均忽略），不会产生任何过滤效果。如需在 OpenAlex 中限定主题，请改用 `TITLE` 或 `ABSTRACT` 字段。详见 [OpenAlex 查询说明](./source_openalex_api_query.md)。
 
 ### 4.3 `TEXT` 简写（等价于 TITLE + ABSTRACT）
 
@@ -191,3 +194,5 @@ output:
 - [详细参数配置说明](./guide_configuration.md)
 
 - [arXiv 查询语法说明](./source_arxiv_api_query.md)
+
+- [OpenAlex 查询语法说明](./source_openalex_api_query.md)

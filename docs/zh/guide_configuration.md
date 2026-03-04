@@ -141,6 +141,11 @@ queries:
 
 ### 2.6 `search`（拉取策略配置）
 
+- `sources`: 启用的检索来源列表; 可选值: `arxiv` / `openalex` 的任意组合，至少一个。默认值: `[arxiv]`。
+  - `arxiv`：从 arXiv Atom API 拉取预印本，支持 `cat:` 分类码（`CATEGORY` 字段有效）。
+  - `openalex`：从 OpenAlex REST API 拉取，覆盖期刊/会议论文，但**不支持 arXiv 分类码**（`CATEGORY` 字段在 OpenAlex 中无效，见 [OpenAlex 查询说明](./source_openalex_api_query.md)）。
+  - 两个 source 同时启用时，各自并行检索，服务层在聚合后执行跨源去重（优先保留已发表 article）。
+
 - `max_results`: 目标论文数量，每条 query 最多返回这么多篇**新论文**（去重后）; 可选值: 整数，必须大于 0。
 
 - `pull_every`: strict 时间窗口大小（单位：天），论文的更新/发布时间必须在 `[now - pull_every, now]` 范围内; 可选值: 整数，必须大于 0。建议值：`7`（最近一周）。
@@ -155,7 +160,10 @@ queries:
 
 - `fetch_batch_size`: 每次 API 请求拉取的论文数量（分页大小）; 可选值: 整数，必须大于 0。建议值：`25`。
 
-**排序策略**：arXiv 拉取时固定使用 `lastUpdatedDate` + `descending`（最新更新优先），不支持用户配置。
+**排序策略**：
+- arXiv：固定使用 `lastUpdatedDate + descending`（最近更新优先），时间过滤以 `updated` 字段为准。
+- OpenAlex：固定使用 `publication_date:desc`（最近发表优先），时间过滤以 `published`（或 `updated`）字段为准；翻页之间有 3 秒强制间隔（请求频率限制）。
+- 均不支持用户配置排序字段。
 
 示例（`search` 只给一个示例即可）：
 ```yml
