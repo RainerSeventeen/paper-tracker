@@ -9,7 +9,7 @@
 
 **[English](./README.en.md) | 中文**
 
-Paper Tracker 是一个最小化的论文追踪工具，核心目标是基于关键词查询 arXiv (预计会加入更多数据来源支持)，并按配置输出结构化结果，便于持续跟踪新论文。
+Paper Tracker 是一个最小化的论文追踪工具，核心目标是基于关键词查询多个论文数据库（arXiv、OpenAlex），并按配置输出结构化结果，便于持续跟踪新论文。
 
 **如果该项目对你有帮助, 请麻烦点一个 Star ⭐, 谢谢!**
 
@@ -22,10 +22,18 @@ Paper Tracker 是一个最小化的论文追踪工具，核心目标是基于关
 ## 已实现功能
 
 - 🔍 **查询与筛选**:
-  - 基于 arXiv API 查询论文
+  - 支持多数据源：`arxiv`（预印本）、`openalex`（期刊/会议/预印本），可同时启用
   - 支持字段化检索：`TITLE`、`ABSTRACT`、`AUTHOR`、`JOURNAL`、`CATEGORY`
   - 支持逻辑操作：`AND`、`OR`、`NOT`
   - 支持全局 `scope`（对所有 queries 生效）
+  - 多源结果聚合后执行跨源去重
+
+
+  | 数据源 | 数据类型 | query 字段支持 | 本地精筛 | 跨源去重 |
+  |--------|----------|:--------------:|:--------:|:--------:|
+  | `arxiv` | 预印本 | 完整 | — | ✅ |
+  | `openalex` | 期刊 / 会议 / 预印本 | 部分 | ✅ | ✅ |
+
 - 🧲 **拉取策略**: 支持拉取更早的论文以补全预定论文数量
 
 - 🗃️ **去重与存储**: SQLite 去重功能, 并存储论文内容供日后查询
@@ -79,7 +87,11 @@ cp .env.example .env
 
 - [⚙️ 详细参数配置说明](./docs/zh/guide_configuration.md)
 
+- [🔍 查询内部逻辑说明](./docs/zh/architecture_search_logic.md)
+
 - [🔍 arXiv 查询语法说明](./docs/zh/source_arxiv_api_query.md)
+
+- [🔍 OpenAlex 查询语法说明](./docs/zh/source_openalex_api_query.md)
 
 ## 更新
 
