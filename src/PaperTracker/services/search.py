@@ -12,7 +12,7 @@ from typing import Protocol, Sequence
 from PaperTracker.core.dedup import resolve_timestamp
 from PaperTracker.core.models import Paper
 from PaperTracker.core.query import SearchQuery
-from PaperTracker.services.dedup import deduplicate_cross_source_batch
+from PaperTracker.services.deduplicate import deduplicate_cross_source_batch
 from PaperTracker.utils.log import log
 
 _EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)

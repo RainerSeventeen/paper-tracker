@@ -43,9 +43,10 @@ def deduplicate_cross_source_batch(
     Returns:
         Deduplicated papers with deterministic order.
     """
+    # group_id → group state; key_to_group_id enables O(1) lookup by dedup key
     groups: dict[int, _DedupGroup] = {}
     key_to_group_id: dict[tuple[str, ...], int] = {}
-    ordered_group_ids: list[int] = []
+    ordered_group_ids: list[int] = []  # preserves first-seen order for deterministic output
     next_group_id = 0
     dedup_hit_doi = 0
     dedup_hit_fingerprint = 0
@@ -57,6 +58,7 @@ def deduplicate_cross_source_batch(
         doi_hit = False
         fingerprint_hit = False
 
+        # find all existing groups that share at least one dedup key with this paper
         for key in keys:
             group_id = key_to_group_id.get(key)
             if group_id is None or group_id not in groups:
@@ -69,6 +71,7 @@ def deduplicate_cross_source_batch(
                 matched_group_ids.append(group_id)
 
         if not matched_group_ids:
+            # no match — start a new group for this paper
             group_id = next_group_id
             next_group_id += 1
             groups[group_id] = _DedupGroup(winner=paper, keys=set(keys))
@@ -82,6 +85,7 @@ def deduplicate_cross_source_batch(
         elif fingerprint_hit:
             dedup_hit_fingerprint += 1
 
+        # merge all matched groups into the first one to handle transitive duplicates across keys
         primary_group_id = matched_group_ids[0]
         primary_group = groups[primary_group_id]
 
@@ -98,9 +102,11 @@ def deduplicate_cross_source_batch(
             primary_group.winner = merged
             if article_win:
                 dedup_article_win_count += 1
+            # remap all keys from the absorbed group to the primary group
             for key in other_group.keys:
                 key_to_group_id[key] = primary_group_id
 
+        # compete current paper against the group winner and backfill missing fields
         merged, article_win = _pick_winner_with_merge(
             primary_group.winner,
             paper,
