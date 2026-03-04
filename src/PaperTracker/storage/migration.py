@@ -8,7 +8,8 @@ from __future__ import annotations
 import importlib
 import pkgutil
 import sqlite3
-from dataclasses import dataclass
+from collections.abc import Callable
+from dataclasses import dataclass, field
 
 from PaperTracker.utils.log import log
 
@@ -34,11 +35,16 @@ class Migration:
         version: Monotonically increasing integer, starting at 1.
         description: Human-readable summary of what this migration does.
         sql: One or more semicolon-separated DDL/DML statements to execute.
+        hook: Optional Python callable executed after all SQL statements, within
+            the same transaction.  Receives the active connection and may issue
+            additional DML.  Use this for backfill logic that must match runtime
+            Python semantics (e.g. normalisation functions).
     """
 
     version: int
     description: str
     sql: str
+    hook: Callable[[sqlite3.Connection], None] | None = field(default=None, compare=False, hash=False)
 
 
 # ---------------------------------------------------------------------------
@@ -195,7 +201,9 @@ def _apply_migration(conn: sqlite3.Connection, migration: Migration) -> None:
     The migration SQL may contain multiple semicolon-separated statements.
     Each statement is executed individually with conn.execute() (never
     executescript(), which would issue an implicit COMMIT and break atomicity).
-    After all statements succeed, the schema_version row is updated and the
+    If the migration defines a hook, it is called after all SQL statements and
+    before the version record is written — still within the same transaction.
+    After all steps succeed, the schema_version row is updated and the
     transaction is committed.  On any failure the transaction is rolled back.
 
     Args:
@@ -204,6 +212,7 @@ def _apply_migration(conn: sqlite3.Connection, migration: Migration) -> None:
 
     Raises:
         sqlite3.Error: If any statement fails; the transaction is rolled back.
+        Exception: If the hook raises; the transaction is rolled back.
     """
     conn.execute("BEGIN")
     try:
@@ -212,6 +221,8 @@ def _apply_migration(conn: sqlite3.Connection, migration: Migration) -> None:
         ]
         for stmt in statements:
             conn.execute(stmt)
+        if migration.hook is not None:
+            migration.hook(conn)
         conn.execute(
             "INSERT OR REPLACE INTO schema_version (id, version) VALUES (1, ?)",
             (migration.version,),

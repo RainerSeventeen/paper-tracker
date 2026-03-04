@@ -2,7 +2,68 @@
 
 from __future__ import annotations
 
+import json
+import sqlite3
+from datetime import datetime, timezone
+
+from PaperTracker.core.dedup import build_title_author_year_fingerprint
+from PaperTracker.core.models import Paper
 from PaperTracker.storage.migration import Migration
+
+
+def _backfill_fingerprint(conn: sqlite3.Connection) -> None:
+    """Backfill title_author_year_fingerprint for existing seen_papers rows.
+
+    For each seen_papers row that has no fingerprint, resolves the latest
+    paper_content entry and delegates to build_title_author_year_fingerprint,
+    guaranteeing byte-for-byte consistency with the runtime dedup path.
+
+    Args:
+        conn: Active SQLite connection (called within a migration transaction).
+    """
+    rows = conn.execute("""
+        SELECT sp.source, sp.source_id, pc.title, pc.authors, pc.published_at
+        FROM seen_papers sp
+        LEFT JOIN (
+            SELECT source, source_id, title, authors, published_at,
+                   ROW_NUMBER() OVER (
+                       PARTITION BY source, source_id
+                       ORDER BY fetched_at DESC, id DESC
+                   ) AS rn
+            FROM paper_content
+        ) pc ON pc.source = sp.source AND pc.source_id = sp.source_id AND pc.rn = 1
+        WHERE sp.title_author_year_fingerprint IS NULL
+    """).fetchall()
+
+    updates = []
+    for source, source_id, title, authors_json, published_at in rows:
+        try:
+            authors = tuple(json.loads(authors_json)) if authors_json else ()
+        except (json.JSONDecodeError, TypeError):
+            authors = ()
+        published = (
+            datetime.fromtimestamp(published_at, tz=timezone.utc)
+            if published_at is not None
+            else None
+        )
+        paper = Paper(
+            source=source,
+            id=source_id,
+            title=title or "",
+            authors=authors,
+            abstract="",
+            published=published,
+            updated=None,
+        )
+        updates.append((build_title_author_year_fingerprint(paper), source, source_id))
+
+    if updates:
+        conn.executemany(
+            "UPDATE seen_papers SET title_author_year_fingerprint = ? "
+            "WHERE source = ? AND source_id = ?",
+            updates,
+        )
+
 
 MIGRATION = Migration(
     version=2,
@@ -11,117 +72,10 @@ MIGRATION = Migration(
         ALTER TABLE seen_papers
           ADD COLUMN title_author_year_fingerprint TEXT;
 
-        WITH latest_content AS (
-          SELECT
-            pc.source,
-            pc.source_id,
-            pc.title,
-            pc.authors,
-            pc.published_at,
-            ROW_NUMBER() OVER (
-              PARTITION BY pc.source, pc.source_id
-              ORDER BY pc.fetched_at DESC, pc.id DESC
-            ) AS row_num
-          FROM paper_content pc
-        ),
-        normalized AS (
-          SELECT
-            lc.source,
-            lc.source_id,
-            (
-              WITH RECURSIVE
-              chars(pos, raw, normalized_text) AS (
-                SELECT
-                  1,
-                  lower(COALESCE(lc.title, '')),
-                  ''
-                UNION ALL
-                SELECT
-                  pos + 1,
-                  raw,
-                  normalized_text || CASE
-                    WHEN substr(raw, pos, 1) GLOB '[a-z0-9 ]' THEN substr(raw, pos, 1)
-                    ELSE ' '
-                  END
-                FROM chars
-                WHERE pos <= length(raw)
-              ),
-              collapsed(step, text_value) AS (
-                SELECT
-                  0,
-                  COALESCE((SELECT normalized_text FROM chars ORDER BY pos DESC LIMIT 1), '')
-                UNION ALL
-                SELECT
-                  step + 1,
-                  replace(text_value, '  ', ' ')
-                FROM collapsed
-                WHERE instr(text_value, '  ') > 0
-              )
-              SELECT trim(text_value)
-              FROM collapsed
-              ORDER BY step DESC
-              LIMIT 1
-            ) AS title_norm,
-            (
-              WITH RECURSIVE
-              chars(pos, raw, normalized_text) AS (
-                SELECT
-                  1,
-                  lower(COALESCE(json_extract(lc.authors, '$[0]'), '')),
-                  ''
-                UNION ALL
-                SELECT
-                  pos + 1,
-                  raw,
-                  normalized_text || CASE
-                    WHEN substr(raw, pos, 1) GLOB '[a-z0-9 ]' THEN substr(raw, pos, 1)
-                    ELSE ' '
-                  END
-                FROM chars
-                WHERE pos <= length(raw)
-              ),
-              collapsed(step, text_value) AS (
-                SELECT
-                  0,
-                  COALESCE((SELECT normalized_text FROM chars ORDER BY pos DESC LIMIT 1), '')
-                UNION ALL
-                SELECT
-                  step + 1,
-                  replace(text_value, '  ', ' ')
-                FROM collapsed
-                WHERE instr(text_value, '  ') > 0
-              )
-              SELECT trim(text_value)
-              FROM collapsed
-              ORDER BY step DESC
-              LIMIT 1
-            ) AS first_author_norm,
-            CASE
-              WHEN lc.published_at IS NULL THEN NULL
-              ELSE CAST(strftime('%Y', lc.published_at, 'unixepoch') AS INTEGER)
-            END AS publish_year
-          FROM latest_content lc
-          WHERE lc.row_num = 1
-        )
-        UPDATE seen_papers
-        SET title_author_year_fingerprint = (
-          SELECT
-            CASE
-              WHEN length(normalized.title_norm) >= 24
-                AND normalized.first_author_norm <> ''
-                AND normalized.publish_year IS NOT NULL
-              THEN normalized.title_norm || '|' || normalized.first_author_norm || '|' || normalized.publish_year
-              ELSE NULL
-            END
-          FROM normalized
-          WHERE normalized.source = seen_papers.source
-            AND normalized.source_id = seen_papers.source_id
-        )
-        WHERE title_author_year_fingerprint IS NULL;
-
         CREATE INDEX IF NOT EXISTS idx_seen_title_author_year_fingerprint
           ON seen_papers(title_author_year_fingerprint)
           WHERE title_author_year_fingerprint IS NOT NULL
             AND title_author_year_fingerprint <> '';
     """,
+    hook=_backfill_fingerprint,
 )
