@@ -34,6 +34,9 @@ See the live result: [📄 Deployment Page](https://rainerseventeen.github.io/pa
   |--------|-----------|:-------------------:|:-----------------:|:-------------------:|
   | `arxiv` | Preprints | Full | — | ✅ |
   | `openalex` | Journals / Conferences / Preprints | Partial | ✅ | ✅ |
+
+  > **Note**: The `openalex` source is currently unstable and may return papers unrelated to the queried topic. This feature is still under active development. If you find a significant number of irrelevant articles in the results, it is recommended to disable the `openalex` source in your configuration.
+
 - 🧲 **Fetch Strategy**: Supports fetching older papers to fill the target paper count
 
 - 🗃️ **Deduplication and Storage**: SQLite-based deduplication and paper content storage for later lookup

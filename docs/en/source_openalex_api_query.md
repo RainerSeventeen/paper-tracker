@@ -6,6 +6,8 @@ This document explains how the OpenAlex Works API (`/works`) parameters are used
 
 > Note: This document focuses on capabilities actually used by the current Paper Tracker implementation, not a full OpenAlex syntax manual.
 
+> **Warning (Development Stage)**: The OpenAlex data source is currently unstable and may return papers unrelated to the queried topic. This feature is still under active development. If you find a significant number of irrelevant articles in the results, it is recommended to disable the OpenAlex source in your configuration (remove the corresponding `source` entry) and rely on arXiv only.
+
 ---
 
 ## 1. Overview of OpenAlex Works API Request Parameters
