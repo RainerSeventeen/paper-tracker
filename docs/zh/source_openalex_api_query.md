@@ -16,7 +16,7 @@ https://api.openalex.org/works?search=<QUERY>&filter=from_publication_date:2026-
 
 本项目使用的常用参数：
 
-- `search`: 全局布尔文本搜索（本文重点，本项目所有字段均编译进此参数）
+- `search`: 全局布尔文本搜索（本文重点，本项目仅将 TITLE / ABSTRACT / TEXT 字段编译进此参数）
 - `filter`: 过滤条件（本项目会附加 `from_publication_date:YYYY-MM-DD`）
 - `page`: 页码（从 1 开始）
 - `per-page`: 每页条数（最大 200）
@@ -32,7 +32,11 @@ https://api.openalex.org/works?search=<QUERY>&filter=from_publication_date:2026-
 
 OpenAlex 只接受全局 `search` 参数，**没有** `ti:`、`abs:`、`au:` 这类字段前缀。
 
-本项目将配置中所有字段（`TITLE`、`ABSTRACT`、`AUTHOR`、`JOURNAL`、`CATEGORY`、`TEXT`）的词项全部合并编译进同一个 `search` 字符串，字段之间用 `AND` 连接。
+本项目**只将 `TITLE`、`ABSTRACT`、`TEXT` 三个字段**的词项编译进 `search` 字符串，字段子句之间用 `AND` 连接。
+
+`AUTHOR`、`JOURNAL`、`CATEGORY` 字段在编译阶段被跳过，由下游本地过滤处理（见第 3 节）。
+
+> 日后计划：`AUTHOR` 可通过 `filter=author.display_name:<name>` 实现；`JOURNAL` 可通过 `filter=primary_location.source.display_name:<name>` 实现；`CATEGORY` 可通过 `filter=concepts.display_name:<name>` 或 topics 实现。
 
 `scope` 和 `query` 各自编译为独立 clause，再以 `AND` 拼接：
 
@@ -84,20 +88,22 @@ OpenAlex 上游的 `search` 是全文搜索，没有字段精度保证。本项�
 
 独立于正向过滤运行，移除标题或摘要中包含任意 NOT 词的论文（大小写不敏感）。
 
-> NOT 词"双重保险"：既在 `search` 中作为文本提示（减少上游返回量），又在本地强制排除，确保排除效果。
+> NOT 词"双重保险"：`TITLE`/`ABSTRACT`/`TEXT` 字段的 NOT 词既在 `search` 中作为文本提示（减少上游返回量），又在本地强制排除，确保排除效果。`AUTHOR`/`JOURNAL`/`CATEGORY` 字段的 NOT 词当前仅在本地过滤阶段生效。
 
 ---
 
 ## 4. `CATEGORY` 字段的行为与限制
 
-| 阶段       | 行为                                                         |
-|------------|--------------------------------------------------------------|
-| 编译阶段   | CATEGORY 词被编入 `search`，参与上游全文搜索                |
-| 本地过滤   | CATEGORY 字段被跳过，不做任何本地匹配（视为条件始终成立）   |
+| 阶段       | 行为                                                       |
+|------------|------------------------------------------------------------|
+| 编译阶段   | **跳过**，不编入 `search`                                  |
+| 本地过滤   | **跳过**，不做任何本地匹配（视为条件始终成立）             |
 
-**原因**：OpenAlex 的论文不携带 arXiv 分类码（如 `cs.CV`）。OpenAlex 的主题词（`primary_topic` / `concepts`）是自然语言名称（如 `Computer Vision`），无法像 arXiv `cat:` 一样做精确过滤。
+**原因**：OpenAlex 的论文不携带 arXiv 分类码（如 `cs.CV`）。OpenAlex 的主题词（`primary_topic` / `concepts`）是自然语言名称（如 `Computer Vision`），无法像 arXiv `cat:` 一样做精确过滤；将其混入全局 `search` 反而会干扰召回语义。
 
-**实际效果**：`CATEGORY` 在 OpenAlex 中是软约束——只影响上游召回倾向，不保证本地过滤精度。如需强约束，建议改用 `TITLE` 或 `ABSTRACT` 字段。
+**实际效果**：`CATEGORY` 在 OpenAlex 中当前完全无效。如需按主题限定，建议改用 `TITLE` 或 `ABSTRACT` 字段。
+
+> 日后计划：支持通过 `filter=concepts.display_name:<name>` 或 `topics` 实现主题约束。
 
 ---
 

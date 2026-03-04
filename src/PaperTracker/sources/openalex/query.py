@@ -132,10 +132,24 @@ def _field_text(*, paper: Paper, field_name: str) -> str:
     return f"{paper.title} {paper.abstract}"
 
 
+_COMPILED_FIELDS = frozenset({"TITLE", "ABSTRACT", "TEXT"})
+
+
 def _build_query_clause(search_query: SearchQuery) -> str:
-    """Build boolean clause for one SearchQuery."""
+    """Build boolean clause for one SearchQuery.
+
+    Only TITLE, ABSTRACT, and TEXT fields are compiled into the OpenAlex
+    ``search`` parameter. Other fields are skipped at compile time and handled
+    by local post-fetch filters instead.
+
+    # TODO(future): AUTHOR — 可通过 filter=author.display_name:<name> 实现
+    # TODO(future): JOURNAL — 可通过 filter=primary_location.source.display_name:<name> 实现
+    # TODO(future): CATEGORY — 可通过 filter=concepts.display_name:<name> 或 topics 实现
+    """
     field_clauses: list[str] = []
-    for field_query in search_query.fields.values():
+    for field_name, field_query in search_query.fields.items():
+        if field_name.strip().upper() not in _COMPILED_FIELDS:
+            continue
         field_clause = _build_field_clause(field_query)
         if field_clause:
             field_clauses.append(field_clause)
