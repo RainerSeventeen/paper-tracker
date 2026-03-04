@@ -100,6 +100,9 @@ def _matches_query(*, paper: Paper, search_query: SearchQuery) -> bool:
 
 def _matches_field_query(*, paper: Paper, field_name: str, field_query: FieldQuery) -> bool:
     """Evaluate field-level AND/OR/NOT against projected text."""
+    if field_name.strip().upper() == "CATEGORY":
+        # CATEGORY is an arXiv-specific field; OpenAlex does not carry it, skip filtering.
+        return True
     haystack = _field_text(paper=paper, field_name=field_name).casefold()
     and_terms = [term.casefold() for term in _normalize_terms(field_query.AND)]
     or_terms = [term.casefold() for term in _normalize_terms(field_query.OR)]
@@ -125,8 +128,6 @@ def _field_text(*, paper: Paper, field_name: str) -> str:
         return " ".join(paper.authors)
     if normalized == "JOURNAL":
         return paper.journal
-    if normalized == "CATEGORY":
-        return " ".join(paper.categories)
     # TEXT and unknown fields fallback to title + abstract.
     return f"{paper.title} {paper.abstract}"
 
