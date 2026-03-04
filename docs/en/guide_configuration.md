@@ -1,24 +1,24 @@
-# Configuration & Environment
+# Configuration and Environment
 
 > The following content was translated using a large language model (LLM)
 
 This document covers two parts:
-1. Explanation and configuration method for **every field** in `config/default.yml`
-2. Configuration method for `.env`
+1. How to configure and what each field means in the built-in default config (`src/PaperTracker/config/defaults.yml`)
+2. How to configure `.env`
 
 ---
 
 ## 1. Configuration File Rules
 
-- CLI accepts only one parameter: `--config <path>`
+- The CLI accepts only one argument: `--config <path>`
 
-- Configuration is a YAML nested structure, does not support flat keys like `log.level`
+- Configuration uses nested YAML. Flat keys like `log.level` are not supported.
 
-- `config/default.yml` is the default configuration, please do not modify it
+- The default config is built into the package (`src/PaperTracker/config/defaults.yml`). Do not modify it.
 
-- Merge rule: mappings merge recursively, lists and scalars override as a whole
+- Merge rule: mappings merge recursively; lists and scalars override as a whole.
 
-Example (override a few fields):
+Example (overriding only a few fields):
 ```yml
 log:
   level: DEBUG
@@ -38,19 +38,19 @@ paper-tracker search --config config/custom.yml
 
 ---
 
-## 2. `default.yml` Field Descriptions
+## 2. Default Configuration Field Reference
 
-The following explains each field in order of the `config/default.yml` structure. Each field includes: functional description, optional range, and example.
+The following sections explain each field in the structure of the built-in default config. Each field includes: purpose, valid options/range, and an example.
 
 ### 2.1 `log`
 
-- `level`: Control CLI log level; Optional values: `DEBUG` / `INFO` / `WARNING` / `ERROR` / `CRITICAL`. An error is reported if an unknown value is filled in.
+- `level`: Controls CLI log level; valid values: `DEBUG` / `INFO` / `WARNING` / `ERROR` / `CRITICAL`. Unknown values will raise an error.
 
-- `to_file`: Whether to write log files simultaneously (in addition to console output); Optional values: `true` / `false`.
+- `to_file`: Whether to also write logs to files (in addition to console output); valid values: `true` / `false`.
 
-- `dir`: Root path of log file directory; Optional values: Any valid directory path. Relative paths are relative to the current working directory.
+- `dir`: Root directory for log files; valid values: any valid directory path. Relative paths are based on the current working directory.
 
-Example (only one example for `log`):
+Example (one example for `log` is enough):
 ```yml
 log:
   level: DEBUG
@@ -58,15 +58,15 @@ log:
   dir: log
 ```
 
-### 2.2 `storage` (Deduplication & Content Storage)
+### 2.2 `storage` (Deduplication and Content Storage)
 
-- `enabled`: When enabled, deduplicates already-seen papers to avoid duplicate output; Optional values: `true` / `false`.
+- `enabled`: When enabled, deduplicates papers already seen to avoid duplicate output; valid values: `true` / `false`.
 
-- `db_path`: SQLite database storage path for deduplication state and content storage; Optional values: Any valid file path. Relative paths are relative to the current working directory; absolute paths start with `/`.
+- `db_path`: SQLite database path for deduplication state and content storage; valid values: any valid file path. Relative paths are based on the current working directory; absolute paths start with `/`.
 
-- `content_storage_enabled`: Whether to save complete paper content to the database (title, abstract, authors, etc.) for future retrieval and reuse; Optional values: `true` / `false`.
+- `content_storage_enabled`: Whether to store full paper content in the database (title, abstract, authors, etc.) for later retrieval and reuse; valid values: `true` / `false`.
 
-Example (only one example for `storage`):
+Example (one example for `storage` is enough):
 ```yml
 storage:
   enabled: true
@@ -77,32 +77,32 @@ storage:
 
 ### 2.3 `storage.keep_arxiv_version`
 
-- `storage.keep_arxiv_version`: Whether to keep the version suffix of arXiv paper IDs; Optional values: `true` / `false`.
+- `storage.keep_arxiv_version`: Whether to keep the version suffix in arXiv paper IDs; valid values: `true` / `false`.
 
-Example (only one example):
+Example (one example is enough):
 ```yml
 storage:
   keep_arxiv_version: false
 ```
 
-Explanation:
+Notes:
 - `false` (default): `2601.21922v1` -> `2601.21922`
 
-- `true`: Keep version numbers `v1` / `v2`, etc.
+- `true`: keeps version suffixes like `v1` / `v2`
 
-### 2.4 `scope` (Optional, Global Filter Conditions)
+### 2.4 `scope` (Optional Global Filters)
 
-- `scope`: Global filter conditions that apply to **all** queries; Optional values: Same structure as `queries` (field names and operators must be uppercase). Allowed fields: `TITLE` / `ABSTRACT` / `AUTHOR` / `JOURNAL` / `CATEGORY`. Allowed operators: `AND` / `OR` / `NOT`.
+- `scope`: Global filtering conditions applied to **all** queries; valid values: same structure as `queries` (field names and operators must be uppercase). Allowed fields: `TITLE` / `ABSTRACT` / `AUTHOR` / `JOURNAL` / `CATEGORY`. Allowed operators: `AND` / `OR` / `NOT`.
 
-- `scope.<FIELD>`: Specify search conditions for a field; Optional values: Field names must be uppercase and can only be `TITLE` / `ABSTRACT` / `AUTHOR` / `JOURNAL` / `CATEGORY`.
+- `scope.<FIELD>`: Search conditions for a specific field; valid values: field name must be uppercase and one of `TITLE` / `ABSTRACT` / `AUTHOR` / `JOURNAL` / `CATEGORY`.
 
-- `scope.<FIELD>.AND`: "All keywords must match" within the same field; Optional values: String or list of strings.
+- `scope.<FIELD>.AND`: "All keywords must match" in the same field; valid values: string or list of strings.
 
-- `scope.<FIELD>.OR`: "Any keyword match is acceptable" within the same field; Optional values: String or list of strings.
+- `scope.<FIELD>.OR`: "Any keyword may match" in the same field; valid values: string or list of strings.
 
-- `scope.<FIELD>.NOT`: Exclude certain keywords; Optional values: String or list of strings.
+- `scope.<FIELD>.NOT`: Exclude certain keywords; valid values: string or list of strings.
 
-Example (only one example for `scope`):
+Example (one example for `scope` is enough):
 ```yml
 scope:
   CATEGORY:
@@ -113,21 +113,21 @@ scope:
 
 ### 2.5 `queries` (Required)
 
-- `queries`: List of queries, each element is an independent query executed and output sequentially; Optional values: Non-empty array; each element is a query object.
+- `queries`: Query list. Each item is an independent query executed in sequence; valid values: non-empty array, each item is a query object.
 
-- `queries[].NAME`: Give the query a readable name, only used for logging and output display; Optional values: Non-empty string, can be omitted.
+- `queries[].NAME`: Human-readable query name, used only for logs and output display; valid values: non-empty string, optional.
 
-- `queries[].<FIELD>`: Specify search conditions for a field; Optional values: Field names must be uppercase and can only be `TITLE` / `ABSTRACT` / `AUTHOR` / `JOURNAL` / `CATEGORY`.
+- `queries[].<FIELD>`: Search condition for a specific field; valid values: field name must be uppercase and one of `TITLE` / `ABSTRACT` / `AUTHOR` / `JOURNAL` / `CATEGORY`.
 
-- `queries[].AND / OR / NOT`: When writing `AND/OR/NOT` directly at the top level of a query, it represents searching the `TEXT` field (title + abstract); Optional values: String or list of strings.
+- `queries[].AND / OR / NOT`: If `AND/OR/NOT` is written directly at query top level, it means searching the `TEXT` field (title + abstract); valid values: string or list of strings.
 
-- `queries[].<FIELD>.AND`: "All keywords must match" within the same field; Optional values: String or list of strings.
+- `queries[].<FIELD>.AND`: "All keywords must match" in the same field; valid values: string or list of strings.
 
-- `queries[].<FIELD>.OR`: "Any keyword match is acceptable" within the same field; Optional values: String or list of strings.
+- `queries[].<FIELD>.OR`: "Any keyword may match" in the same field; valid values: string or list of strings.
 
-- `queries[].<FIELD>.NOT`: Exclude certain keywords; Optional values: String or list of strings.
+- `queries[].<FIELD>.NOT`: Exclude certain keywords; valid values: string or list of strings.
 
-Example (only one example for `queries`):
+Example (one example for `queries` is enough):
 
 ```yml
 queries:
@@ -141,58 +141,66 @@ queries:
       NOT: ["survey", "review"]
 ```
 
-### 2.6 `search` (Fetch Strategy Configuration)
+### 2.6 `search` (Fetch Strategy)
 
-- `max_results`: Target number of papers, each query returns at most this many **new papers** (after deduplication); Optional values: Integer, must be greater than 0.
+- `sources`: List of enabled sources; valid values: any non-empty combination of `arxiv` / `openalex`. Default: `[arxiv]`.
+  - `arxiv`: Fetches preprints from arXiv Atom API. Supports `cat:` category matching (`CATEGORY` is effective).
+  - `openalex`: Fetches from OpenAlex REST API, with broader coverage (journals/conferences/preprints), but **does not support arXiv category codes** (`CATEGORY` is ineffective in OpenAlex mode; see [OpenAlex Query Parameters](./source_openalex_api_query.md)).
+  - When both are enabled, the service fetches in parallel and performs cross-source deduplication after aggregation (prefers published `article` records when duplicated).
 
-- `pull_every`: Strict time window size (in days), paper update/release time must be within `[now - pull_every, now]`; Optional values: Integer, must be greater than 0. Recommended value: `7` (last week).
+- `max_results`: Target number of papers. Each query returns at most this many **new papers** (after deduplication); valid values: integer greater than 0.
 
-- `fill_enabled`: Whether to allow papers outside the strict window to become candidates (to fill up to `max_results`); Optional values: `true` / `false`.
-  - `false` (strict mode): Only papers within the strict time window are allowed to become candidates. The system still continues paginated fetches until it hits a stop condition (e.g., reaching the target, reaching the strict window boundary, or hitting the fetch limit).
-  - `true` (fill mode): Allow papers outside the strict window (limited by `max_lookback_days`) to become candidates to fill the target count; also always fetch according to pagination strategy.
+- `pull_every`: Strict time-window size (days). Paper updated/published time must be in `[now - pull_every, now]`; valid values: integer greater than 0. Recommended: `7` (last week).
 
-- `max_lookback_days`: Maximum lookback days for fill (in days), only effective when `fill_enabled=true`; Optional values: `-1` (unlimited) or an integer greater than or equal to `pull_every`. Recommended value: `30` (last month).
+- `fill_enabled`: Whether papers outside the strict window can be considered (to fill up `max_results`); valid values: `true` / `false`.
+  - `false` (strict mode): only papers in strict window can be candidates. The system still continues paginated fetching until a stop condition is reached (for example, target reached, strict-window boundary reached, or fetch limit reached).
+  - `true` (fill mode): allows papers outside strict window (limited by `max_lookback_days`) to be candidates to fill target count; fetching still follows pagination strategy.
 
-- `max_fetch_items`: Maximum raw papers fetched for a single query (including duplicates and filtered items); Optional values: `-1` (unlimited) or an integer greater than 0. Recommended value: `125` (to control API call count).
+- `max_lookback_days`: Maximum lookback days for fill mode, effective only when `fill_enabled=true`; valid values: `-1` (unlimited) or integer greater than or equal to `pull_every`. Recommended: `30` (last month).
 
-- `fetch_batch_size`: Number of papers fetched per API request (page size); Optional values: Integer, must be greater than 0. Recommended value: `25`.
+- `max_fetch_items`: Maximum number of raw paper items fetched for one query (including duplicates and filtered-out entries); valid values: `-1` (unlimited) or integer greater than 0. Recommended: `125` (to control API call volume).
 
-**Sorting Strategy**: arXiv fetching always uses `lastUpdatedDate` + `descending` (most recently updated first), user configuration is not supported.
+- `fetch_batch_size`: Number of papers fetched per API request (page size); valid values: integer greater than 0. Recommended: `25`.
 
-Example (only one example for `search`):
+**Sorting strategy**:
+- arXiv: fixed `lastUpdatedDate + descending` (latest updates first), with time filtering based on `updated`.
+- OpenAlex: fixed `publication_date:desc` (latest publication first), with time filtering based on `published` (or `updated`), and a forced 3-second interval between pages due to API rate behavior.
+- Sorting fields are not user-configurable for either source.
+
+Example (one example for `search` is enough):
 ```yml
 search:
   max_results: 10             # Target: return 10 new papers
 
-  # Time window configuration
+  # Time-window settings
   pull_every: 7               # Strict window: last 7 days
   fill_enabled: false         # Strict mode, no fill
-  max_lookback_days: 30       # If fill_enabled=true, look back at most 30 days
-  max_fetch_items: 125        # Fetch at most 125 raw items
+  max_lookback_days: 30       # If fill_enabled=true, look back up to 30 days
+  max_fetch_items: 125        # Fetch at most 125 raw entries
   fetch_batch_size: 25        # 25 items per page
 ```
 
-**Configuration Constraints**:
+**Configuration constraints**:
 - `pull_every > 0`
-- When `fill_enabled=true`: `max_lookback_days == -1` or `max_lookback_days >= pull_every`
+- If `fill_enabled=true`: `max_lookback_days == -1` or `max_lookback_days >= pull_every`
 - `max_fetch_items == -1` or `max_fetch_items > 0`
 - `fetch_batch_size > 0`
 
 ### 2.7 `output`
 
-- `base_dir`: Output root directory; Optional values: Any valid directory path. Relative paths are relative to the current working directory.
+- `base_dir`: Output root directory; valid values: any valid directory path. Relative paths are based on the current working directory.
 
-- `formats`: List of output formats, can output multiple formats simultaneously; Optional values: Any combination of `console` / `json` / `markdown` / `html` (at least one).
+- `formats`: Output format list. Multiple formats can be enabled at once; valid values: any combination of `console` / `json` / `markdown` / `html` (at least one).
 
-- `markdown.template_dir`: Markdown template directory; Optional values: Any non-empty directory path string.
+- `markdown.template_dir`: Markdown template directory; valid values: any non-empty directory path string.
 
-- `markdown.document_template`: Document-level template file name (generates the outer structure of the entire Markdown document); Optional values: File name in the template directory.
+- `markdown.document_template`: Document-level template file name (outer structure for the whole Markdown document); valid values: file name within the template directory.
 
-- `markdown.paper_template`: Paper-level template file name (rendering structure of a single paper); Optional values: File name in the template directory.
+- `markdown.paper_template`: Paper-level template file name (rendering structure for one paper); valid values: file name within the template directory.
 
-- `markdown.paper_separator`: Separator string between multiple papers; Optional values: Any string; can contain `\n` newline.
+- `markdown.paper_separator`: Separator string between papers; valid values: any string, can include newline `\n`.
 
-Example (only one example for `output`):
+Example (one example for `output` is enough):
 ```yml
 output:
   base_dir: output/
@@ -204,45 +212,45 @@ output:
     paper_separator: "\n\n---\n\n"
 ```
 
-Explanation:
-- The `output.markdown.*` fields above only take effect when `output.formats` includes `markdown`.
-- The `output.html.*` fields only take effect when `output.formats` includes `html`.
+Notes:
+- `output.markdown.*` fields take effect only when `output.formats` includes `markdown`.
+- `output.html.*` fields take effect only when `output.formats` includes `html`.
 
 ### 2.8 `llm`
 
-- `enabled`: Whether to enable LLM-related functionality (translation/summary); Optional values: `true` / `false`.
+- `enabled`: Whether to enable LLM features (translation/summary); valid values: `true` / `false`.
 
-- `provider`: LLM provider type; Optional values: Currently only supports `openai-compat`.
+- `provider`: LLM provider type; valid values: currently only `openai-compat`.
 
-- `base_url`: API Base URL; Optional values: Any accessible HTTP(S) interface address.
+- `base_url`: API base URL; valid values: any accessible HTTP(S) endpoint.
 
-- `model`: Model name; Optional values: Determined by the service corresponding to `base_url`.
+- `model`: Model name; valid values: determined by the service behind `base_url`.
 
-- `api_key_env`: Environment variable name corresponding to the API Key; Optional values: Any non-empty string.
+- `api_key_env`: Environment variable name for API key; valid values: any non-empty string.
 
-- `timeout`: Single request timeout (seconds); Optional values: Integer, recommended greater than 0.
+- `timeout`: Timeout per request (seconds); valid values: integer, recommended greater than 0.
 
-- `target_lang`: Target language for translation and summary output; Optional values: Any non-empty language description string. Prefer full names, for example `Simplified Chinese` / `English` / `Japanese`.
+- `target_lang`: Target language for translation and summary output; valid values: any non-empty language description string. Full language names are recommended (for example `Simplified Chinese` / `English` / `Japanese`).
 
-- `temperature`: Sampling temperature, affects output randomness; Optional values: Float, commonly `0.0` ~ `2.0`.
+- `temperature`: Sampling temperature that affects randomness; valid values: float, commonly `0.0` to `2.0`.
 
-- `max_tokens`: Maximum response tokens; Optional values: Integer, recommended greater than 0.
+- `max_tokens`: Maximum response tokens; valid values: integer, recommended greater than 0.
 
-- `max_workers`: Number of concurrent workers, affects the number of papers processed simultaneously; Optional values: Integer, recommended greater than or equal to 1.
+- `max_workers`: Number of concurrent workers, affecting parallel paper processing; valid values: integer, recommended greater than or equal to 1.
 
-- `enable_translation`: Whether to enable abstract translation; Optional values: `true` / `false`.
+- `enable_translation`: Whether to enable abstract translation; valid values: `true` / `false`.
 
-- `enable_summary`: Whether to enable structured summary (TLDR, motivation, method, results, conclusion); Optional values: `true` / `false`.
+- `enable_summary`: Whether to enable structured summary (TLDR, motivation, method, result, conclusion); valid values: `true` / `false`.
 
-- `max_retries`: Maximum number of retries (for timeouts or temporary errors); Optional values: Integer, `0` means no retry.
+- `max_retries`: Maximum retry count (for timeout or transient errors); valid values: integer, `0` means no retry.
 
-- `retry_base_delay`: Exponential backoff base delay (seconds); Optional values: Float, recommended greater than or equal to 0.
+- `retry_base_delay`: Base delay for exponential backoff (seconds); valid values: float, recommended greater than or equal to 0.
 
-- `retry_max_delay`: Maximum retry delay (seconds); Optional values: Float, recommended greater than or equal to 0.
+- `retry_max_delay`: Maximum retry delay (seconds); valid values: float, recommended greater than or equal to 0.
 
-- `retry_timeout_multiplier`: Timeout multiplier for each retry; Optional values: Float, `1.0` means no amplification.
+- `retry_timeout_multiplier`: Timeout multiplier for each retry; valid values: float, `1.0` means no scaling.
 
-Example (only one example for `llm`):
+Example (one example for `llm` is enough):
 ```yml
 llm:
   enabled: true
@@ -267,7 +275,7 @@ llm:
 
 ## 3. `.env` Configuration
 
-`.env` is used to store sensitive information (such as API Keys).
+`.env` is used to store sensitive information (such as API keys).
 
 ### 3.1 Create `.env`
 
@@ -276,8 +284,8 @@ cp .env.example .env
 ```
 
 ### 3.2 `LLM_API_KEY`
-Description: Access key for LLM API, specified by default in `llm.api_key_env` (default `LLM_API_KEY`).
-Optional range: Non-empty string, issued by the provider.
+Purpose: access key for the LLM API. By default, it is specified by `llm.api_key_env` (default `LLM_API_KEY`).
+Valid range: non-empty string issued by the provider.
 
 Example:
 ```bash
@@ -285,13 +293,13 @@ LLM_API_KEY=sk-your-actual-api-key-here
 ```
 
 ### 3.3 Notes
-- `.env` is in `.gitignore` and will not be committed
+- `.env` is already in `.gitignore` and will not be committed.
 
-- You can customize the variable name via `llm.api_key_env`
+- You can customize the variable name via `llm.api_key_env`.
 
-- Same-name variables in the shell have higher priority
+- Variables with the same name in the shell have higher priority.
 
-Example of temporary override:
+Temporary override example:
 ```bash
 LLM_API_KEY=sk-temp paper-tracker search --config config.yml
 ```

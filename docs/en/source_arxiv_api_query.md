@@ -1,14 +1,14 @@
-# arXiv API: `search_query` Fields and Syntax
+# arXiv API: `search_query` Fields and Syntax Reference
 
 > The following content was translated using a large language model (LLM)
 
-This document summarizes common fields and writing methods supported by the `search_query` parameter in the arXiv Atom API (`/api/query`), and describes the correspondence with this project's configuration.
+This document summarizes common fields and syntax supported by the `search_query` parameter in the arXiv Atom API (`/api/query`), and explains how they map to this project's configuration.
 
-> Note: Here "field" refers to the prefix in `search_query` (such as `cat:`, `ti:`), not the HTTP parameter name.
+> Note: Here, "field" refers to the prefix inside `search_query` (for example, `cat:`, `ti:`), not an HTTP parameter name.
 
 ---
 
-## 1. arXiv Atom API Request Parameters Overview
+## 1. Overview of arXiv Atom API Request Parameters
 
 A typical arXiv Atom API request looks like:
 
@@ -18,10 +18,10 @@ https://export.arxiv.org/api/query?search_query=<QUERY>&start=0&max_results=20&s
 
 Common parameters:
 
-- `search_query`: Search expression (focus of this document)
-- `id_list`: Comma-separated list of arXiv IDs (use either `search_query` or `id_list`)
-- `start`: Result start offset
-- `max_results`: Number of results returned
+- `search_query`: Search expression (the focus of this document)
+- `id_list`: Comma-separated list of arXiv IDs (use either `id_list` or `search_query`)
+- `start`: Starting offset of results
+- `max_results`: Number of returned results
 - `sortBy`: Common values are `submittedDate` / `lastUpdatedDate`
 - `sortOrder`: `ascending` / `descending`
 
@@ -29,9 +29,9 @@ This project currently only uses `search_query` + `start/max_results/sortBy/sort
 
 ---
 
-## 2. Fields (Field Prefix) of `search_query`
+## 2. `search_query` Fields (Field Prefixes)
 
-`search_query` uses `field:value` format for restricted searches. Here are common fields:
+`search_query` uses the `field:value` form for constrained search. Common fields include:
 
 ### 2.1 `cat:` (Category)
 
@@ -43,18 +43,18 @@ This project currently only uses `search_query` + `start/max_results/sortBy/sort
 
 For details, see [arXiv official documentation](https://arxiv.org/category_taxonomy)
 
-`cs.CV` and similar values are arXiv classification codes (`<major>.<minor>`).
+Values such as `cs.CV` are arXiv category codes (`<major>.<minor>`).
 
 ### 2.2 `ti:` (Title)
 
-- Purpose: Search only in titles
+- Purpose: Search only in the title
 - Examples:
   - `ti:diffusion`
   - `ti:"large language model"`
 
 ### 2.3 `abs:` (Abstract)
 
-- Purpose: Search only in abstracts
+- Purpose: Search only in the abstract
 - Examples:
   - `abs:transformer`
 
@@ -67,34 +67,34 @@ For details, see [arXiv official documentation](https://arxiv.org/category_taxon
 
 ### 2.5 `co:` (Comments)
 
-- Purpose: Search in comments field (many papers include conference/journal information here)
+- Purpose: Search in the comments field (many papers include conference/journal information here)
 - Examples:
   - `co:ICCV`
   - `co:"NeurIPS 2024"`
 
 ### 2.6 `jr:` (Journal Reference)
 
-- Purpose: Search in journal reference field
+- Purpose: Search in the journal reference field
 - Examples:
   - `jr:"Nature"`
 
 ### 2.7 `all:` (All Fields)
 
-- Purpose: Search in arXiv's "all fields" (usually broader than `ti/abs`)
+- Purpose: Search across arXiv-provided "all fields" (usually broader than `ti/abs`)
 - Examples:
   - `all:diffusion`
 
 ### 2.8 `id:` (Identifier)
 
-- Purpose: Search by arXiv identifier (related to the purpose of `id_list`)
+- Purpose: Search by arXiv identifier (related to `id_list` usage)
 - Examples:
   - `id:1234.5678`
 
 ---
 
-## 3. Boolean Syntax of `search_query` (AND / OR / NOT)
+## 3. Boolean Syntax in `search_query` (AND / OR / NOT)
 
-arXiv query strings support boolean combinations and parenthetical grouping, common writing methods:
+arXiv query strings support boolean composition and parenthesized grouping. Common forms:
 
 - `AND`:
   - `cat:cs.CV AND ti:diffusion`
@@ -102,33 +102,33 @@ arXiv query strings support boolean combinations and parenthetical grouping, com
   - `cat:cs.CV OR cat:cs.LG`
 - `NOT` / `AND NOT`:
   - `cat:cs.CV AND NOT ti:survey`
-- Parenthetical grouping:
+- Parenthesized grouping:
   - `(cat:cs.CV OR cat:cs.LG) AND (ti:diffusion OR abs:diffusion)`
 
-Phrases (containing spaces) usually need to be wrapped in double quotes:
+Phrases (containing spaces) usually need double quotes:
 
 - `ti:"large language model"`
 
 ---
 
-## 4. Correspondence with This Project's Configuration
+## 4. Mapping to This Project's Configuration
 
-This project uses structured queries in the configuration file (`queries` list)
+In this project, configuration files use structured queries (the `queries` list).
 
-For detailed explanation, see: [Detailed Parameter Configuration](./guide_configuration.md)
+For details, see: [Detailed configuration parameter reference](./guide_configuration.md)
 
-Configuration level uses semantic fields:
+The configuration layer uses semantic fields:
 
 - `TITLE` / `ABSTRACT` / `AUTHOR` / `JOURNAL` / `CATEGORY`
-- Also supports writing `AND`/`OR`/`NOT` directly at the query top level without specifying a field (equivalent to `TEXT`: title + abstract)
+- You can also omit fields and place `AND`/`OR`/`NOT` directly at query top level (equivalent to `TEXT`: title + abstract)
 
-Each field supports three operator keys (required uppercase):
+Each field supports three operator keys (must be uppercase):
 
-- `AND`: Must satisfy all (list)
-- `OR`: Any one satisfies (list)
+- `AND`: Must all be satisfied (list)
+- `OR`: Any one is sufficient (list)
 - `NOT`: Exclude (list)
 
-This project compiles these structures into arXiv Atom API's `search_query`.
+This project compiles these structures into arXiv Atom API `search_query`.
 
 ```yml
 queries:
@@ -142,19 +142,19 @@ queries:
 
 Rules:
 
-- This project compiles each query into arXiv's `search_query` before sending.
+- The project compiles each query into arXiv `search_query` before sending.
 
 ---
 
 ## 5. Examples
 
-### 5.1 Write Only Values (Project Auto-expands Fields)
+### 5.1 Values Only (Fields auto-expanded by the project)
 
 ```text
 diffusion AND "large language model"
 ```
 
-### 5.2 Explicitly Specify Category + Title
+### 5.2 Explicit Category + Title
 
 ```text
 cat:cs.CV AND ti:diffusion AND NOT all:survey
@@ -168,7 +168,7 @@ cat:cs.CV AND ti:diffusion AND NOT all:survey
 
 ---
 
-## 6. Common Precautions
+## 6. Common Notes
 
-- Multiple words without quotes are treated as multiple terms: `large language model` is equivalent to `large AND language AND model` (this project supports implicit AND).
-- It is recommended to wrap the entire expression in single quotes in YAML so that the expression can use double quotes internally for phrases.
+- Multi-word text without quotes is treated as multiple terms: `large language model` is equivalent to `large AND language AND model` (this project supports implicit AND).
+- In YAML, it is recommended to wrap the whole expression in single quotes so you can use double-quoted phrases inside.

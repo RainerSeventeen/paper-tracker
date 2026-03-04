@@ -1,5 +1,7 @@
 # Paper Tracker
 
+> The following content was translated using a large language model (LLM)
+
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 [![Version](https://img.shields.io/badge/version-0.1.0-orange.svg)](https://github.com/rainerseventeen/paper-tracker/releases)
@@ -9,7 +11,7 @@
 
 **English | [中文](./README.md)**
 
-Paper Tracker is a minimal paper tracking tool. Its core goal is to query arXiv by keywords (with more data sources planned) and output structured results based on configuration, so you can continuously track new papers.
+Paper Tracker is a minimal paper tracking tool. Its core goal is to query multiple paper data sources by keywords (`arXiv`, `OpenAlex`) and output structured results based on configuration, so you can continuously track new papers.
 
 **If this project helps you, please consider giving it a Star ⭐. Thank you!**
 
@@ -22,10 +24,16 @@ See the live result: [📄 Deployment Page](https://rainerseventeen.github.io/pa
 ## Implemented Features
 
 - 🔍 **Query and Filtering**:
-  - Query papers via the arXiv API
+  - Multi-source retrieval: `arxiv` (preprints), `openalex` (journals/conferences/preprints), can be enabled together
   - Field-based search: `TITLE`, `ABSTRACT`, `AUTHOR`, `JOURNAL`, `CATEGORY`
   - Logical operators: `AND`, `OR`, `NOT`
   - Global `scope` support (applies to all queries)
+  - Cross-source deduplication after multi-source aggregation
+
+  | Source | Data Type | Query Field Support | Local Post-Filter | Cross-Source Dedupe |
+  |--------|-----------|:-------------------:|:-----------------:|:-------------------:|
+  | `arxiv` | Preprints | Full | — | ✅ |
+  | `openalex` | Journals / Conferences / Preprints | Partial | ✅ | ✅ |
 - 🧲 **Fetch Strategy**: Supports fetching older papers to fill the target paper count
 
 - 🗃️ **Deduplication and Storage**: SQLite-based deduplication and paper content storage for later lookup
@@ -77,10 +85,10 @@ cp .env.example .env
 
 📚 Detailed docs:
 - [📖 User Guide](./docs/en/guide_user.md)
-
 - [⚙️ Detailed Configuration Reference](./docs/en/guide_configuration.md)
-
+- [🔍 Search Logic Overview](./docs/en/architecture_search_logic.md)
 - [🔍 arXiv Query Syntax](./docs/en/source_arxiv_api_query.md)
+- [🔍 OpenAlex Query Parameters](./docs/en/source_openalex_api_query.md)
 
 ## Update
 
