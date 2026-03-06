@@ -55,7 +55,7 @@ class HtmlRenderer:
 
         papers_html = "\n".join(paper_blocks)
         if not papers_html:
-            papers_html = '<p class="empty-state">该 query 暂无结果。</p>'
+            papers_html = '<p class="empty-state">No results for this query.</p>'
 
         safe_query_label = html.escape(query_label)
         safe_query_label_attr = html.escape(query_label, quote=True)
@@ -67,7 +67,7 @@ class HtmlRenderer:
         )
         section += "  <header class=\"query-header\">\n"
         section += f"    <h2>{safe_query_label}</h2>\n"
-        section += f"    <p class=\"query-count\">{paper_count} 篇</p>\n"
+        section += f"    <p class=\"query-count\">{paper_count} papers</p>\n"
         section += "  </header>\n"
         section += f"  <div class=\"query-content\">\n{papers_html}\n  </div>\n"
         section += "</section>"
@@ -313,7 +313,7 @@ def _prepare_paper_context_html(paper: PaperView, paper_number: int) -> Mapping[
         "pdf_url": pdf_url,
         "abstract_url": abstract_url,
         "links_state": "has-links" if has_links else "no-links",
-        "abstract": html.escape(paper.abstract if paper.abstract is not None else "摘要暂不可用"),
+        "abstract": html.escape(paper.abstract if paper.abstract is not None else "Abstract not available."),
         "abstract_translation": html.escape(paper.abstract_translation or ""),
         "tldr": html.escape(paper.tldr or ""),
         "motivation": html.escape(paper.motivation or ""),
