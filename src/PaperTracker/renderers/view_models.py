@@ -22,7 +22,7 @@ class PaperView:
         id: Source-specific unique identifier.
         title: Paper title.
         authors: Author names.
-        abstract: Abstract text.
+        abstract: Abstract text, or None when unavailable.
         published: Publication date as YYYY-MM-DD string or None.
         updated: Last update date as YYYY-MM-DD string or None.
         primary_category: Primary category/field if provided.
@@ -43,7 +43,7 @@ class PaperView:
     id: str
     title: str
     authors: Sequence[str]
-    abstract: str
+    abstract: str | None
 
     # Temporal info (formatted strings for display)
     published: str | None

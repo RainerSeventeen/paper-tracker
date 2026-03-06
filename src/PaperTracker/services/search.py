@@ -94,7 +94,8 @@ class PaperSearchService:
 
         ranked = self._sort_papers(aggregated)
         unique_papers = self._deduplicate_in_batch(ranked)
-        return unique_papers[:max_results]
+        annotated = self._annotate_abstract_status(unique_papers)
+        return annotated[:max_results]
 
     def close(self) -> None:
         """Close all configured sources and release external resources.
@@ -127,6 +128,39 @@ class PaperSearchService:
     def _source_order_map(self) -> dict[str, int]:
         """Return source priority map from configured source order."""
         return {getattr(source, "name", ""): index for index, source in enumerate(self.sources)}
+
+    def _annotate_abstract_status(self, papers: Sequence[Paper]) -> list[Paper]:
+        """Mark papers with missing abstract by setting ``abstract_status`` in extra.
+
+        Papers with a non-empty abstract are returned unchanged. Papers with an
+        empty abstract get a new ``extra`` mapping that adds
+        ``{"abstract_status": "missing"}`` while preserving all existing keys.
+
+        Args:
+            papers: Aggregated, deduplicated papers to annotate.
+
+        Returns:
+            New list of Paper objects; objects without a missing abstract are
+            the same instances as the input.
+        """
+        result: list[Paper] = []
+        missing_count = 0
+        for paper in papers:
+            if not paper.abstract:
+                missing_count += 1
+                extra = {**paper.extra, "abstract_status": "missing"}
+                paper = Paper(
+                    source=paper.source, id=paper.id, title=paper.title,
+                    authors=paper.authors, abstract=paper.abstract,
+                    published=paper.published, updated=paper.updated,
+                    primary_category=paper.primary_category,
+                    categories=paper.categories, links=paper.links,
+                    doi=paper.doi, extra=extra,
+                )
+            result.append(paper)
+        if missing_count:
+            log.info("Papers with missing abstract: %d/%d", missing_count, len(papers))
+        return result
 
     def _sort_papers(self, papers: Sequence[Paper]) -> list[Paper]:
         """Sort papers with stable, deterministic ordering."""

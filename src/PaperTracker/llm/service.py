@@ -153,6 +153,14 @@ class LLMService:
         Returns:
             LLMGeneratedInfo on success, otherwise None.
         """
+        if not paper.abstract:
+            log.debug(
+                "Skipping LLM enrichment for paper with missing abstract: source=%s id=%s",
+                paper.source,
+                paper.id,
+            )
+            return None
+
         translation = None
         summary_dict = None
 

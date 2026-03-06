@@ -55,7 +55,7 @@ def map_paper_to_view(paper: Paper) -> PaperView:
         id=paper.id,
         title=paper.title,
         authors=paper.authors,
-        abstract=paper.abstract,
+        abstract=paper.abstract or None,  # empty string → None
         published=format_datetime(paper.published),
         updated=format_datetime(paper.updated),
         primary_category=paper.primary_category,

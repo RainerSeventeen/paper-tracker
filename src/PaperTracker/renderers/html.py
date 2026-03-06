@@ -313,7 +313,7 @@ def _prepare_paper_context_html(paper: PaperView, paper_number: int) -> Mapping[
         "pdf_url": pdf_url,
         "abstract_url": abstract_url,
         "links_state": "has-links" if has_links else "no-links",
-        "abstract": html.escape(paper.abstract or ""),
+        "abstract": html.escape(paper.abstract if paper.abstract is not None else "摘要暂不可用"),
         "abstract_translation": html.escape(paper.abstract_translation or ""),
         "tldr": html.escape(paper.tldr or ""),
         "motivation": html.escape(paper.motivation or ""),
