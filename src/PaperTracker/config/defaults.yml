@@ -40,6 +40,7 @@ search:
   max_lookback_days: 30       # Max length for fill window, -1 as infinite
   max_fetch_items: 125        # Max number of items to fetch, -1 means unlimited
   fetch_batch_size: 25        # Fetch count for each round
+  openalex_relevance_threshold: 0.0                    # local threshold for OpenAlex relevance_score
 
 # output domain
 output:

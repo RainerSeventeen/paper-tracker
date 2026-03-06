@@ -28,6 +28,8 @@ def parse_openalex_works(items: Sequence[Mapping[str, Any]]) -> list[Paper]:
         authors = _extract_authors(item.get("authorships"))
         abstract = _rebuild_abstract(item.get("abstract_inverted_index"))
         doi = _normalize_doi(_safe_str(item.get("doi")))
+        language = _safe_str(item.get("language")).lower()
+        relevance_score = _extract_relevance_score(item)
 
         categories = _extract_categories(item)
         primary_category = categories[0] if categories else None
@@ -46,7 +48,11 @@ def parse_openalex_works(items: Sequence[Mapping[str, Any]]) -> list[Paper]:
                 categories=categories,
                 links=PaperLinks(abstract=abstract_url, pdf=pdf_url),
                 doi=doi or None,
-                extra={"work_type": _extract_work_type(item)},
+                extra={
+                    "work_type": _extract_work_type(item),
+                    "language": language or None,
+                    "relevance_score": relevance_score,
+                },
             )
         )
 
@@ -199,6 +205,16 @@ def _extract_work_type(item: Mapping[str, Any]) -> str:
     if raw_type in {"preprint", "posted-content"}:
         return "preprint"
     return "unknown"
+
+
+def _extract_relevance_score(item: Mapping[str, Any]) -> float | None:
+    """Extract OpenAlex relevance score when available."""
+    score = item.get("relevance_score")
+    if isinstance(score, bool):
+        return None
+    if isinstance(score, (int, float)):
+        return float(score)
+    return None
 
 
 def _rebuild_abstract(raw_index: Any) -> str:

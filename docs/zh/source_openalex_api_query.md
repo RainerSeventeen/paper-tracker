@@ -13,16 +13,16 @@
 OpenAlex Works API 的典型请求形如：
 
 ```text
-https://api.openalex.org/works?search=<QUERY>&filter=from_publication_date:2026-02-01&page=1&per-page=25&sort=publication_date:desc
+https://api.openalex.org/works?search=<QUERY>&filter=from_publication_date:2026-02-01,language:en&page=1&per-page=25&sort=publication_date:desc,relevance_score:desc
 ```
 
 本项目使用的常用参数：
 
 - `search`: 全局布尔文本搜索（本文重点，本项目仅将 TITLE / ABSTRACT / TEXT 字段编译进此参数）
-- `filter`: 过滤条件（本项目会附加 `from_publication_date:YYYY-MM-DD`）
+- `filter`: 过滤条件（本项目会附加 `from_publication_date:YYYY-MM-DD`，并固定附加 `language:en`）
 - `page`: 页码（从 1 开始）
 - `per-page`: 每页条数（最大 200）
-- `sort`: 排序（本项目固定为 `publication_date:desc`）
+- `sort`: 排序（固定为 `publication_date:desc,relevance_score:desc`）
 
 参考：<https://docs.openalex.org/>
 
@@ -233,7 +233,7 @@ scope 和 query 各自编译为 clause，最终以 `AND` 拼接：
 
 | 维度         | arXiv                              | OpenAlex                              |
 |--------------|------------------------------------|---------------------------------------|
-| 上游排序参数 | `sortBy=lastUpdatedDate&sortOrder=descending` | `sort=publication_date:desc`   |
+| 上游排序参数 | `sortBy=lastUpdatedDate&sortOrder=descending` | 固定 `sort=publication_date:desc,relevance_score:desc` |
 | 时间过滤字段 | 论文的 `updated` 时间              | 论文的 `published`（或 `updated`）    |
 | 含义         | 最近有更新的论文优先               | 最近发表的论文优先                    |
 

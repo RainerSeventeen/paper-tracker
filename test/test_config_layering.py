@@ -24,6 +24,7 @@ def _base_raw_config() -> dict:
             "max_lookback_days": 30,
             "max_fetch_items": 125,
             "fetch_batch_size": 25,
+            "openalex_relevance_threshold": 0.0,
         },
         "output": {
             "base_dir": "output",
@@ -75,6 +76,7 @@ class TestConfigLayering(unittest.TestCase):
         self.assertEqual(cfg.storage.db_path, "database/papers.db")
         self.assertEqual(cfg.search.queries[0].name, "q1")
         self.assertEqual(cfg.search.sources, ("arxiv",))
+        self.assertEqual(cfg.search.openalex_relevance_threshold, 0.0)
 
     def test_output_unknown_format_error_contains_key(self) -> None:
         raw = _base_raw_config()
@@ -165,6 +167,18 @@ class TestConfigLayering(unittest.TestCase):
         raw = deepcopy(_base_raw_config())
         raw["search"]["sources"] = ["  "]
         with self.assertRaisesRegex(ValueError, "search\\.sources"):
+            parse_config_dict(raw)
+
+    def test_search_openalex_relevance_threshold_type_invalid(self) -> None:
+        raw = deepcopy(_base_raw_config())
+        raw["search"]["openalex_relevance_threshold"] = "high"
+        with self.assertRaisesRegex(TypeError, "search\\.openalex_relevance_threshold"):
+            parse_config_dict(raw)
+
+    def test_search_openalex_relevance_threshold_negative_invalid(self) -> None:
+        raw = deepcopy(_base_raw_config())
+        raw["search"]["openalex_relevance_threshold"] = -0.1
+        with self.assertRaisesRegex(ValueError, "search\\.openalex_relevance_threshold"):
             parse_config_dict(raw)
 
 

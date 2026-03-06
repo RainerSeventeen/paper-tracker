@@ -19,7 +19,7 @@ BASE_PAUSE = 0.8
 MAX_SLEEP = 8.0
 RETRYABLE_STATUS = {429, 500, 502, 503, 504}
 MAX_PER_PAGE = 200
-OPENALEX_SORT = "publication_date:desc"
+DEFAULT_OPENALEX_SORT = "publication_date:desc,relevance_score:desc"
 
 HEADERS = {
     "User-Agent": "paper-tracker/0.1 (+https://github.com/RainerSeventeen/paper-tracker)",
@@ -128,11 +128,12 @@ class OpenAlexApiClient:
 
         query_params = self._normalize_params(params)
         request_timeout = timeout or DEFAULT_TIMEOUT
+        sort = query_params.pop("sort", DEFAULT_OPENALEX_SORT)
         page_params = {
             **query_params,
             "per-page": str(min(MAX_PER_PAGE, page_size)),
             "page": str(page),
-            "sort": OPENALEX_SORT,
+            "sort": sort,
         }
         response = self._get_with_retry(params=page_params, timeout=request_timeout)
         response.raise_for_status()

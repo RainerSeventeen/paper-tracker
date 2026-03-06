@@ -37,6 +37,7 @@ class SearchConfig:
     max_fetch_items: int
     fetch_batch_size: int
     sources: tuple[str, ...]
+    openalex_relevance_threshold: float
 
 
 def load_search(raw: Mapping[str, Any]) -> SearchConfig:
@@ -64,6 +65,9 @@ def load_search(raw: Mapping[str, Any]) -> SearchConfig:
 
     section = get_section(raw, "search", required=True)
     sources = _parse_sources(section.get("sources", ["arxiv"]))
+    openalex_relevance_threshold = _load_openalex_relevance_threshold(
+        section.get("openalex_relevance_threshold")
+    )
     return SearchConfig(
         scope=scope,
         queries=queries,
@@ -86,6 +90,7 @@ def load_search(raw: Mapping[str, Any]) -> SearchConfig:
             "search.fetch_batch_size",
         ),
         sources=sources,
+        openalex_relevance_threshold=openalex_relevance_threshold,
     )
 
 
@@ -116,6 +121,8 @@ def check_search(config: SearchConfig) -> None:
         raise ValueError("search.fetch_batch_size must be positive")
     if not config.sources:
         raise ValueError("search.sources must include at least one source")
+    if config.openalex_relevance_threshold < 0:
+        raise ValueError("search.openalex_relevance_threshold must be >= 0")
 
 
 def _parse_sources(value: Any) -> tuple[str, ...]:
@@ -150,6 +157,17 @@ def _parse_sources(value: Any) -> tuple[str, ...]:
         raise ValueError("search.sources must include at least one source")
 
     return tuple(normalized)
+
+
+def _load_openalex_relevance_threshold(value: Any) -> float:
+    """Load ``search.openalex_relevance_threshold`` with type validation."""
+    if value is None:
+        return 0.0
+    if isinstance(value, bool):
+        raise TypeError("search.openalex_relevance_threshold must be a number")
+    if not isinstance(value, (int, float)):
+        raise TypeError("search.openalex_relevance_threshold must be a number")
+    return float(value)
 
 
 def parse_search_query(value: Any, config_key: str) -> SearchQuery:
