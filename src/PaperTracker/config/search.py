@@ -5,6 +5,7 @@ Parses search configuration and converts query DSL payloads into validated struc
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from typing import Any, Mapping
 
@@ -38,6 +39,10 @@ class SearchConfig:
     fetch_batch_size: int
     sources: tuple[str, ...]
     openalex_relevance_threshold: float
+    ncbi_api_key_env: str
+    ncbi_api_key: str
+    ncbi_tool: str
+    ncbi_email: str
 
 
 def load_search(raw: Mapping[str, Any]) -> SearchConfig:
@@ -68,6 +73,10 @@ def load_search(raw: Mapping[str, Any]) -> SearchConfig:
     openalex_relevance_threshold = _load_openalex_relevance_threshold(
         section.get("openalex_relevance_threshold")
     )
+    ncbi_api_key_env = expect_str(section.get("ncbi_api_key_env", "NCBI_API_KEY"), "search.ncbi_api_key_env")
+    ncbi_api_key = os.getenv(ncbi_api_key_env, "").strip()
+    ncbi_tool = expect_str(section.get("ncbi_tool", "paper-tracker"), "search.ncbi_tool")
+    ncbi_email = expect_str(section.get("ncbi_email", ""), "search.ncbi_email")
     return SearchConfig(
         scope=scope,
         queries=queries,
@@ -91,6 +100,10 @@ def load_search(raw: Mapping[str, Any]) -> SearchConfig:
         ),
         sources=sources,
         openalex_relevance_threshold=openalex_relevance_threshold,
+        ncbi_api_key_env=ncbi_api_key_env,
+        ncbi_api_key=ncbi_api_key,
+        ncbi_tool=ncbi_tool,
+        ncbi_email=ncbi_email,
     )
 
 

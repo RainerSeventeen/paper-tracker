@@ -41,6 +41,9 @@ search:
   max_fetch_items: 125        # Max number of items to fetch, -1 means unlimited
   fetch_batch_size: 25        # Fetch count for each round
   openalex_relevance_threshold: 0.0                    # local threshold for OpenAlex relevance_score
+  ncbi_api_key_env: NCBI_API_KEY   # env var name for NCBI API key (optional, improves rate limit)
+  ncbi_tool: paper-tracker         # tool identifier sent to NCBI E-utilities
+  ncbi_email: ""                   # contact email sent to NCBI E-utilities (recommended)
 
 # output domain
 output:

@@ -56,6 +56,7 @@ def _source_builders() -> dict[str, SourceBuilder]:
     return {
         "arxiv": _build_arxiv_source,
         "openalex": _build_openalex_source,
+        "pubmed": _build_pubmed_source,
         # NOTE: crossref is temporarily disabled — data quality issues.
         # To re-enable, uncomment the entry below and the _build_crossref_source function.
         # "crossref": _build_crossref_source,
@@ -83,6 +84,23 @@ def _build_openalex_source(config: AppConfig, dedup_store: SqliteDeduplicateStor
 
     return OpenAlexSource(
         client=OpenAlexApiClient(),
+        scope=config.search.scope,
+        search_config=config.search,
+        dedup_store=dedup_store,
+    )
+
+
+def _build_pubmed_source(config: AppConfig, dedup_store: SqliteDeduplicateStore | None) -> PaperSource:
+    """Build PubMed source."""
+    from PaperTracker.sources.pubmed.client import PubMedApiClient
+    from PaperTracker.sources.pubmed.source import PubMedSource
+
+    return PubMedSource(
+        client=PubMedApiClient(
+            api_key=config.search.ncbi_api_key or None,
+            tool=config.search.ncbi_tool,
+            email=config.search.ncbi_email,
+        ),
         scope=config.search.scope,
         search_config=config.search,
         dedup_store=dedup_store,

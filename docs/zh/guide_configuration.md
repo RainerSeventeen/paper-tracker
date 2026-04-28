@@ -292,10 +292,22 @@ cp .env.example .env
 LLM_API_KEY=sk-your-actual-api-key-here
 ```
 
-### 3.3 说明
+### 3.3 `NCBI_API_KEY`
+功能说明：PubMed 数据源（NCBI E-utilities）的访问密钥，默认由 `search.ncbi_api_key_env` 指定（默认 `NCBI_API_KEY`）。
+
+- 不提供时：NCBI 限速为 3 次请求/秒（匿名访问）。
+- 提供时：限速提升至 10 次请求/秒。
+- 免费申请：https://www.ncbi.nlm.nih.gov/account/
+
+示例：
+```bash
+NCBI_API_KEY=your-ncbi-api-key-here
+```
+
+### 3.4 说明
 - `.env` 已在 `.gitignore` 中，不会提交
 
-- 可以通过 `llm.api_key_env` 自定义变量名
+- 可以通过 `llm.api_key_env` / `search.ncbi_api_key_env` 自定义变量名
 
 - shell 中同名变量优先级更高
 
