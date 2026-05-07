@@ -7,7 +7,7 @@ ESearch+EFetch fetch strategy into the PaperSource protocol.
 from __future__ import annotations
 
 import time as time_module
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING
 
@@ -48,8 +48,6 @@ class PubMedSource:
         """
         if self.search_config is None:
             raise ValueError("PubMedSource.search_config is required for paged fetching")
-
-        from dataclasses import replace
 
         policy = (
             self.search_config

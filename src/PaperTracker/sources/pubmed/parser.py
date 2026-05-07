@@ -9,7 +9,6 @@ from __future__ import annotations
 import logging
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
-from typing import Optional
 
 from PaperTracker.core.models import Paper, PaperLinks
 
@@ -124,7 +123,7 @@ def _extract_authors(article: ET.Element) -> tuple[str, ...]:
     return tuple(authors)
 
 
-def _extract_published(article: ET.Element) -> Optional[datetime]:
+def _extract_published(article: ET.Element) -> datetime | None:
     """Extract publication date, preferring ArticleDate over PubDate."""
     # Prefer ArticleDate (electronic publication date)
     for article_date in article.findall(".//Article/ArticleDate"):
@@ -192,7 +191,7 @@ def _build_links(pmid: str, pmc_id: str) -> PaperLinks:
 # ---------------------------------------------------------------------------
 
 
-def _parse_structured_date(el: ET.Element) -> Optional[datetime]:
+def _parse_structured_date(el: ET.Element) -> datetime | None:
     """Parse Year/Month/Day child elements into a UTC datetime."""
     year_text = _text_or_empty(el.find("Year"))
     month_text = _text_or_empty(el.find("Month"))
@@ -200,7 +199,7 @@ def _parse_structured_date(el: ET.Element) -> Optional[datetime]:
     return _build_datetime(year_text, month_text, day_text)
 
 
-def _parse_pub_date(pub_date: ET.Element) -> Optional[datetime]:
+def _parse_pub_date(pub_date: ET.Element) -> datetime | None:
     """Parse PubDate element, including MedlineDate fallback."""
     # Try structured Year/Month/Day first
     parsed = _parse_structured_date(pub_date)
@@ -215,7 +214,7 @@ def _parse_pub_date(pub_date: ET.Element) -> Optional[datetime]:
     return None
 
 
-def _parse_medline_date(medline_date: str) -> Optional[datetime]:
+def _parse_medline_date(medline_date: str) -> datetime | None:
     """Parse a MedlineDate string like '2024 Jan' or '2024 Jan-Feb'."""
     parts = medline_date.strip().split()
     if not parts:
@@ -231,7 +230,7 @@ _MONTH_MAP: dict[str, int] = {
 }
 
 
-def _build_datetime(year_text: str, month_text: str, day_text: str) -> Optional[datetime]:
+def _build_datetime(year_text: str, month_text: str, day_text: str) -> datetime | None:
     """Build a UTC datetime from year/month/day text strings."""
     try:
         year = int(year_text.strip())
@@ -259,7 +258,7 @@ def _build_datetime(year_text: str, month_text: str, day_text: str) -> Optional[
         return None
 
 
-def _text_or_empty(el: Optional[ET.Element]) -> str:
+def _text_or_empty(el: ET.Element | None) -> str:
     """Return stripped text of element, or empty string when absent."""
     if el is None:
         return ""

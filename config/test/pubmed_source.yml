@@ -2,15 +2,21 @@ log:
   level: INFO
 
 queries:
-  - NAME: pubmed-test
-    OR:
-      - machine learning
-      - deep learning
+  - NAME: pubmed-glp1-obesity
+    AND:
+      - GLP-1 receptor agonist
+      - obesity
 
 search:
   sources: [pubmed]
   max_results: 5
+  pull_every: 30
+  fill_enabled: true
+  max_lookback_days: 180
 
 output:
   base_dir: output
-  formats: [json]
+  formats: [console, markdown, html]
+
+llm:
+  enabled: false

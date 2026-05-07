@@ -9,7 +9,6 @@ from __future__ import annotations
 import logging
 import time as time_module
 from collections.abc import Callable
-from time import time
 from typing import TYPE_CHECKING
 
 from PaperTracker.core.models import Paper
@@ -47,13 +46,13 @@ def collect_pubmed_papers(
     Returns:
         Papers sorted by ``published`` descending, capped at ``policy.max_results``.
     """
-    start_time = time()
+    start_time = time_module.time()
     fetched_items = 0
     retstart = 0
     collected: list[Paper] = []
 
     while policy.max_fetch_items == -1 or fetched_items < policy.max_fetch_items:
-        elapsed = time() - start_time
+        elapsed = time_module.time() - start_time
         if elapsed > TIMEOUT_SECONDS:
             logger.warning(
                 "PubMed fetch timeout (%.1fs > %ds) - fetched %d items; stop",
