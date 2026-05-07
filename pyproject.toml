@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "paper-tracker"
-version = "0.1.0"
+version = "0.2.0"
 description = "Minimal paper tracker (arXiv search + CLI output)"
 readme = "README.md"
 requires-python = ">=3.10"

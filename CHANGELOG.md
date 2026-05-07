@@ -15,6 +15,21 @@ A version bump is triggered when: a feature branch is merged to `main` and the c
 
 ---
 
+## [0.2.0] - 2026-05-07
+
+### Added
+
+- **PubMed source**: NCBI E-utilities integration with ESearch and EFetch support for biomedical literature retrieval
+- **PubMed query compiler**: field-aware query conversion for title, abstract, author, journal, and category-style inputs
+- **PubMed parser**: article metadata extraction for titles, abstracts, authors, journals, publication dates, DOIs, and links
+- **PubMed fetch strategy**: paginated retrieval with rate limiting, timeout protection, source-local deduplication, and deterministic ordering
+- **PubMed configuration**: source registration, default settings, example configuration, and optional `NCBI_API_KEY` environment support
+- **PubMed documentation**: Chinese and English query guides plus README feature coverage for PubMed usage
+
+### Changed
+
+- **Multi-source retrieval**: expands the supported source set from arXiv and OpenAlex to arXiv, OpenAlex, and PubMed
+
 ## [0.1.0] - 2026-04-27
 
 ### Added
@@ -41,4 +56,5 @@ A version bump is triggered when: a feature branch is merged to `main` and the c
 - arXiv source-level dedup and multi-round stop signal restored after multi-source refactor
 - OpenAlex query compilation scoped to title/abstract fields only to reduce irrelevant results
 
+[0.2.0]: https://github.com/rainerseventeen/paper-tracker/releases/tag/v0.2.0
 [0.1.0]: https://github.com/rainerseventeen/paper-tracker/releases/tag/v0.1.0
