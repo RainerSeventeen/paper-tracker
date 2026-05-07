@@ -9,7 +9,7 @@
 
 **[English](./README.en.md) | 中文**
 
-Paper Tracker 是一个最小化的论文追踪工具，核心目标是基于关键词查询多个论文数据库（arXiv、OpenAlex），并按配置输出结构化结果，便于持续跟踪新论文。
+Paper Tracker 是一个最小化的论文追踪工具，核心目标是基于关键词查询多个论文数据库（arXiv、OpenAlex、PubMed），并按配置输出结构化结果，便于持续跟踪新论文。
 
 **如果该项目对你有帮助, 请麻烦点一个 Star ⭐, 谢谢!**
 
@@ -22,7 +22,7 @@ Paper Tracker 是一个最小化的论文追踪工具，核心目标是基于关
 ## 已实现功能
 
 - 🔍 **查询与筛选**:
-  - 支持多数据源：`arxiv`（预印本）、`openalex`（期刊/会议/预印本），可同时启用
+  - 支持多数据源：`arxiv`（预印本）、`openalex`（期刊/会议/预印本）、`pubmed`（生物医学期刊），可同时启用
   - 支持字段化检索：`TITLE`、`ABSTRACT`、`AUTHOR`、`JOURNAL`、`CATEGORY`
   - 支持逻辑操作：`AND`、`OR`、`NOT`
   - 支持全局 `scope`（对所有 queries 生效）
@@ -33,8 +33,11 @@ Paper Tracker 是一个最小化的论文追踪工具，核心目标是基于关
   |--------|----------|:--------------:|:--------:|:--------:|
   | `arxiv` | 预印本 | 完整 | — | ✅ |
   | `openalex` | 期刊 / 会议 / 预印本 | 部分 | ✅ | ✅ |
+  | `pubmed` | 生物医学期刊 | 部分 | — | ✅ |
 
   > **注意**：`openalex` 来源数据目前尚不稳定，可能返回与查询主题不相关的论文，该功能仍处于开发阶段。如果发现结果中出现大量无关文章，建议在配置中关闭 `openalex` 来源。
+  >
+  > **PubMed 使用提示**：PubMed 偏向生物医学/生命科学领域；若检索主题与生命科学无关，启用 PubMed 大概率召回较少。建议设置 `NCBI_API_KEY` 环境变量以提升速率上限。
 
 - 🧲 **拉取策略**: 支持拉取更早的论文以补全预定论文数量
 
@@ -94,6 +97,8 @@ cp .env.example .env
 - [🔍 arXiv 查询语法说明](./docs/zh/source_arxiv_api_query.md)
 
 - [🔍 OpenAlex 查询语法说明](./docs/zh/source_openalex_api_query.md)
+
+- [🔍 PubMed 查询语法说明](./docs/zh/source_pubmed_api_query.md)
 
 ## 更新
 
