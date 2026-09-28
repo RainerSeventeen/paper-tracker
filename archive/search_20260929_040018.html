@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paper Tracker Daily Reading</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Crimson+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body class="theme-light">
+  <a class="skip-link" href="#main-content">跳转到正文</a>
+
+  <header class="page-header">
+    <div class="header-main">
+      <p class="header-topline">
+        POWER BY
+        <a class="powered-by-link" href="https://github.com/RainerSeventeen/paper-tracker" target="_blank" rel="noopener noreferrer">
+          RainerSeventeen/paper-tracker
+        </a>
+      </p>
+      <h1>文献阅读简报</h1>
+      <p class="header-meta">生成时间：2026-09-29 04:00:18</p>
+      <div class="report-stats">
+        <p><span>3</span> 个查询主题</p>
+        <p><span>9</span> 篇候选论文</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="expand-all" type="button" aria-label="展开所有论文详情">展开全部</button>
+      <button id="collapse-all" type="button" aria-label="折叠所有论文详情">折叠全部</button>
+      <button id="theme-toggle" type="button" aria-label="切换暗色模式">切换暗色模式</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" aria-label="查询导航">
+      <p class="sidebar-title">文献目录</p>
+      <p class="sidebar-note">按查询主题快速定位</p>
+    </aside>
+    <main id="main-content" class="content">
+      <section id="query-query" class="query-section" data-query-label="多模态大模型" data-paper-count="3">
+  <header class="query-header">
+    <h2>多模态大模型</h2>
+    <p class="query-count">3 papers</p>
+  </header>
+  <div class="query-content">
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 1</p>
+    <h3 class="paper-title">EAServe: Encode-Aware Disaggregated Serving for Multimodal Large Language Models</h3>
+    <p class="paper-authors">Kunxiong Zhu, Zhihao Shu, Hangyu Zheng, Minghai Qin, Miao Yin, Gagan Agrawal, Wei Niu</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-09-25</p>
+      <p class="meta-item"><span>Updated</span>2026-09-25</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.DC</strong> · cs.LG · cs.PF</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>该论文提出EAServe，将多模态LLM服务中的Encode阶段作为控制点，通过运行时和配置层协同优化，解决EPD流水线中的资源失衡问题，显著提升吞吐量。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2609.31551v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2609.31551v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+    <a class="paper-link" href="https://doi.org/10.1145/3838684.3846886" target="_blank" rel="noopener noreferrer">DOI</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Disaggregating the two stages, Prefill and Decode, onto separate GPU pools is now a standard optimization for (text-only) LLM serving. However, multimodal LLMs (MLLMs), which add a third phase, Encode, pose new challenges for resource allocation. Encode turns images, video, or audio into embeddings that the language model can consume, yielding a three-stage Encode-Prefill-Decode (EPD) pipeline. Existing frameworks offer only partial answers: text-only PD systems lack Encode, while EPD frameworks expose it as a separate service without regulating downstream request flow. The pipeline also carries a structural resource imbalance: every request enters through Encode before downstream work can begin, yet per-request execution leaves the encode GPU severely underutilized even at high loads, starving the downstream Prefill and Decode workers. Addressing this, we reposition Encode as the control point of the EPD pipeline, exposing three tightly coupled dimensions: when work enters downstream, where prefill executes, and how the GPU is shared. We instantiate this in EAServe across two co-designed layers. Its runtime manages load-adaptive micro-batching, rate-controlled partial offload to a co-resident prefill worker, and dynamic SM partitioning for predictable co-location. The configuration layer, Hybrid Auto Selection (HAS), navigates the joint space of GPU allocation, encode batch size, and offload ratio by pruning unbalanced allocations with per-stage capacity profiling and refining the remainder through TPE-based Bayesian optimization. Evaluated on three MLLM architectures spanning image, video, and audio, EAServe delivers up to 4.3x and 1.7x higher goodput than NVIDIA Dynamo and vLLM, respectively, under identical SLO constraints, sustains more balanced and higher GPU utilization across the EPD pipeline, and reaches near-optimal configurations faster than baseline search methods.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>多模态LLM服务引入Encode阶段形成EPD流水线，但现有框架要么缺少Encode（文本PD系统），要么将Encode作为独立服务而不调控下游请求流。同时，每个请求都先经过Encode，导致编码GPU利用率低，下游Prefill和Decode资源饥饿，存在结构性资源失衡。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>将Encode重新定位为EPD流水线的控制点，暴露三个耦合维度：工作进入下游的时机、prefill执行位置、GPU共享方式。在EAServe中实现两层：运行时层管理负载自适应微批处理、速率控制的部分卸载到共驻prefill worker、动态SM分区以实现可预测共置；配置层HAS通过每阶段容量分析剪枝不平衡分配，并用TPE贝叶斯优化精炼剩余配置，联合搜索GPU分配、编码批大小和卸载比例。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在三种MLLM架构（图像、视频、音频）上评估，在相同SLO约束下，EAServe的goodput分别比NVIDIA Dynamo和vLLM高4.3倍和1.7倍，EPD流水线GPU利用率更均衡且更高，并比基线搜索方法更快达到近优配置。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>EAServe通过将Encode作为控制点并协同优化运行时与配置，有效解决了多模态LLM服务中EPD流水线的资源失衡问题，显著提升了吞吐量和GPU利用率。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 2</p>
+    <h3 class="paper-title">Structured Reasoning Agentic Framework for Interpretable Critical View of Safety Assessment</h3>
+    <p class="paper-authors">Qing Xu, Yuxiang Luo, Zhen Chen</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-09-25</p>
+      <p class="meta-item"><span>Updated</span>2026-09-25</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>提出ReasonCVS框架，利用视觉语言模型和结构化推理，将腹腔镜胆囊切除术中的关键安全视野评估分解为细粒度解剖验证，在Endoscapes-CVS201基准上达到68.1% mAP，并提供可解释的临床依据。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2609.31524v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2609.31524v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Surgical scene understanding is critical for computer-assisted intervention, yet laparoscopic cholecystectomy remains challenged by the complex anatomy of the hepatocystic triangle and the risk of bile duct injury. Existing methods for Critical View of Safety (CVS) assessment typically treat it as a holistic prediction task, mapping visual features directly to criterion-level labels. This black-box paradigm lacks explicit reasoning about anatomical relationships, limiting both interpretability and compositional generalization. To address this, we propose ReasonCVS, a structured reasoning agentic framework empowered by Vision-Language Models (VLMs) that decomposes CVS assessment into explicit, fine-grained anatomical verification. Specifically, we devise an Anatomical Scene Graph Abstraction (ASGA) that organizes anatomical entities and their spatial relationships into a structured representation. To operationalize this, we introduce a Rationale-Aware Reasoning Agent, powered by a Large Language Model (LLM) fine-tuned via rationale distillation. Functioning as a strict central decision-maker, it invokes VLM-driven Sub-criterion Verifier as a specialized perceptual tool to parse the graph and independently evaluate individual sub-criteria. Through calibrated soft reasoning, this agent synthesizes the tool-gathered distributed observations, yielding a final verdict alongside a traceable clinical rationale. Extensive experiments on the Endoscapes-CVS201 benchmark demonstrate that ReasonCVS achieves superior performance (68.1\% mAP) over state-of-the-art while providing interpretable, criterion-level explanations for reliable surgical assessment.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有CVS评估方法将任务视为整体预测，直接映射视觉特征到标准级标签，这种黑盒范式缺乏对解剖关系的显式推理，限制了可解释性和组合泛化能力，且腹腔镜胆囊切除术因肝胆囊三角复杂解剖和胆管损伤风险而面临挑战。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>提出ReasonCVS结构化推理智能体框架，由视觉语言模型驱动。设计解剖场景图抽象（ASGA）组织解剖实体及其空间关系为结构化表示；引入理性感知推理智能体，基于通过理性蒸馏微调的大语言模型，作为中央决策者调用VLM驱动的子标准验证器作为专用感知工具，解析图并独立评估各子标准；通过校准软推理合成分布式观察，输出最终判定及可追溯的临床依据。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在Endoscapes-CVS201基准上，ReasonCVS取得68.1% mAP，优于现有最先进方法，同时提供可解释的、标准级别的解释，用于可靠的手术评估。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>ReasonCVS通过结构化推理和智能体框架，有效提升了CVS评估的性能和可解释性，为计算机辅助干预中的手术场景理解提供了新思路。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 3</p>
+    <h3 class="paper-title">ChemMLLM: Chemical Multimodal Large Language Model</h3>
+    <p class="paper-authors">Qian Tan, Di Zhang, Ben Gao, Peng Xia, Wanhao Liu, Shufei Zhang, Wanli Ouyang, Lei Bai, Yuqiang Li, Tianfan Fu</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2025-05-22</p>
+      <p class="meta-item"><span>Updated</span>2026-09-25</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>提出ChemMLLM，一个统一的化学多模态大语言模型，用于分子理解与生成，在五类跨模态任务上性能优于通用MLLM，接近专用模型，并首次将化学MLLM能力扩展至图像生成。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2505.16326v3" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2505.16326v3" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Recent years have seen rapid progress in multimodal large language models (MLLMs) in the field of chemistry. However, chemical MLLMs that can handle cross-modal understanding and generation remain underexplored. To fill this gap, we propose ChemMLLM, a unified chemical multimodal large language model for molecule understanding and generation. In this work, we design five types of multimodal tasks across text, molecular SMILES strings and images, and curate the datasets. We benchmark ChemMLLM against a range of general leading MLLMs, Chemical LLMs and specialized models on these tasks. Experimental results show that ChemMLLM achieves superior performance among general-purpose MLLMs and close performance to specialized models across all evaluated tasks. Our work extends the capabilities of chemical multimodal large language models to the realm of image generation, demonstrating the feasibility of unifying multiple cross-modal chemical tasks within a single foundation model and enabling more intuitive, visual human-AI interaction.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>化学领域的多模态大语言模型在跨模态理解与生成方面仍缺乏探索，现有模型无法统一处理分子理解与生成任务。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>设计五类跨文本、分子SMILES字符串和图像的多模态任务，构建相应数据集，并基于统一的多模态大语言模型框架训练ChemMLLM。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在五类任务上，ChemMLLM在通用MLLM中表现最优，且性能接近专用模型，同时实现了图像生成能力。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>ChemMLLM证明了在单一基础模型中统一多种跨模态化学任务的可行性，扩展了化学MLLM至图像生成领域，支持更直观的视觉人机交互。</p></div>
+  </details>
+</article>
+  </div>
+</section>
+
+<section id="query-query-2" class="query-section" data-query-label="视频多模态理解" data-paper-count="3">
+  <header class="query-header">
+    <h2>视频多模态理解</h2>
+    <p class="query-count">3 papers</p>
+  </header>
+  <div class="query-content">
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 1</p>
+    <h3 class="paper-title">STORM-Bench: Evaluating Online Video QA under Evolving and Incomplete Evidence</h3>
+    <p class="paper-authors">Siru Zhong, Shenghan Tan, Rihong Yan, Xiaohui Lv, Yuzheng Zhuang, Shuai Tao, Wulong Liu, Haohuan Fu, Yuxuan Liang</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-09-25</p>
+      <p class="meta-item"><span>Updated</span>2026-09-25</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>论文提出STORM-Bench基准，包含5,736个问题，覆盖630个变化密集的自我中心视频片段，并引入STORM-BR调和指标评估在线视频问答中的状态跟踪与选择性弃权能力。实验显示14个视频LLM的在线准确率最高60.3%，但STORM-BR仅5.7%-35.6%，表明普遍存在过度自信和弃权失败。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2609.30981v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2609.30981v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Reliable online video question answering requires tracking state transitions while selectively abstaining when visual evidence is insufficient. Existing benchmarks focus on static recognition or long-range retrieval, rarely evaluating these coupled capabilities under evolving and incomplete evidence. We present STORM-Bench, comprising 5,736 questions across 630 compact, change-dense episodes spanning five egocentric domains (STORM-Real) and two controlled simulation subsets (STORM-Sim) at 1 FPS. Questions are stratified by a proxy for accumulated change intensity (Low, Medium, High) and query-time answerability (Known, Uncertain). To measure reliability, we introduce STORM-BR, a harmonic metric over joint answer-status correctness that exposes abstention failures masked by aggregate accuracy, alongside STORM-BR-ATTR for uncertainty attribution. Across 14 video LLMs, online accuracy peaks at 60.3\% (mean 51.7\%), whereas STORM-BR ranges from 5.7\% to 35.6\% (mean 18.8\%), driven by pervasive overconfidence on uncertain queries. STORM-Bench shows that task accuracy masks these gaps in epistemic reliability and state tracking. Benchmark and code are available at https://github.com/siruzhong/STORM-Bench.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有在线视频问答基准主要关注静态识别或长程检索，很少在动态变化和不完整证据下评估状态跟踪与选择性弃权这两个耦合能力，导致模型在证据不足时仍过度自信回答，缺乏可靠性评估。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>构建STORM-Bench基准，包含5,736个问题，来自630个变化密集的自我中心视频片段，涵盖五个领域（STORM-Real）和两个受控模拟子集（STORM-Sim），帧率1 FPS。问题按累积变化强度（低、中、高）和查询时可回答性（已知、不确定）分层。提出STORM-BR调和指标，联合评估答案与状态正确性，暴露弃权失败；并引入STORM-BR-ATTR进行不确定性归因。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在14个视频LLM上，在线准确率最高60.3%（平均51.7%），但STORM-BR仅5.7%至35.6%（平均18.8%），主要由于对不确定查询的普遍过度自信。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>STORM-Bench表明任务准确率掩盖了认知可靠性和状态跟踪方面的差距，强调了在动态不完整证据下评估选择性弃权的重要性。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 2</p>
+    <h3 class="paper-title">CinematicVQA: Benchmarking Film-Grammar Reasoning in Large Vision-Language Models</h3>
+    <p class="paper-authors">Shuo Xing, Pooja Verlani, Balu Adsumilli, Zhengzhong Tu</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-09-23</p>
+      <p class="meta-item"><span>Updated</span>2026-09-23</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>本文提出首个电影视频理解基准CinematicVQA，利用电影场景图（CSG）评估大型视觉语言模型（LVLM）对电影语法和叙事功能的推理能力，发现模型在识别底层技术方面存在语义鸿沟，且思维链提示效果不佳，微调可提升叙事功能和多跳推理表现。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2609.28813v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2609.28813v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Cinematography, the craft of visual storytelling through framing, lighting, and camera operation, fundamentally shapes how audiences perceive and emotionally engage with video content. While Large Vision Language Models (LVLMs) have made remarkable progress in video question answering, existing benchmarks primarily focus on identifying low-level techniques rather than understanding their storytelling impact. To address this, we introduce CinematicVQA, the first-of-its-kind benchmark for cinematic video understanding that goes beyond technique recognition to evaluate film-grammar reasoning, utilizing our introduced Cinematic Scene Graph (CSG), a structured representation that links filming techniques to their perceptual effects and narrative functions. Through comprehensive evaluation of state-of-the-art LVLMs, we reveal a striking semantic gap: models consistently perform higher on describing visual presentations than on identifying the underlying techniques. Surprisingly, Chain-of-Thought prompting fails to provide consistent gains and degrades performance for most models, suggesting that current LVLMs lack sufficient cinematic domain knowledge to benefit from step-by-step reasoning. Fine-tuning on \textsc{CinematicVQA-train} yields consistent improvements, particularly for narrative function and multi-hop reasoning. Overall, \textsc{CinematicVQA} serves both as a rigorous benchmark for cinematic evaluation in LVLMs and as a practical dataset for training more film-aware video models.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有视频问答基准主要关注识别低层次电影技术，而非理解其叙事影响和感知效果，无法评估LVLM对电影语法的深层推理能力。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>引入CinematicVQA基准和电影场景图（CSG），CSG是一种结构化表示，将拍摄技术与感知效果和叙事功能关联；对最先进LVLM进行全面评估，并测试思维链提示和微调效果。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>模型在描述视觉呈现上表现优于识别底层技术，存在语义鸿沟；思维链提示未带来一致增益，且对多数模型性能有损；在CinematicVQA-train上微调可一致提升性能，尤其在叙事功能和多跳推理方面。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>CinematicVQA既是评估LVLM电影理解能力的严格基准，也是训练更具电影感知视频模型的实用数据集。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 3</p>
+    <h3 class="paper-title">From Priors to Perception: Grounding Video-LLMs in Physical Reality</h3>
+    <p class="paper-authors">Zicheng Zhao, Chaofan Gan, Shijie Li, Weiyao Lin</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-05-06</p>
+      <p class="meta-item"><span>Updated</span>2026-09-19</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>论文发现Video-LLMs存在语义先验主导（SPD）问题，即依赖事件预期而非视觉观察进行物理判断，并提出了PriorPair基准和PhyAR训练框架来诊断和克服该问题。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2605.04515v2" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2605.04515v2" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Video Large Language Models (Video-LLMs) excel in general video understanding but often base physical judgments on event expectations rather than observations. We find that they not only rationalize physically impossible events, but also incorrectly report expected outcomes in physically plausible yet counter-intuitive scenarios, despite clear contradictory visual evidence. We provide the first unified account of these failures as Semantic Prior Dominance (SPD): semantic expectations override conflicting visual evidence. To diagnose and overcome these failures, we introduce PriorPair, a high-fidelity paired video benchmark covering both conflicts across eight physical categories. Its category-directed construction pairs prior-aligned events with semantically matched but prior-conflicting counterparts. We further propose Physics-Anchored Reasoner (PhyAR), a lightweight training framework. Its Visually Anchored Reasoning Chain grounds physical attribution and judgment in explicit visual observations, while Paired Data Binding strengthens learning of decisive event differences through matched-pair supervision. Standard LoRA fine-tuning with PhyAR substantially improves physical reasoning and reduces prior-driven judgment bias across different Video-LLM backbones without architectural modifications. These gains extend to an external physical benchmark while largely preserving general video understanding.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>Video-LLMs在通用视频理解上表现优异，但在物理判断中常基于事件预期而非观察，导致它们不仅合理化物理不可能事件，还在物理合理但反直觉的场景中错误报告预期结果，即使有明确矛盾视觉证据。作者旨在统一解释这些失败为语义先验主导（SPD），并解决该问题。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>提出了PriorPair，一个高保真配对视频基准，覆盖八个物理类别的冲突，通过类别导向构建将先验对齐事件与语义匹配但先验冲突的对应事件配对。进一步提出Physics-Anchored Reasoner（PhyAR），一个轻量训练框架，其Visually Anchored Reasoning Chain将物理归因和判断基于显式视觉观察，Paired Data Binding通过匹配对监督加强决定性事件差异的学习。使用标准LoRA微调。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>使用PhyAR进行标准LoRA微调，在不同Video-LLM骨干上显著提升了物理推理能力，减少了先验驱动的判断偏差，且无需架构修改。这些增益扩展到外部物理基准，同时 largely 保留了通用视频理解能力。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>PhyAR能有效缓解Video-LLMs中的语义先验主导问题，提升物理推理的视觉基础性，且不损害通用视频理解，为改进Video-LLMs的物理判断提供了可行方案。</p></div>
+  </details>
+</article>
+  </div>
+</section>
+
+<section id="query-rag" class="query-section" data-query-label="多模态检索与 RAG" data-paper-count="3">
+  <header class="query-header">
+    <h2>多模态检索与 RAG</h2>
+    <p class="query-count">3 papers</p>
+  </header>
+  <div class="query-content">
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 1</p>
+    <h3 class="paper-title">SEA-CLIP-Tiny: Efficient Multilingual Text-Vision Embedding for Southeast Asian Languages</h3>
+    <p class="paper-authors">Puja Ahmad Habibi, Faiz Assabil Firdaus, Ashvanth S, Ekapol Chuangsuwanich, Pume Tuchinda, Peerat Limkonchotiwat</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-09-25</p>
+      <p class="meta-item"><span>Updated</span>2026-09-25</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>提出SEA-CLIP-Tiny，一个少于50M参数的东南亚多语言文本-视觉嵌入模型，通过区域数据整理和多语言教师指导的CLIP-KD框架，在七种东南亚语言上取得最佳平均检索性能。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2609.30739v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2609.30739v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Multilingual text-vision embedding models are essential for cross-lingual image-text retrieval, but Southeast Asian languages remain poorly supported due to the region&#x27;s linguistic diversity and limited data and computing resources. In this paper, we introduce SEA-CLIP-Tiny, a compact multilingual text-vision embedding model for Southeast Asia with fewer than 50M parameters. Our model adapts a CLIP-KD-style framework to Southeast Asian multilingual settings through regional data curation and multilingual teacher guidance. Experiments across seven Southeast Asian languages show that SEA-CLIP-Tiny achieves the strongest average retrieval performance among the evaluated student models, reaching 12.9%, 31.5%, and 42.2% at R@1, R@5, and R@10, respectively. Compared with MobileCLIP2, it improves average R@10 by 12.1 points while using 38.4% fewer parameters and lower measured CPU latency. These results highlight the importance of region-aware training for efficient multilingual text-vision models in Southeast Asia.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>多语言文本-视觉嵌入模型对跨语言图像-文本检索至关重要，但东南亚语言因区域语言多样性和有限的数据与计算资源而支持不足。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>采用CLIP-KD风格框架，适配东南亚多语言环境，通过区域数据整理和多语言教师指导来训练紧凑模型。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在七种东南亚语言上，SEA-CLIP-Tiny在学生模型中平均检索性能最强，R@1、R@5、R@10分别达到12.9%、31.5%、42.2%；相比MobileCLIP2，平均R@10提升12.1点，参数减少38.4%，CPU延迟更低。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>结果凸显了区域感知训练对东南亚高效多语言文本-视觉模型的重要性。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 2</p>
+    <h3 class="paper-title">GOMA: Toward Structure-Driven Multimodal Alignment from a Graph Signal Smoothing Perspective</h3>
+    <p class="paper-authors">Xu Wang, Xunkai Li, Yinlin Zhu, Rong-Hua Li, Guoren Wang</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-05-15</p>
+      <p class="meta-item"><span>Updated</span>2026-09-24</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.LG</strong> · cs.CV</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>提出GOMA，通过分离内容与语义嵌入并利用语义引导图传播，统一多模态检索中的配对匹配与关系检索，在6个数据集4个任务上14项指标均达SOTA。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2605.15723v2" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2605.15723v2" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Multimodal retrieval uses images, text, and object relationships to answer different questions about the same collection. A query may seek an object&#x27;s paired description, another object in the same category, or an object connected by an observed relationship. These goals rely on different notions of relevance. Paired matching requires object-specific distinctions, whereas cross-object retrieval benefits from relational agreement. Existing methods learn strong cross-modal correspondence or propagate information over a graph, but a shared output regularized toward neighbors can weaken identity distinctions. Moreover, gains from graph regularization can diminish after uniform graph propagation. We introduce Graph-Optimized Multimodal Alignment (GOMA), which assigns these roles to two connected embeddings. Each modality produces a content embedding directly supervised for paired identity and a semantic embedding jointly trained with cross-modal pairs and observed relationships. For complete records, both embeddings form an initial fused representation, semantic agreement sets positive weights on observed edges, and restart graph propagation reinjects this initial signal. This design lets a jointly trained model support single-modality and dual-attribute retrieval through a task-specific readout. Across six datasets and four tasks, GOMA achieves state-of-the-art performance on all 14 primary measures against 14 external methods. Controlled comparisons further show how separate supervision, graph regularization, and semantic-guided graph propagation shape the final representation and align the learned signal with each retrieval target.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有多模态检索方法或学习强跨模态对应，或在图上传播信息，但共享输出被邻居正则化会削弱身份区分；且均匀图传播后图正则化收益递减。不同检索目标依赖不同相关性：配对匹配需对象特定区分，跨对象检索需关系一致性。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>GOMA为每个模态生成两个连接嵌入：内容嵌入直接监督配对身份，语义嵌入联合训练跨模态对与观测关系。完整记录时，两嵌入形成初始融合表示，语义一致性为观测边设正权重，重启图传播重新注入初始信号。设计支持单模态和双属性检索的任务特定读出。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在6个数据集、4个任务上，GOMA在全部14项主要指标上超越14种外部方法，达到SOTA。控制实验进一步揭示分离监督、图正则化和语义引导图传播如何塑造最终表示并对齐检索目标。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>GOMA通过角色分离的双嵌入和语义引导图传播，有效统一了配对匹配与关系检索，验证了分离监督与图正则化对多模态检索表示学习的重要性。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 3</p>
+    <h3 class="paper-title">MultiViewDx: Evidence-Linked Multi-View Clinical Diagnosis</h3>
+    <p class="paper-authors">Junda Wang, Zonghai Yao, Yujan Ting, Eric Z. Chen, Hieu Tran, Hong Yu, Weijing Huang, Terrence Chen</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2024-10-19</p>
+      <p class="meta-item"><span>Updated</span>2026-09-24</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.CL</strong> · cs.CV</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>提出MultiViewDx，一个以临床病例为监督单元、证据链接的多视图医学影像诊断指令数据集，并微调MultiViewDx-8B-AN，在MedVQA基准和真实病例诊断推理上均取得最优表现。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2410.14948v3" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2410.14948v3" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Medical multimodal large language models (MLLMs) can perform well on existing medical visual question answering (MedVQA) benchmarks, but their training data often does not match clinical diagnosis. Most supervision is organized around isolated images or short QA pairs, leaving two structures weakly specified: how evidence leads to a decision, and how views, series, modalities, and patient context from the same case are linked. We introduce MultiViewDx, a partly physician-validated multimodal instruction dataset for evidence-linked multi-view medical imaging diagnosis. MultiViewDx uses the clinical case as the supervision unit. It links imaging studies with patient context, normalizes heterogeneous reports into an evidence-linked workflow (evidence -&gt; findings -&gt; differential discussion -&gt; diagnosis), and uses a unified image-text retriever to constrain instruction synthesis to source-supported evidence. It covers X-ray, CT, MRI, ultrasound, histopathology, and other clinical visual sources. We fine-tune MultiViewDx-8B-AN and evaluate it on both existing MedVQA benchmarks and real-world case-based diagnostic reasoning. Across four MedVQA benchmarks, it achieves the best average accuracy among compared systems (79.0%), outperforming HuatuoGPT-Vision-34B (66.7%) and Claude3-Opus (55.7%). Beyond MedVQA, on JAMA Clinical Challenge cases, it receives the strongest overall rating under a physician-designed rubric for key clinical points, diagnostic inference, and evidence grounding. Controlled ablations and clinician evaluation show that both case-level multi-view organization and evidence-linked reasoning targets contribute to the gain.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有医学多模态大语言模型虽在MedVQA基准上表现良好，但其训练数据与临床诊断不匹配：监督多围绕孤立图像或短问答对，导致证据到决策的推理结构以及同一病例中视图、序列、模态和患者背景的关联结构未被充分建模。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>构建MultiViewDx，部分经医生验证的多模态指令数据集。以临床病例为监督单元，将影像检查与患者背景关联，把异构报告规范化为证据链接工作流（证据-&gt;发现-&gt;鉴别讨论-&gt;诊断），并使用统一图像-文本检索器约束指令合成仅基于源支持证据。覆盖X射线、CT、MRI、超声、组织病理等。微调MultiViewDx-8B-AN。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在四个MedVQA基准上平均准确率79.0%，优于HuatuoGPT-Vision-34B（66.7%）和Claude3-Opus（55.7%）。在JAMA Clinical Challenge病例上，按医生设计的评分标准（关键临床要点、诊断推理、证据 grounding）获得最强总体评分。消融和临床评估表明病例级多视图组织和证据链接推理目标均有贡献。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>以临床病例为监督单元、结合多视图组织和证据链接推理目标，能有效提升医学多模态大语言模型在基准和真实诊断推理中的表现。</p></div>
+  </details>
+</article>
+  </div>
+</section>
+    </main>
+  </div>
+
+  <script src="./assets/interactive.js"></script>
+</body>
+</html>
