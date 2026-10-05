@@ -21,7 +21,7 @@
         </a>
       </p>
       <h1>文献阅读简报</h1>
-      <p class="header-meta">生成时间：2026-09-29 04:00:18</p>
+      <p class="header-meta">生成时间：2026-10-06 04:00:18</p>
       <div class="report-stats">
         <p><span>3</span> 个查询主题</p>
         <p><span>9</span> 篇候选论文</p>
@@ -49,20 +49,18 @@
 <article class="paper-card" data-paper-card>
   <header class="paper-head">
     <p class="paper-index">No. 1</p>
-    <h3 class="paper-title">EAServe: Encode-Aware Disaggregated Serving for Multimodal Large Language Models</h3>
-    <p class="paper-authors">Kunxiong Zhu, Zhihao Shu, Hangyu Zheng, Minghai Qin, Miao Yin, Gagan Agrawal, Wei Niu</p>
+    <h3 class="paper-title">DEPICT: Scoring Text-to-Image Alignment by Answer Agreement</h3>
+    <p class="paper-authors">Vasco Ramos, Sandra Godinho Silva, Joao Magalhaes, Ricardo Rei, Pedro Henrique Martins</p>
     <div class="paper-meta-inline">
       <p class="meta-item"><span>Source</span>arxiv</p>
-      <p class="meta-item"><span>Published</span>2026-09-25</p>
-      <p class="meta-item"><span>Updated</span>2026-09-25</p>
-      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.DC</strong> · cs.LG · cs.PF</p>
+      <p class="meta-item"><span>Published</span>2026-10-02</p>
+      <p class="meta-item"><span>Updated</span>2026-10-02</p>
     </div>
-    <p class="paper-tldr"><span>TLDR</span>该论文提出EAServe，将多模态LLM服务中的Encode阶段作为控制点，通过运行时和配置层协同优化，解决EPD流水线中的资源失衡问题，显著提升吞吐量。</p>
+    <p class="paper-tldr"><span>TLDR</span>提出无需训练的DEPICT指标，通过用图像与纯文本答案的期望一致性替代固定参考答案，并结合整体分数，显著提升图像-文本对齐评估的细粒度准确性和泛化能力。</p>
   </header>
   <div class="paper-links has-links">
-    <a class="paper-link" href="https://arxiv.org/pdf/2609.31551v1" target="_blank" rel="noopener noreferrer">PDF</a>
-    <a class="paper-link" href="https://arxiv.org/abs/2609.31551v1" target="_blank" rel="noopener noreferrer">Abstract</a>
-    <a class="paper-link" href="https://doi.org/10.1145/3838684.3846886" target="_blank" rel="noopener noreferrer">DOI</a>
+    <a class="paper-link" href="https://arxiv.org/pdf/2610.03617v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2610.03617v1" target="_blank" rel="noopener noreferrer">Abstract</a>
   </div>
   <details class="paper-details" data-paper-details>
     <summary class="details-summary">
@@ -71,29 +69,30 @@
     </summary>
     <div class="detail-block">
       <h4>Abstract</h4>
-      <p>Disaggregating the two stages, Prefill and Decode, onto separate GPU pools is now a standard optimization for (text-only) LLM serving. However, multimodal LLMs (MLLMs), which add a third phase, Encode, pose new challenges for resource allocation. Encode turns images, video, or audio into embeddings that the language model can consume, yielding a three-stage Encode-Prefill-Decode (EPD) pipeline. Existing frameworks offer only partial answers: text-only PD systems lack Encode, while EPD frameworks expose it as a separate service without regulating downstream request flow. The pipeline also carries a structural resource imbalance: every request enters through Encode before downstream work can begin, yet per-request execution leaves the encode GPU severely underutilized even at high loads, starving the downstream Prefill and Decode workers. Addressing this, we reposition Encode as the control point of the EPD pipeline, exposing three tightly coupled dimensions: when work enters downstream, where prefill executes, and how the GPU is shared. We instantiate this in EAServe across two co-designed layers. Its runtime manages load-adaptive micro-batching, rate-controlled partial offload to a co-resident prefill worker, and dynamic SM partitioning for predictable co-location. The configuration layer, Hybrid Auto Selection (HAS), navigates the joint space of GPU allocation, encode batch size, and offload ratio by pruning unbalanced allocations with per-stage capacity profiling and refining the remainder through TPE-based Bayesian optimization. Evaluated on three MLLM architectures spanning image, video, and audio, EAServe delivers up to 4.3x and 1.7x higher goodput than NVIDIA Dynamo and vLLM, respectively, under identical SLO constraints, sustains more balanced and higher GPU utilization across the EPD pipeline, and reaches near-optimal configurations faster than baseline search methods.</p>
+      <p>Image-text alignment is a core problem in computer vision with applications in caption evaluation, hallucination detection, data curation, and the benchmarking of text-to-image (T2I) generators. As T2I models improve, benchmarking has become demanding, requiring metrics capable of finding a series of issues like missing objects, swapped attributes, miscounts, and ignored negations. Recent work addresses this by fine-tuning evaluators on preference data or by prompting a vision-language model, either holistically with the caption or with decomposed verification questions. However, existing approaches fall short: fine-tuned metrics remain bound to one backbone and training distribution; holistic metrics miss fine-grained details; and decomposed metrics rely on a fixed-YES assumption that penalizes faithful images whenever that assumption fails. In contrast, we propose DEPICT, a training-free metric that replaces fixed reference answers with expected agreement between image-based and caption-only answers, weighting questions by how decisively the caption determines them. By replacing fixed references, our agreement rule increases negation accuracy from 19% to 88%. To recover the context lost during decomposition, DEPICT merges this agreement score with a holistic score. We evaluate DEPICT on five benchmarks and eleven backbones from three model families and find that it surpasses all training-free metrics and exceeds fine-tuned evaluators on two out of three human-correlation benchmarks.</p>
     </div>
-    <div class="detail-block"><h4>Motivation</h4><p>多模态LLM服务引入Encode阶段形成EPD流水线，但现有框架要么缺少Encode（文本PD系统），要么将Encode作为独立服务而不调控下游请求流。同时，每个请求都先经过Encode，导致编码GPU利用率低，下游Prefill和Decode资源饥饿，存在结构性资源失衡。</p></div>
-    <div class="detail-block"><h4>Method</h4><p>将Encode重新定位为EPD流水线的控制点，暴露三个耦合维度：工作进入下游的时机、prefill执行位置、GPU共享方式。在EAServe中实现两层：运行时层管理负载自适应微批处理、速率控制的部分卸载到共驻prefill worker、动态SM分区以实现可预测共置；配置层HAS通过每阶段容量分析剪枝不平衡分配，并用TPE贝叶斯优化精炼剩余配置，联合搜索GPU分配、编码批大小和卸载比例。</p></div>
-    <div class="detail-block"><h4>Result</h4><p>在三种MLLM架构（图像、视频、音频）上评估，在相同SLO约束下，EAServe的goodput分别比NVIDIA Dynamo和vLLM高4.3倍和1.7倍，EPD流水线GPU利用率更均衡且更高，并比基线搜索方法更快达到近优配置。</p></div>
-    <div class="detail-block"><h4>Conclusion</h4><p>EAServe通过将Encode作为控制点并协同优化运行时与配置，有效解决了多模态LLM服务中EPD流水线的资源失衡问题，显著提升了吞吐量和GPU利用率。</p></div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有图像-文本对齐评估方法存在局限：微调指标受限于单一骨干和训练分布；整体指标忽略细粒度细节；分解指标依赖固定“是”假设，导致忠实图像被误罚。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>DEPICT是一种无需训练的方法，用图像答案与纯文本答案之间的期望一致性替代固定参考答案，并按文本对问题的决定性加权；同时将一致性分数与整体分数融合，以恢复分解时丢失的上下文。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在五个基准和三个模型家族的十一个骨干上评估，DEPICT超越所有无需训练指标，并在三个人类相关性基准中的两个上超过微调评估器；否定准确率从19%提升至88%。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>DEPICT通过期望一致性规则和整体-分解分数融合，有效解决了现有评估方法的不足，在无需训练的情况下实现了更准确、更鲁棒的图像-文本对齐评估。</p></div>
   </details>
 </article>
 <article class="paper-card" data-paper-card>
   <header class="paper-head">
     <p class="paper-index">No. 2</p>
-    <h3 class="paper-title">Structured Reasoning Agentic Framework for Interpretable Critical View of Safety Assessment</h3>
-    <p class="paper-authors">Qing Xu, Yuxiang Luo, Zhen Chen</p>
+    <h3 class="paper-title">Llama-Mobile: Efficient 2.7-Bit Quantization of VLMs</h3>
+    <p class="paper-authors">Luka Ribar, Jeevan Bhoot, Douglas Orr</p>
     <div class="paper-meta-inline">
       <p class="meta-item"><span>Source</span>arxiv</p>
-      <p class="meta-item"><span>Published</span>2026-09-25</p>
-      <p class="meta-item"><span>Updated</span>2026-09-25</p>
+      <p class="meta-item"><span>Published</span>2026-08-21</p>
+      <p class="meta-item"><span>Updated</span>2026-10-02</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.CV</strong> · cs.LG</p>
     </div>
-    <p class="paper-tldr"><span>TLDR</span>提出ReasonCVS框架，利用视觉语言模型和结构化推理，将腹腔镜胆囊切除术中的关键安全视野评估分解为细粒度解剖验证，在Endoscapes-CVS201基准上达到68.1% mAP，并提供可解释的临床依据。</p>
+    <p class="paper-tldr"><span>TLDR</span>提出一种无需原始训练数据的VLM量化框架，结合自生成训练数据和2.7比特/参数格式，在Arm CPU上高效推理，将Llama 3.2 11B Vision Instruct压缩至3.7 GB并保持VQA任务性能。</p>
   </header>
   <div class="paper-links has-links">
-    <a class="paper-link" href="https://arxiv.org/pdf/2609.31524v1" target="_blank" rel="noopener noreferrer">PDF</a>
-    <a class="paper-link" href="https://arxiv.org/abs/2609.31524v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+    <a class="paper-link" href="https://arxiv.org/pdf/2608.21134v2" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2608.21134v2" target="_blank" rel="noopener noreferrer">Abstract</a>
   </div>
   <details class="paper-details" data-paper-details>
     <summary class="details-summary">
@@ -102,29 +101,30 @@
     </summary>
     <div class="detail-block">
       <h4>Abstract</h4>
-      <p>Surgical scene understanding is critical for computer-assisted intervention, yet laparoscopic cholecystectomy remains challenged by the complex anatomy of the hepatocystic triangle and the risk of bile duct injury. Existing methods for Critical View of Safety (CVS) assessment typically treat it as a holistic prediction task, mapping visual features directly to criterion-level labels. This black-box paradigm lacks explicit reasoning about anatomical relationships, limiting both interpretability and compositional generalization. To address this, we propose ReasonCVS, a structured reasoning agentic framework empowered by Vision-Language Models (VLMs) that decomposes CVS assessment into explicit, fine-grained anatomical verification. Specifically, we devise an Anatomical Scene Graph Abstraction (ASGA) that organizes anatomical entities and their spatial relationships into a structured representation. To operationalize this, we introduce a Rationale-Aware Reasoning Agent, powered by a Large Language Model (LLM) fine-tuned via rationale distillation. Functioning as a strict central decision-maker, it invokes VLM-driven Sub-criterion Verifier as a specialized perceptual tool to parse the graph and independently evaluate individual sub-criteria. Through calibrated soft reasoning, this agent synthesizes the tool-gathered distributed observations, yielding a final verdict alongside a traceable clinical rationale. Extensive experiments on the Endoscapes-CVS201 benchmark demonstrate that ReasonCVS achieves superior performance (68.1\% mAP) over state-of-the-art while providing interpretable, criterion-level explanations for reliable surgical assessment.</p>
+      <p>Deploying vision-language models (VLMs) on mobile devices is challenging due to their significant memory and compute requirements. We present a framework for quantizing VLMs for efficient inference on resource-constrained hardware. Our approach combines a quantization pipeline that uses the model itself to generate training data and does not require access to the training setup, with a novel 2.7-bit-per-parameter format supporting efficient execution on Arm CPUs. We validate our approach by compressing the Llama 3.2 11B Vision Instruct model to 3.7 GB with 8-bit activations, preserving strong performance on a set of standard visual question answering tasks.</p>
     </div>
-    <div class="detail-block"><h4>Motivation</h4><p>现有CVS评估方法将任务视为整体预测，直接映射视觉特征到标准级标签，这种黑盒范式缺乏对解剖关系的显式推理，限制了可解释性和组合泛化能力，且腹腔镜胆囊切除术因肝胆囊三角复杂解剖和胆管损伤风险而面临挑战。</p></div>
-    <div class="detail-block"><h4>Method</h4><p>提出ReasonCVS结构化推理智能体框架，由视觉语言模型驱动。设计解剖场景图抽象（ASGA）组织解剖实体及其空间关系为结构化表示；引入理性感知推理智能体，基于通过理性蒸馏微调的大语言模型，作为中央决策者调用VLM驱动的子标准验证器作为专用感知工具，解析图并独立评估各子标准；通过校准软推理合成分布式观察，输出最终判定及可追溯的临床依据。</p></div>
-    <div class="detail-block"><h4>Result</h4><p>在Endoscapes-CVS201基准上，ReasonCVS取得68.1% mAP，优于现有最先进方法，同时提供可解释的、标准级别的解释，用于可靠的手术评估。</p></div>
-    <div class="detail-block"><h4>Conclusion</h4><p>ReasonCVS通过结构化推理和智能体框架，有效提升了CVS评估的性能和可解释性，为计算机辅助干预中的手术场景理解提供了新思路。</p></div>
+    <div class="detail-block"><h4>Motivation</h4><p>视觉语言模型在移动设备上部署面临巨大的内存和计算需求挑战。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>结合使用模型自身生成训练数据的量化流程（无需访问原始训练设置）与一种新颖的2.7比特/参数格式，支持在Arm CPU上高效执行。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>将Llama 3.2 11B Vision Instruct模型压缩至3.7 GB（8比特激活），在标准视觉问答任务上保持强劲性能。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>该框架能有效量化VLM，使其在资源受限硬件上高效推理，同时保持任务性能。</p></div>
   </details>
 </article>
 <article class="paper-card" data-paper-card>
   <header class="paper-head">
     <p class="paper-index">No. 3</p>
-    <h3 class="paper-title">ChemMLLM: Chemical Multimodal Large Language Model</h3>
-    <p class="paper-authors">Qian Tan, Di Zhang, Ben Gao, Peng Xia, Wanhao Liu, Shufei Zhang, Wanli Ouyang, Lei Bai, Yuqiang Li, Tianfan Fu</p>
+    <h3 class="paper-title">World Action Planner: Generalizable Robot Decision-Making with Action-Conditioned World Models</h3>
+    <p class="paper-authors">Xiangcheng Zhang, Runhan Huang, Yilun Du</p>
     <div class="paper-meta-inline">
       <p class="meta-item"><span>Source</span>arxiv</p>
-      <p class="meta-item"><span>Published</span>2025-05-22</p>
-      <p class="meta-item"><span>Updated</span>2026-09-25</p>
+      <p class="meta-item"><span>Published</span>2026-07-30</p>
+      <p class="meta-item"><span>Updated</span>2026-10-02</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.AI</strong> · cs.RO</p>
     </div>
-    <p class="paper-tldr"><span>TLDR</span>提出ChemMLLM，一个统一的化学多模态大语言模型，用于分子理解与生成，在五类跨模态任务上性能优于通用MLLM，接近专用模型，并首次将化学MLLM能力扩展至图像生成。</p>
+    <p class="paper-tldr"><span>TLDR</span>提出World Action Planner，一种基于动作条件世界模型的机器人规划系统，通过粗到细的想象搜索生成可执行动作计划，在泛化任务上超越端到端策略和VLM规划器。</p>
   </header>
   <div class="paper-links has-links">
-    <a class="paper-link" href="https://arxiv.org/pdf/2505.16326v3" target="_blank" rel="noopener noreferrer">PDF</a>
-    <a class="paper-link" href="https://arxiv.org/abs/2505.16326v3" target="_blank" rel="noopener noreferrer">Abstract</a>
+    <a class="paper-link" href="https://arxiv.org/pdf/2607.27599v2" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2607.27599v2" target="_blank" rel="noopener noreferrer">Abstract</a>
   </div>
   <details class="paper-details" data-paper-details>
     <summary class="details-summary">
@@ -133,12 +133,12 @@
     </summary>
     <div class="detail-block">
       <h4>Abstract</h4>
-      <p>Recent years have seen rapid progress in multimodal large language models (MLLMs) in the field of chemistry. However, chemical MLLMs that can handle cross-modal understanding and generation remain underexplored. To fill this gap, we propose ChemMLLM, a unified chemical multimodal large language model for molecule understanding and generation. In this work, we design five types of multimodal tasks across text, molecular SMILES strings and images, and curate the datasets. We benchmark ChemMLLM against a range of general leading MLLMs, Chemical LLMs and specialized models on these tasks. Experimental results show that ChemMLLM achieves superior performance among general-purpose MLLMs and close performance to specialized models across all evaluated tasks. Our work extends the capabilities of chemical multimodal large language models to the realm of image generation, demonstrating the feasibility of unifying multiple cross-modal chemical tasks within a single foundation model and enabling more intuitive, visual human-AI interaction.</p>
+      <p>Building generalizable robot agents for diverse applications remains a fundamental challenge. While imitation learning-based policies can perform well in familiar training environments, they often struggle to generalize to novel scenes, layouts, and task compositions. To this end, we present World Action Planner, an agentic robot planning system in which the agent searches for and composes executable action plans through imagination with an action-conditioned world model. The search proceeds in a coarse-to-fine manner. First, the agent performs global action optimization by reasoning over imagined world-model rollouts to identify potential failures and refine the proposed action plan. It then performs local action search, comparing the imagined future outcomes of neighboring candidates to select the best action for execution. Across compositional long-horizon tasks, novel object layouts, and real-robot planning on novel tasks without expert demonstrations, World Action Planner consistently outperforms state-of-the-art end-to-end generalist policy models and VLM planners, demonstrating the effectiveness of world-model-based action search for generalizable robot decision making. Qualitative results and videos are available at https://worldactionplanner.github.io/</p>
     </div>
-    <div class="detail-block"><h4>Motivation</h4><p>化学领域的多模态大语言模型在跨模态理解与生成方面仍缺乏探索，现有模型无法统一处理分子理解与生成任务。</p></div>
-    <div class="detail-block"><h4>Method</h4><p>设计五类跨文本、分子SMILES字符串和图像的多模态任务，构建相应数据集，并基于统一的多模态大语言模型框架训练ChemMLLM。</p></div>
-    <div class="detail-block"><h4>Result</h4><p>在五类任务上，ChemMLLM在通用MLLM中表现最优，且性能接近专用模型，同时实现了图像生成能力。</p></div>
-    <div class="detail-block"><h4>Conclusion</h4><p>ChemMLLM证明了在单一基础模型中统一多种跨模态化学任务的可行性，扩展了化学MLLM至图像生成领域，支持更直观的视觉人机交互。</p></div>
+    <div class="detail-block"><h4>Motivation</h4><p>基于模仿学习的策略在训练环境中表现良好，但难以泛化到新场景、布局和任务组合，因此需要构建可泛化的机器人智能体。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>World Action Planner通过动作条件世界模型进行想象，以粗到细方式搜索和组合可执行动作计划：先进行全局动作优化，推理想象的世界模型推演以识别潜在失败并细化计划；再进行局部动作搜索，比较相邻候选的想象未来结果以选择最佳动作执行。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在组合长时程任务、新物体布局以及无专家演示的新任务真实机器人规划中，World Action Planner持续优于最先进的端到端通用策略模型和VLM规划器。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>基于世界模型的动作搜索能有效实现可泛化的机器人决策。</p></div>
   </details>
 </article>
   </div>
@@ -153,18 +153,18 @@
 <article class="paper-card" data-paper-card>
   <header class="paper-head">
     <p class="paper-index">No. 1</p>
-    <h3 class="paper-title">STORM-Bench: Evaluating Online Video QA under Evolving and Incomplete Evidence</h3>
-    <p class="paper-authors">Siru Zhong, Shenghan Tan, Rihong Yan, Xiaohui Lv, Yuzheng Zhuang, Shuai Tao, Wulong Liu, Haohuan Fu, Yuxuan Liang</p>
+    <h3 class="paper-title">Behavior Pack Optimization for Video MLLM Post-Training</h3>
+    <p class="paper-authors">Zhaolu Kang, Shiyu Liu, Tailong Luo, Wei Zhang, Yingjie He, Lei Wei, Guansu Wang, Liang He, Siheng Wang, Guangyuan Dong, Jiaqi Su, Shuang Chen, Haoyu Ji, Qishi Zhan, Kaiyue Zhou</p>
     <div class="paper-meta-inline">
       <p class="meta-item"><span>Source</span>arxiv</p>
-      <p class="meta-item"><span>Published</span>2026-09-25</p>
-      <p class="meta-item"><span>Updated</span>2026-09-25</p>
+      <p class="meta-item"><span>Published</span>2026-10-02</p>
+      <p class="meta-item"><span>Updated</span>2026-10-02</p>
     </div>
-    <p class="paper-tldr"><span>TLDR</span>论文提出STORM-Bench基准，包含5,736个问题，覆盖630个变化密集的自我中心视频片段，并引入STORM-BR调和指标评估在线视频问答中的状态跟踪与选择性弃权能力。实验显示14个视频LLM的在线准确率最高60.3%，但STORM-BR仅5.7%-35.6%，表明普遍存在过度自信和弃权失败。</p>
+    <p class="paper-tldr"><span>TLDR</span>论文提出Behavior Pack Optimization（BPO），通过在一组反事实视图上联合评分行为包，替代单响应奖励，迫使视频多模态大模型依赖时序证据而非外观和语言先验，在多个基准上显著提升时序推理和弃权能力。</p>
   </header>
   <div class="paper-links has-links">
-    <a class="paper-link" href="https://arxiv.org/pdf/2609.30981v1" target="_blank" rel="noopener noreferrer">PDF</a>
-    <a class="paper-link" href="https://arxiv.org/abs/2609.30981v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+    <a class="paper-link" href="https://arxiv.org/pdf/2610.03141v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2610.03141v1" target="_blank" rel="noopener noreferrer">Abstract</a>
   </div>
   <details class="paper-details" data-paper-details>
     <summary class="details-summary">
@@ -173,29 +173,30 @@
     </summary>
     <div class="detail-block">
       <h4>Abstract</h4>
-      <p>Reliable online video question answering requires tracking state transitions while selectively abstaining when visual evidence is insufficient. Existing benchmarks focus on static recognition or long-range retrieval, rarely evaluating these coupled capabilities under evolving and incomplete evidence. We present STORM-Bench, comprising 5,736 questions across 630 compact, change-dense episodes spanning five egocentric domains (STORM-Real) and two controlled simulation subsets (STORM-Sim) at 1 FPS. Questions are stratified by a proxy for accumulated change intensity (Low, Medium, High) and query-time answerability (Known, Uncertain). To measure reliability, we introduce STORM-BR, a harmonic metric over joint answer-status correctness that exposes abstention failures masked by aggregate accuracy, alongside STORM-BR-ATTR for uncertainty attribution. Across 14 video LLMs, online accuracy peaks at 60.3\% (mean 51.7\%), whereas STORM-BR ranges from 5.7\% to 35.6\% (mean 18.8\%), driven by pervasive overconfidence on uncertain queries. STORM-Bench shows that task accuracy masks these gaps in epistemic reliability and state tracking. Benchmark and code are available at https://github.com/siruzhong/STORM-Bench.</p>
+      <p>Video multimodal large language models (MLLMs) keep climbing video question answering benchmarks, yet shuffling the frames, masking the segment that supports the answer, or occluding the target object barely changes their predictions. The accuracy rests on appearance and language priors, not on the temporal evidence the question asks for. We trace this to the unit of post-training: rewards are computed on a single response to the original clip, so the model is never asked to behave consistently across views. We propose Behavior Pack Optimization (BPO), which replaces the single response with a behavior pack of outputs across counterfactual views chosen by question type, scored jointly. The pack reward asks for stability when the intervention is irrelevant, sensitivity when key evidence is removed, and abstention when no evidence remains. To keep this objective stable at small pack sizes, BPO uses an anchor-relative advantage: the response on the original view serves as a per-prompt reference instead of a group mean over mixed views. On TempCompass, MVBench, and NExT-QA, BPO improves the macro accuracy of Qwen2.5-VL-7B-Instruct by 4.7 pp, the temporal-hard subset by 7.8 pp, and abstention F1 by 20.0 pp over a budget-matched vanilla GRPO baseline from the same SFT checkpoint. The gains transfer to Video-MME, LongVideoBench, and to LLaVA-Video-7B; ablations confirm they follow the view sets, not the rollout count. We hope this pack-level perspective offers a useful starting point for the video MLLM and multimodal post-training community as the field moves toward evidence-grounded video reasoning.</p>
     </div>
-    <div class="detail-block"><h4>Motivation</h4><p>现有在线视频问答基准主要关注静态识别或长程检索，很少在动态变化和不完整证据下评估状态跟踪与选择性弃权这两个耦合能力，导致模型在证据不足时仍过度自信回答，缺乏可靠性评估。</p></div>
-    <div class="detail-block"><h4>Method</h4><p>构建STORM-Bench基准，包含5,736个问题，来自630个变化密集的自我中心视频片段，涵盖五个领域（STORM-Real）和两个受控模拟子集（STORM-Sim），帧率1 FPS。问题按累积变化强度（低、中、高）和查询时可回答性（已知、不确定）分层。提出STORM-BR调和指标，联合评估答案与状态正确性，暴露弃权失败；并引入STORM-BR-ATTR进行不确定性归因。</p></div>
-    <div class="detail-block"><h4>Result</h4><p>在14个视频LLM上，在线准确率最高60.3%（平均51.7%），但STORM-BR仅5.7%至35.6%（平均18.8%），主要由于对不确定查询的普遍过度自信。</p></div>
-    <div class="detail-block"><h4>Conclusion</h4><p>STORM-Bench表明任务准确率掩盖了认知可靠性和状态跟踪方面的差距，强调了在动态不完整证据下评估选择性弃权的重要性。</p></div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有视频多模态大模型在视频问答基准上准确率虽高，但打乱帧序、遮蔽关键片段或遮挡目标物体几乎不改变预测，说明模型依赖外观和语言先验而非问题所需的时序证据。根源在于后训练以原始片段的单一响应计算奖励，模型从未被要求在不同视图下保持一致行为。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>提出Behavior Pack Optimization（BPO），将单一响应替换为按问题类型选择的反事实视图上的行为包，联合评分。包奖励要求：干预无关时保持稳定、关键证据移除时敏感、无证据时弃权。为在小包尺寸下稳定目标，采用锚点相对优势，以原始视图响应作为每提示参考，而非混合视图的组均值。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在TempCompass、MVBench和NExT-QA上，BPO使Qwen2.5-VL-7B-Instruct的宏准确率比预算匹配的vanilla GRPO基线提升4.7个百分点，时序困难子集提升7.8个百分点，弃权F1提升20.0个百分点。增益可迁移至Video-MME、LongVideoBench和LLaVA-Video-7B；消融实验证实增益源于视图集而非 rollout 数量。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>BPO从包级视角为视频多模态大模型和多模态后训练社区提供了有用起点，推动领域向证据接地的视频推理发展。</p></div>
   </details>
 </article>
 <article class="paper-card" data-paper-card>
   <header class="paper-head">
     <p class="paper-index">No. 2</p>
-    <h3 class="paper-title">CinematicVQA: Benchmarking Film-Grammar Reasoning in Large Vision-Language Models</h3>
-    <p class="paper-authors">Shuo Xing, Pooja Verlani, Balu Adsumilli, Zhengzhong Tu</p>
+    <h3 class="paper-title">GeoScaffold: Learning Compact Geometric Latents via Reconstruction for Efficient Vision-Language Navigation</h3>
+    <p class="paper-authors">Yixuan Jiang, Wentong Li, An Liu, Zihao Xin, Fulin Tang, Cong Leng, Yang Gao, Jian Cheng</p>
     <div class="paper-meta-inline">
       <p class="meta-item"><span>Source</span>arxiv</p>
-      <p class="meta-item"><span>Published</span>2026-09-23</p>
-      <p class="meta-item"><span>Updated</span>2026-09-23</p>
+      <p class="meta-item"><span>Published</span>2026-10-02</p>
+      <p class="meta-item"><span>Updated</span>2026-10-02</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.RO</strong> · cs.CV</p>
     </div>
-    <p class="paper-tldr"><span>TLDR</span>本文提出首个电影视频理解基准CinematicVQA，利用电影场景图（CSG）评估大型视觉语言模型（LVLM）对电影语法和叙事功能的推理能力，发现模型在识别底层技术方面存在语义鸿沟，且思维链提示效果不佳，微调可提升叙事功能和多跳推理表现。</p>
+    <p class="paper-tldr"><span>TLDR</span>GeoScaffold通过训练时几何监督将深度、连通性和可通行性内化到Video-LLM策略中，推理时无需额外传感器或计算，在连续VLN基准上超越纯视觉导航器。</p>
   </header>
   <div class="paper-links has-links">
-    <a class="paper-link" href="https://arxiv.org/pdf/2609.28813v1" target="_blank" rel="noopener noreferrer">PDF</a>
-    <a class="paper-link" href="https://arxiv.org/abs/2609.28813v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+    <a class="paper-link" href="https://arxiv.org/pdf/2610.02697v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2610.02697v1" target="_blank" rel="noopener noreferrer">Abstract</a>
   </div>
   <details class="paper-details" data-paper-details>
     <summary class="details-summary">
@@ -204,29 +205,29 @@
     </summary>
     <div class="detail-block">
       <h4>Abstract</h4>
-      <p>Cinematography, the craft of visual storytelling through framing, lighting, and camera operation, fundamentally shapes how audiences perceive and emotionally engage with video content. While Large Vision Language Models (LVLMs) have made remarkable progress in video question answering, existing benchmarks primarily focus on identifying low-level techniques rather than understanding their storytelling impact. To address this, we introduce CinematicVQA, the first-of-its-kind benchmark for cinematic video understanding that goes beyond technique recognition to evaluate film-grammar reasoning, utilizing our introduced Cinematic Scene Graph (CSG), a structured representation that links filming techniques to their perceptual effects and narrative functions. Through comprehensive evaluation of state-of-the-art LVLMs, we reveal a striking semantic gap: models consistently perform higher on describing visual presentations than on identifying the underlying techniques. Surprisingly, Chain-of-Thought prompting fails to provide consistent gains and degrades performance for most models, suggesting that current LVLMs lack sufficient cinematic domain knowledge to benefit from step-by-step reasoning. Fine-tuning on \textsc{CinematicVQA-train} yields consistent improvements, particularly for narrative function and multi-hop reasoning. Overall, \textsc{CinematicVQA} serves both as a rigorous benchmark for cinematic evaluation in LVLMs and as a practical dataset for training more film-aware video models.</p>
+      <p>Recent vision-and-language navigation (VLN) systems increasingly adopt streaming Video-LLM policies that map egocentric RGB observations and instructions directly to low-level actions. Yet these policies inherit weak 3D geometric priors from 2D pretraining. Existing geometry-aware extensions charge a persistent inference-time price: depth sensors, 3D encoders, or per-step perception tool calls. We propose GeoScaffold, a geometric supervision framework that pays this price once, at training time, by internalizing geometry into the policy itself. It first learns a compact depth tokenizer on depth maps from the training trajectories and freezes it. It then fine-tunes the policy with a handful of learnable geometry query tokens, training their hidden states to reconstruct navigation-critical geometry such as depth, connectivity, and traversability. This supervision turns the query states into compact geometric latents for action decoding, and through the shared weights also internalizes geometry into the backbone&#x27;s own representations. Like a scaffold, the tokenizer, target generators, and reconstruction heads are discarded after training, leaving the backbone and action interface unchanged. Extensive experiments show that GeoScaffold consistently outperforms leading vision-only navigators on continuous VLN benchmarks, offering a practical paradigm for lightweight edge deployment of spatially aware embodied navigation models.</p>
     </div>
-    <div class="detail-block"><h4>Motivation</h4><p>现有视频问答基准主要关注识别低层次电影技术，而非理解其叙事影响和感知效果，无法评估LVLM对电影语法的深层推理能力。</p></div>
-    <div class="detail-block"><h4>Method</h4><p>引入CinematicVQA基准和电影场景图（CSG），CSG是一种结构化表示，将拍摄技术与感知效果和叙事功能关联；对最先进LVLM进行全面评估，并测试思维链提示和微调效果。</p></div>
-    <div class="detail-block"><h4>Result</h4><p>模型在描述视觉呈现上表现优于识别底层技术，存在语义鸿沟；思维链提示未带来一致增益，且对多数模型性能有损；在CinematicVQA-train上微调可一致提升性能，尤其在叙事功能和多跳推理方面。</p></div>
-    <div class="detail-block"><h4>Conclusion</h4><p>CinematicVQA既是评估LVLM电影理解能力的严格基准，也是训练更具电影感知视频模型的实用数据集。</p></div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有流式Video-LLM导航策略从2D预训练继承的3D几何先验较弱，而现有几何感知扩展在推理时需持续付出深度传感器、3D编码器或逐步感知工具调用的代价。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>先基于训练轨迹的深度图学习紧凑深度分词器并冻结；再用少量可学习几何查询令牌微调策略，训练其隐藏状态重建导航关键几何（深度、连通性、可通行性），使查询状态成为动作解码的紧凑几何潜变量，并通过共享权重将几何内化到骨干表示；训练后丢弃分词器、目标生成器和重建头，保持骨干和动作接口不变。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>大量实验表明，GeoScaffold在连续VLN基准上持续优于领先的纯视觉导航器。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>GeoScaffold为空间感知具身导航模型的轻量边缘部署提供了一种实用范式。</p></div>
   </details>
 </article>
 <article class="paper-card" data-paper-card>
   <header class="paper-head">
     <p class="paper-index">No. 3</p>
-    <h3 class="paper-title">From Priors to Perception: Grounding Video-LLMs in Physical Reality</h3>
-    <p class="paper-authors">Zicheng Zhao, Chaofan Gan, Shijie Li, Weiyao Lin</p>
+    <h3 class="paper-title">OneStreamer: Unifying Perception, Memory, and Proactive Response in Streaming Video Interaction</h3>
+    <p class="paper-authors">Xiangyu Zeng, Yuandong Yang, Zhiqiu Zhang, Yuhan Zhu, Xinhao Li, Qingyi Si, Dingyu Yao, Changlian Ma, Haoran Chen, Xinyu Chen, Yansong Shi, Junhao Zhou, Yifei Li, Jun Zhang, Chuanyu Qin, Chenxu Yang, Xinlei Yu, Kun Ouyang, Yuchen Shao, Qianshan Wei, Changhai Zhou, Jun Gao, Jiaqi Wang, Limin Wang</p>
     <div class="paper-meta-inline">
       <p class="meta-item"><span>Source</span>arxiv</p>
-      <p class="meta-item"><span>Published</span>2026-05-06</p>
-      <p class="meta-item"><span>Updated</span>2026-09-19</p>
+      <p class="meta-item"><span>Published</span>2026-10-01</p>
+      <p class="meta-item"><span>Updated</span>2026-10-01</p>
     </div>
-    <p class="paper-tldr"><span>TLDR</span>论文发现Video-LLMs存在语义先验主导（SPD）问题，即依赖事件预期而非视觉观察进行物理判断，并提出了PriorPair基准和PhyAR训练框架来诊断和克服该问题。</p>
+    <p class="paper-tldr"><span>TLDR</span>提出OneStreamer，通过共享主动生成过程联合学习查询无关的证据记录和任务响应，利用PHCM和PSTL实现流式视频理解，在八个基准上达到最佳，并构建了OneStreamer-1M数据集。</p>
   </header>
   <div class="paper-links has-links">
-    <a class="paper-link" href="https://arxiv.org/pdf/2605.04515v2" target="_blank" rel="noopener noreferrer">PDF</a>
-    <a class="paper-link" href="https://arxiv.org/abs/2605.04515v2" target="_blank" rel="noopener noreferrer">Abstract</a>
+    <a class="paper-link" href="https://arxiv.org/pdf/2610.01762v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2610.01762v1" target="_blank" rel="noopener noreferrer">Abstract</a>
   </div>
   <details class="paper-details" data-paper-details>
     <summary class="details-summary">
@@ -235,12 +236,12 @@
     </summary>
     <div class="detail-block">
       <h4>Abstract</h4>
-      <p>Video Large Language Models (Video-LLMs) excel in general video understanding but often base physical judgments on event expectations rather than observations. We find that they not only rationalize physically impossible events, but also incorrectly report expected outcomes in physically plausible yet counter-intuitive scenarios, despite clear contradictory visual evidence. We provide the first unified account of these failures as Semantic Prior Dominance (SPD): semantic expectations override conflicting visual evidence. To diagnose and overcome these failures, we introduce PriorPair, a high-fidelity paired video benchmark covering both conflicts across eight physical categories. Its category-directed construction pairs prior-aligned events with semantically matched but prior-conflicting counterparts. We further propose Physics-Anchored Reasoner (PhyAR), a lightweight training framework. Its Visually Anchored Reasoning Chain grounds physical attribution and judgment in explicit visual observations, while Paired Data Binding strengthens learning of decisive event differences through matched-pair supervision. Standard LoRA fine-tuning with PhyAR substantially improves physical reasoning and reduces prior-driven judgment bias across different Video-LLM backbones without architectural modifications. These gains extend to an external physical benchmark while largely preserving general video understanding.</p>
+      <p>Streaming video LLMs must retain evidence before its relevance to future tasks is known and respond when sufficient evidence becomes available. The challenge is to form reusable factual memory without compromising real-time perception. We introduce OneStreamer, which jointly learns query-independent evidence recording and task response through a shared proactive generation process. Its Proactive Hierarchical Caption Memory (PHCM) produces time-grounded local-detail captions and summaries of completed events. Streaming caption targets supervise the interpretation of observed video prefixes during training. At inference, model-generated records complement a recent visual window, providing reusable factual context without revisiting historical visual features. Proactive State Transition Learning (PSTL) reduces the dominance of repeated waiting states by preserving supervision at all output anchors and selecting representative state-change and state-persistence tokens. We further develop a streaming data synthesis pipeline that aligns output content and timing with available evidence. Combining the resulting streaming captions and QA with cleaned open-source data yields OneStreamer-1M, a broad-coverage streaming video interaction dataset with over one million records spanning diverse tasks. Our 4B model achieves the best results among the compared methods across all eight evaluated streaming video understanding benchmarks. Ablations show that retaining generated captions improves historical QA without degrading real-time perception. PSTL also outperforms dense state supervision while supervising only 27.5% of annotated state tokens. Together, these results support proactive generation as a shared learning interface connecting perception, memory formation, and timely response in streaming video interaction.</p>
     </div>
-    <div class="detail-block"><h4>Motivation</h4><p>Video-LLMs在通用视频理解上表现优异，但在物理判断中常基于事件预期而非观察，导致它们不仅合理化物理不可能事件，还在物理合理但反直觉的场景中错误报告预期结果，即使有明确矛盾视觉证据。作者旨在统一解释这些失败为语义先验主导（SPD），并解决该问题。</p></div>
-    <div class="detail-block"><h4>Method</h4><p>提出了PriorPair，一个高保真配对视频基准，覆盖八个物理类别的冲突，通过类别导向构建将先验对齐事件与语义匹配但先验冲突的对应事件配对。进一步提出Physics-Anchored Reasoner（PhyAR），一个轻量训练框架，其Visually Anchored Reasoning Chain将物理归因和判断基于显式视觉观察，Paired Data Binding通过匹配对监督加强决定性事件差异的学习。使用标准LoRA微调。</p></div>
-    <div class="detail-block"><h4>Result</h4><p>使用PhyAR进行标准LoRA微调，在不同Video-LLM骨干上显著提升了物理推理能力，减少了先验驱动的判断偏差，且无需架构修改。这些增益扩展到外部物理基准，同时 largely 保留了通用视频理解能力。</p></div>
-    <div class="detail-block"><h4>Conclusion</h4><p>PhyAR能有效缓解Video-LLMs中的语义先验主导问题，提升物理推理的视觉基础性，且不损害通用视频理解，为改进Video-LLMs的物理判断提供了可行方案。</p></div>
+    <div class="detail-block"><h4>Motivation</h4><p>流式视频LLM需要在未知未来任务相关性时保留证据，并在足够证据出现时响应，挑战在于形成可重用的事实记忆而不损害实时感知。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>OneStreamer联合学习查询无关证据记录和任务响应，通过共享主动生成过程；其PHCM生成时间定位的局部细节描述和已完成事件的摘要，流式描述目标监督训练中对观察到的视频前缀的解释；推理时模型生成的记录补充近期视觉窗口，提供可重用事实上下文而无需重访历史视觉特征；PSTL通过保留所有输出锚点的监督并选择代表性状态变化和状态持续令牌，减少重复等待状态的主导；还开发了流式数据合成管道，对齐输出内容和时序与可用证据；结合流式描述和QA与清理的开源数据得到OneStreamer-1M数据集。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>4B模型在所有八个评估的流式视频理解基准上优于对比方法；消融实验表明保留生成的描述改善了历史QA而不降低实时感知；PSTL在仅监督27.5%标注状态令牌的情况下优于密集状态监督。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>这些结果支持主动生成作为共享学习接口，连接流式视频交互中的感知、记忆形成和及时响应。</p></div>
   </details>
 </article>
   </div>
@@ -255,18 +256,18 @@
 <article class="paper-card" data-paper-card>
   <header class="paper-head">
     <p class="paper-index">No. 1</p>
-    <h3 class="paper-title">SEA-CLIP-Tiny: Efficient Multilingual Text-Vision Embedding for Southeast Asian Languages</h3>
-    <p class="paper-authors">Puja Ahmad Habibi, Faiz Assabil Firdaus, Ashvanth S, Ekapol Chuangsuwanich, Pume Tuchinda, Peerat Limkonchotiwat</p>
+    <h3 class="paper-title">CLIMB: Confidence-Guided Complementary Evidence for Multimodal Retrieval-Augmented Generation</h3>
+    <p class="paper-authors">Hang Gao, Wujiang Xu, Zhixing Zhang, Kai Mei, Jingyi Yang, Dimitris N. Metaxas</p>
     <div class="paper-meta-inline">
       <p class="meta-item"><span>Source</span>arxiv</p>
-      <p class="meta-item"><span>Published</span>2026-09-25</p>
-      <p class="meta-item"><span>Updated</span>2026-09-25</p>
+      <p class="meta-item"><span>Published</span>2026-10-02</p>
+      <p class="meta-item"><span>Updated</span>2026-10-02</p>
     </div>
-    <p class="paper-tldr"><span>TLDR</span>提出SEA-CLIP-Tiny，一个少于50M参数的东南亚多语言文本-视觉嵌入模型，通过区域数据整理和多语言教师指导的CLIP-KD框架，在七种东南亚语言上取得最佳平均检索性能。</p>
+    <p class="paper-tldr"><span>TLDR</span>提出免训练推理框架CLIMB，通过互补证据池和置信度控制细化，提升多模态RAG在知识密集型VQA中的性能。</p>
   </header>
   <div class="paper-links has-links">
-    <a class="paper-link" href="https://arxiv.org/pdf/2609.30739v1" target="_blank" rel="noopener noreferrer">PDF</a>
-    <a class="paper-link" href="https://arxiv.org/abs/2609.30739v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+    <a class="paper-link" href="https://arxiv.org/pdf/2610.03421v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2610.03421v1" target="_blank" rel="noopener noreferrer">Abstract</a>
   </div>
   <details class="paper-details" data-paper-details>
     <summary class="details-summary">
@@ -275,30 +276,29 @@
     </summary>
     <div class="detail-block">
       <h4>Abstract</h4>
-      <p>Multilingual text-vision embedding models are essential for cross-lingual image-text retrieval, but Southeast Asian languages remain poorly supported due to the region&#x27;s linguistic diversity and limited data and computing resources. In this paper, we introduce SEA-CLIP-Tiny, a compact multilingual text-vision embedding model for Southeast Asia with fewer than 50M parameters. Our model adapts a CLIP-KD-style framework to Southeast Asian multilingual settings through regional data curation and multilingual teacher guidance. Experiments across seven Southeast Asian languages show that SEA-CLIP-Tiny achieves the strongest average retrieval performance among the evaluated student models, reaching 12.9%, 31.5%, and 42.2% at R@1, R@5, and R@10, respectively. Compared with MobileCLIP2, it improves average R@10 by 12.1 points while using 38.4% fewer parameters and lower measured CPU latency. These results highlight the importance of region-aware training for efficient multilingual text-vision models in Southeast Asia.</p>
+      <p>Multimodal large language models (MLLMs) have shown strong visual reasoning abilities, but knowledge-intensive visual question answering often requires external textual evidence beyond the image and the model&#x27;s parametric knowledge. Existing multimodal RAG systems commonly rely on Top-$K$ retrieval or reranking, which may return redundant passages and provide limited control over whether an answer update is sufficiently supported by the retrieved evidence. We propose \textit{CLIMB}, a training-free inference-time framework for multimodal RAG. CLIMB first constructs a compact complementary evidence pool using an MMR-style objective that balances query relevance and passage-level redundancy. It then performs confidence-controlled refinement within this fixed pool: an R/E/C critic scores passages by relevance, evidence specificity, and cross-modal alignment, while an evidence-grounded confidence estimator accepts an updated answer only when the estimated confidence increases. This design provides a simple stopping criterion and reduces unnecessary refinement without modifying the underlying retriever or MLLM. Experiments on Encyclopedic-VQA and InfoSeek show that CLIMB consistently improves over retrieval-augmented multimodal baselines. Ablations further indicate that complementary pooling, critic-based scoring, and iterative confidence-controlled refinement each contribute to the final performance.</p>
     </div>
-    <div class="detail-block"><h4>Motivation</h4><p>多语言文本-视觉嵌入模型对跨语言图像-文本检索至关重要，但东南亚语言因区域语言多样性和有限的数据与计算资源而支持不足。</p></div>
-    <div class="detail-block"><h4>Method</h4><p>采用CLIP-KD风格框架，适配东南亚多语言环境，通过区域数据整理和多语言教师指导来训练紧凑模型。</p></div>
-    <div class="detail-block"><h4>Result</h4><p>在七种东南亚语言上，SEA-CLIP-Tiny在学生模型中平均检索性能最强，R@1、R@5、R@10分别达到12.9%、31.5%、42.2%；相比MobileCLIP2，平均R@10提升12.1点，参数减少38.4%，CPU延迟更低。</p></div>
-    <div class="detail-block"><h4>Conclusion</h4><p>结果凸显了区域感知训练对东南亚高效多语言文本-视觉模型的重要性。</p></div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有多模态RAG系统依赖Top-K检索或重排序，可能返回冗余段落，且对答案更新是否被检索证据充分支持缺乏控制。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>CLIMB首先用MMR式目标构建紧凑互补证据池，平衡查询相关性与段落冗余；然后在固定池内进行置信度控制细化：R/E/C批评器从相关性、证据特异性和跨模态对齐评分段落，基于证据的置信度估计器仅在置信度增加时接受更新答案。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在Encyclopedic-VQA和InfoSeek上，CLIMB持续优于检索增强的多模态基线；消融实验表明互补池、批评器评分和迭代置信度控制细化各自贡献性能。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>CLIMB是一种免训练、推理时的多模态RAG框架，通过互补证据池和置信度控制细化，在不修改检索器或MLLM的情况下提升性能，并提供简单停止准则。</p></div>
   </details>
 </article>
 <article class="paper-card" data-paper-card>
   <header class="paper-head">
     <p class="paper-index">No. 2</p>
-    <h3 class="paper-title">GOMA: Toward Structure-Driven Multimodal Alignment from a Graph Signal Smoothing Perspective</h3>
-    <p class="paper-authors">Xu Wang, Xunkai Li, Yinlin Zhu, Rong-Hua Li, Guoren Wang</p>
+    <h3 class="paper-title">AMBER: Multi-View Adaptive Budget Allocation for Listwise Vision-Language Reranking</h3>
+    <p class="paper-authors">Wenteng Chen, Jiachen Zhu, Rong Shan, Tianyi Xu, Yuxiang Chen, Congmin Zheng, Teng Wang, Junjie Wu, Weiwen Liu, Changwang Zhang, Weinan Zhang, Jun Wang, Jianghao Lin</p>
     <div class="paper-meta-inline">
       <p class="meta-item"><span>Source</span>arxiv</p>
-      <p class="meta-item"><span>Published</span>2026-05-15</p>
-      <p class="meta-item"><span>Updated</span>2026-09-24</p>
-      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.LG</strong> · cs.CV</p>
+      <p class="meta-item"><span>Published</span>2026-10-02</p>
+      <p class="meta-item"><span>Updated</span>2026-10-02</p>
     </div>
-    <p class="paper-tldr"><span>TLDR</span>提出GOMA，通过分离内容与语义嵌入并利用语义引导图传播，统一多模态检索中的配对匹配与关系检索，在6个数据集4个任务上14项指标均达SOTA。</p>
+    <p class="paper-tldr"><span>TLDR</span>AMBER是一个在线预算多视图重排序框架，通过动态分配VLM调用预算，利用Elo更新维护全局排序状态，并在候选视图构建和查询调度两级优化，在CIRR、CIRCO和PhotoBench上以相当预算取得最佳性能。</p>
   </header>
   <div class="paper-links has-links">
-    <a class="paper-link" href="https://arxiv.org/pdf/2605.15723v2" target="_blank" rel="noopener noreferrer">PDF</a>
-    <a class="paper-link" href="https://arxiv.org/abs/2605.15723v2" target="_blank" rel="noopener noreferrer">Abstract</a>
+    <a class="paper-link" href="https://arxiv.org/pdf/2610.02831v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2610.02831v1" target="_blank" rel="noopener noreferrer">Abstract</a>
   </div>
   <details class="paper-details" data-paper-details>
     <summary class="details-summary">
@@ -307,30 +307,30 @@
     </summary>
     <div class="detail-block">
       <h4>Abstract</h4>
-      <p>Multimodal retrieval uses images, text, and object relationships to answer different questions about the same collection. A query may seek an object&#x27;s paired description, another object in the same category, or an object connected by an observed relationship. These goals rely on different notions of relevance. Paired matching requires object-specific distinctions, whereas cross-object retrieval benefits from relational agreement. Existing methods learn strong cross-modal correspondence or propagate information over a graph, but a shared output regularized toward neighbors can weaken identity distinctions. Moreover, gains from graph regularization can diminish after uniform graph propagation. We introduce Graph-Optimized Multimodal Alignment (GOMA), which assigns these roles to two connected embeddings. Each modality produces a content embedding directly supervised for paired identity and a semantic embedding jointly trained with cross-modal pairs and observed relationships. For complete records, both embeddings form an initial fused representation, semantic agreement sets positive weights on observed edges, and restart graph propagation reinjects this initial signal. This design lets a jointly trained model support single-modality and dual-attribute retrieval through a task-specific readout. Across six datasets and four tasks, GOMA achieves state-of-the-art performance on all 14 primary measures against 14 external methods. Controlled comparisons further show how separate supervision, graph regularization, and semantic-guided graph propagation shape the final representation and align the learned signal with each retrieval target.</p>
+      <p>Vision-language models (VLMs) are powerful listwise rerankers for multimodal retrieval, but high inference costs restrict them to evaluating small local candidate views. Existing multi-call strategies rely on fixed schedules, wasting expensive VLM calls on uninformative candidate pairs and easy queries. To address this, we propose Adaptive Multi-view Budgeted Elo Reranking (AMBER), an online, budgeted multi-view reranking framework that dynamically optimizes global resource allocation. AMBER treats fragmented listwise VLM outputs as local tournaments, using continuous Elo updates to maintain a lightweight global ranking state. Building on this, it allocates computation at two levels: dynamically constructing candidate views with high score ambiguity, and scheduling queries to maximize expected information gain. We show that each Elo update corresponds to a stochastic gradient ascent step on the Bradley-Terry log-likelihood, and provide a submodular information-theoretic motivation for the query-level allocation strategy. Experiments on CIRR, CIRCO, and PhotoBench demonstrate that AMBER achieves the strongest overall performance among the compared multi-call VLM reranking methods under comparable VLM-call budgets, while remaining effective in lower-budget settings. Our code is publicly available at https://github.com/wnlfc/AMBER.</p>
     </div>
-    <div class="detail-block"><h4>Motivation</h4><p>现有多模态检索方法或学习强跨模态对应，或在图上传播信息，但共享输出被邻居正则化会削弱身份区分；且均匀图传播后图正则化收益递减。不同检索目标依赖不同相关性：配对匹配需对象特定区分，跨对象检索需关系一致性。</p></div>
-    <div class="detail-block"><h4>Method</h4><p>GOMA为每个模态生成两个连接嵌入：内容嵌入直接监督配对身份，语义嵌入联合训练跨模态对与观测关系。完整记录时，两嵌入形成初始融合表示，语义一致性为观测边设正权重，重启图传播重新注入初始信号。设计支持单模态和双属性检索的任务特定读出。</p></div>
-    <div class="detail-block"><h4>Result</h4><p>在6个数据集、4个任务上，GOMA在全部14项主要指标上超越14种外部方法，达到SOTA。控制实验进一步揭示分离监督、图正则化和语义引导图传播如何塑造最终表示并对齐检索目标。</p></div>
-    <div class="detail-block"><h4>Conclusion</h4><p>GOMA通过角色分离的双嵌入和语义引导图传播，有效统一了配对匹配与关系检索，验证了分离监督与图正则化对多模态检索表示学习的重要性。</p></div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有视觉语言模型（VLM）作为多模态检索的列表重排序器性能强大，但推理成本高，只能评估小的局部候选视图。现有多调用策略依赖固定调度，浪费昂贵的VLM调用在无信息量的候选对和简单查询上。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>提出自适应多视图预算Elo重排序（AMBER），将碎片化的列表VLM输出视为局部锦标赛，用连续Elo更新维护轻量级全局排序状态。在两级分配计算：动态构建高分数模糊性的候选视图，并调度查询以最大化期望信息增益。理论证明每次Elo更新对应Bradley-Terry对数似然上的随机梯度上升步，并为查询级分配策略提供子模信息论动机。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在CIRR、CIRCO和PhotoBench上，AMBER在可比的VLM调用预算下，相比其他多调用VLM重排序方法取得最强的整体性能，并在更低预算设置下仍然有效。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>AMBER通过动态预算分配和Elo全局状态维护，有效提升了多视图VLM重排序的效率与效果，代码已公开。</p></div>
   </details>
 </article>
 <article class="paper-card" data-paper-card>
   <header class="paper-head">
     <p class="paper-index">No. 3</p>
-    <h3 class="paper-title">MultiViewDx: Evidence-Linked Multi-View Clinical Diagnosis</h3>
-    <p class="paper-authors">Junda Wang, Zonghai Yao, Yujan Ting, Eric Z. Chen, Hieu Tran, Hong Yu, Weijing Huang, Terrence Chen</p>
+    <h3 class="paper-title">Revisiting Visual Representation Enhancement of VLMs via Kernel Canonical Correlation Analysis</h3>
+    <p class="paper-authors">Peilin Yang, Xiaoyu Liu, Jian Sun, Qinghua Tao</p>
     <div class="paper-meta-inline">
       <p class="meta-item"><span>Source</span>arxiv</p>
-      <p class="meta-item"><span>Published</span>2024-10-19</p>
-      <p class="meta-item"><span>Updated</span>2026-09-24</p>
-      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.CL</strong> · cs.CV</p>
+      <p class="meta-item"><span>Published</span>2026-10-02</p>
+      <p class="meta-item"><span>Updated</span>2026-10-02</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.CV</strong> · cs.AI · cs.LG</p>
     </div>
-    <p class="paper-tldr"><span>TLDR</span>提出MultiViewDx，一个以临床病例为监督单元、证据链接的多视图医学影像诊断指令数据集，并微调MultiViewDx-8B-AN，在MedVQA基准和真实病例诊断推理上均取得最优表现。</p>
+    <p class="paper-tldr"><span>TLDR</span>本文指出KUEA中DINOv2对齐损失对细粒度视觉性能并非关键，提出基于KCCA的特征子空间对齐方法，并扩展为三视图3vKCCA，在ImageNet-1K上显著提升MMVP-VLM准确率且保持零样本检索性能。</p>
   </header>
   <div class="paper-links has-links">
-    <a class="paper-link" href="https://arxiv.org/pdf/2410.14948v3" target="_blank" rel="noopener noreferrer">PDF</a>
-    <a class="paper-link" href="https://arxiv.org/abs/2410.14948v3" target="_blank" rel="noopener noreferrer">Abstract</a>
+    <a class="paper-link" href="https://arxiv.org/pdf/2610.02718v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2610.02718v1" target="_blank" rel="noopener noreferrer">Abstract</a>
   </div>
   <details class="paper-details" data-paper-details>
     <summary class="details-summary">
@@ -339,12 +339,12 @@
     </summary>
     <div class="detail-block">
       <h4>Abstract</h4>
-      <p>Medical multimodal large language models (MLLMs) can perform well on existing medical visual question answering (MedVQA) benchmarks, but their training data often does not match clinical diagnosis. Most supervision is organized around isolated images or short QA pairs, leaving two structures weakly specified: how evidence leads to a decision, and how views, series, modalities, and patient context from the same case are linked. We introduce MultiViewDx, a partly physician-validated multimodal instruction dataset for evidence-linked multi-view medical imaging diagnosis. MultiViewDx uses the clinical case as the supervision unit. It links imaging studies with patient context, normalizes heterogeneous reports into an evidence-linked workflow (evidence -&gt; findings -&gt; differential discussion -&gt; diagnosis), and uses a unified image-text retriever to constrain instruction synthesis to source-supported evidence. It covers X-ray, CT, MRI, ultrasound, histopathology, and other clinical visual sources. We fine-tune MultiViewDx-8B-AN and evaluate it on both existing MedVQA benchmarks and real-world case-based diagnostic reasoning. Across four MedVQA benchmarks, it achieves the best average accuracy among compared systems (79.0%), outperforming HuatuoGPT-Vision-34B (66.7%) and Claude3-Opus (55.7%). Beyond MedVQA, on JAMA Clinical Challenge cases, it receives the strongest overall rating under a physician-designed rubric for key clinical points, diagnostic inference, and evidence grounding. Controlled ablations and clinician evaluation show that both case-level multi-view organization and evidence-linked reasoning targets contribute to the gain.</p>
+      <p>Vision-language models such as CLIP exhibit strong semantic generalization, but remain limited in fine-grained visual perception. A recent work named KUEA presents a natural remedy by finetuning the image encoder under the supervision of the vision-centric DINOv2 to align their kernel matrices element-wisely, while regularizing the embeddings to remain close to the pretrained visual encoder for preserving image-text semantics in CLIP. However, we show that diminishing the role of the alignment loss to DINOv2 does not necessarily degrade its fine-grained visual performance, suggesting that the kernel-matrix discrepancy may be insufficient for further visual representation enhancement, motivating us to revisit the alignment formulation. In this work, we present a novel perspective to characterize representation alignment on feature subspaces through Kernel Canonical Correlation Analysis (KCCA), which maximizes the projection correlations. In optimization, we derive an efficient end-to-end training scheme upon KKT conditions, avoiding the eigenvalue problem in KCCA. Further, we extend our method into a 3-view formulation, i.e., 3vKCCA, in which the projections from the pretrained text encoder are also incorporated under a unified optimization framework for joint alignment. With CLIP ViT-L/14 on ImageNet-1K, our 3vKCCA improves the MMVP-VLM accuracy from 17.8 to 25.9, substantially outperforming the existing methods, and meanwhile maintains zero-shot image--text retrieval performance.</p>
     </div>
-    <div class="detail-block"><h4>Motivation</h4><p>现有医学多模态大语言模型虽在MedVQA基准上表现良好，但其训练数据与临床诊断不匹配：监督多围绕孤立图像或短问答对，导致证据到决策的推理结构以及同一病例中视图、序列、模态和患者背景的关联结构未被充分建模。</p></div>
-    <div class="detail-block"><h4>Method</h4><p>构建MultiViewDx，部分经医生验证的多模态指令数据集。以临床病例为监督单元，将影像检查与患者背景关联，把异构报告规范化为证据链接工作流（证据-&gt;发现-&gt;鉴别讨论-&gt;诊断），并使用统一图像-文本检索器约束指令合成仅基于源支持证据。覆盖X射线、CT、MRI、超声、组织病理等。微调MultiViewDx-8B-AN。</p></div>
-    <div class="detail-block"><h4>Result</h4><p>在四个MedVQA基准上平均准确率79.0%，优于HuatuoGPT-Vision-34B（66.7%）和Claude3-Opus（55.7%）。在JAMA Clinical Challenge病例上，按医生设计的评分标准（关键临床要点、诊断推理、证据 grounding）获得最强总体评分。消融和临床评估表明病例级多视图组织和证据链接推理目标均有贡献。</p></div>
-    <div class="detail-block"><h4>Conclusion</h4><p>以临床病例为监督单元、结合多视图组织和证据链接推理目标，能有效提升医学多模态大语言模型在基准和真实诊断推理中的表现。</p></div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有视觉语言模型如CLIP语义泛化强但细粒度视觉感知弱；KUEA通过核矩阵逐元素对齐DINOv2来改善，但实验表明减弱该对齐损失不一定降低细粒度性能，说明核矩阵差异不足以进一步优化视觉表示，因此需要重新审视对齐公式。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>从特征子空间角度用核典型相关分析（KCCA）刻画表示对齐，最大化投影相关性；基于KKT条件推导高效端到端训练方案，避免求解KCCA特征值问题；进一步提出三视图3vKCCA，将预训练文本编码器的投影纳入统一优化框架进行联合对齐。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在ImageNet-1K上使用CLIP ViT-L/14，3vKCCA将MMVP-VLM准确率从17.8提升至25.9，大幅优于现有方法，同时保持零样本图像-文本检索性能。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>通过KCCA在特征子空间进行对齐，并扩展至三视图联合优化，能有效增强CLIP的细粒度视觉感知，且不损害其零样本检索能力。</p></div>
   </details>
 </article>
   </div>

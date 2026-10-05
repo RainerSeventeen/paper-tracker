@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paper Tracker Daily Reading</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Crimson+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body class="theme-light">
+  <a class="skip-link" href="#main-content">跳转到正文</a>
+
+  <header class="page-header">
+    <div class="header-main">
+      <p class="header-topline">
+        POWER BY
+        <a class="powered-by-link" href="https://github.com/RainerSeventeen/paper-tracker" target="_blank" rel="noopener noreferrer">
+          RainerSeventeen/paper-tracker
+        </a>
+      </p>
+      <h1>文献阅读简报</h1>
+      <p class="header-meta">生成时间：2026-10-06 04:00:18</p>
+      <div class="report-stats">
+        <p><span>3</span> 个查询主题</p>
+        <p><span>9</span> 篇候选论文</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="expand-all" type="button" aria-label="展开所有论文详情">展开全部</button>
+      <button id="collapse-all" type="button" aria-label="折叠所有论文详情">折叠全部</button>
+      <button id="theme-toggle" type="button" aria-label="切换暗色模式">切换暗色模式</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" aria-label="查询导航">
+      <p class="sidebar-title">文献目录</p>
+      <p class="sidebar-note">按查询主题快速定位</p>
+    </aside>
+    <main id="main-content" class="content">
+      <section id="query-query" class="query-section" data-query-label="多模态大模型" data-paper-count="3">
+  <header class="query-header">
+    <h2>多模态大模型</h2>
+    <p class="query-count">3 papers</p>
+  </header>
+  <div class="query-content">
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 1</p>
+    <h3 class="paper-title">DEPICT: Scoring Text-to-Image Alignment by Answer Agreement</h3>
+    <p class="paper-authors">Vasco Ramos, Sandra Godinho Silva, Joao Magalhaes, Ricardo Rei, Pedro Henrique Martins</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-10-02</p>
+      <p class="meta-item"><span>Updated</span>2026-10-02</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>提出无需训练的DEPICT指标，通过用图像与纯文本答案的期望一致性替代固定参考答案，并结合整体分数，显著提升图像-文本对齐评估的细粒度准确性和泛化能力。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2610.03617v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2610.03617v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Image-text alignment is a core problem in computer vision with applications in caption evaluation, hallucination detection, data curation, and the benchmarking of text-to-image (T2I) generators. As T2I models improve, benchmarking has become demanding, requiring metrics capable of finding a series of issues like missing objects, swapped attributes, miscounts, and ignored negations. Recent work addresses this by fine-tuning evaluators on preference data or by prompting a vision-language model, either holistically with the caption or with decomposed verification questions. However, existing approaches fall short: fine-tuned metrics remain bound to one backbone and training distribution; holistic metrics miss fine-grained details; and decomposed metrics rely on a fixed-YES assumption that penalizes faithful images whenever that assumption fails. In contrast, we propose DEPICT, a training-free metric that replaces fixed reference answers with expected agreement between image-based and caption-only answers, weighting questions by how decisively the caption determines them. By replacing fixed references, our agreement rule increases negation accuracy from 19% to 88%. To recover the context lost during decomposition, DEPICT merges this agreement score with a holistic score. We evaluate DEPICT on five benchmarks and eleven backbones from three model families and find that it surpasses all training-free metrics and exceeds fine-tuned evaluators on two out of three human-correlation benchmarks.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有图像-文本对齐评估方法存在局限：微调指标受限于单一骨干和训练分布；整体指标忽略细粒度细节；分解指标依赖固定“是”假设，导致忠实图像被误罚。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>DEPICT是一种无需训练的方法，用图像答案与纯文本答案之间的期望一致性替代固定参考答案，并按文本对问题的决定性加权；同时将一致性分数与整体分数融合，以恢复分解时丢失的上下文。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在五个基准和三个模型家族的十一个骨干上评估，DEPICT超越所有无需训练指标，并在三个人类相关性基准中的两个上超过微调评估器；否定准确率从19%提升至88%。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>DEPICT通过期望一致性规则和整体-分解分数融合，有效解决了现有评估方法的不足，在无需训练的情况下实现了更准确、更鲁棒的图像-文本对齐评估。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 2</p>
+    <h3 class="paper-title">Llama-Mobile: Efficient 2.7-Bit Quantization of VLMs</h3>
+    <p class="paper-authors">Luka Ribar, Jeevan Bhoot, Douglas Orr</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-08-21</p>
+      <p class="meta-item"><span>Updated</span>2026-10-02</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.CV</strong> · cs.LG</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>提出一种无需原始训练数据的VLM量化框架，结合自生成训练数据和2.7比特/参数格式，在Arm CPU上高效推理，将Llama 3.2 11B Vision Instruct压缩至3.7 GB并保持VQA任务性能。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2608.21134v2" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2608.21134v2" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Deploying vision-language models (VLMs) on mobile devices is challenging due to their significant memory and compute requirements. We present a framework for quantizing VLMs for efficient inference on resource-constrained hardware. Our approach combines a quantization pipeline that uses the model itself to generate training data and does not require access to the training setup, with a novel 2.7-bit-per-parameter format supporting efficient execution on Arm CPUs. We validate our approach by compressing the Llama 3.2 11B Vision Instruct model to 3.7 GB with 8-bit activations, preserving strong performance on a set of standard visual question answering tasks.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>视觉语言模型在移动设备上部署面临巨大的内存和计算需求挑战。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>结合使用模型自身生成训练数据的量化流程（无需访问原始训练设置）与一种新颖的2.7比特/参数格式，支持在Arm CPU上高效执行。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>将Llama 3.2 11B Vision Instruct模型压缩至3.7 GB（8比特激活），在标准视觉问答任务上保持强劲性能。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>该框架能有效量化VLM，使其在资源受限硬件上高效推理，同时保持任务性能。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 3</p>
+    <h3 class="paper-title">World Action Planner: Generalizable Robot Decision-Making with Action-Conditioned World Models</h3>
+    <p class="paper-authors">Xiangcheng Zhang, Runhan Huang, Yilun Du</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-07-30</p>
+      <p class="meta-item"><span>Updated</span>2026-10-02</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.AI</strong> · cs.RO</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>提出World Action Planner，一种基于动作条件世界模型的机器人规划系统，通过粗到细的想象搜索生成可执行动作计划，在泛化任务上超越端到端策略和VLM规划器。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2607.27599v2" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2607.27599v2" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Building generalizable robot agents for diverse applications remains a fundamental challenge. While imitation learning-based policies can perform well in familiar training environments, they often struggle to generalize to novel scenes, layouts, and task compositions. To this end, we present World Action Planner, an agentic robot planning system in which the agent searches for and composes executable action plans through imagination with an action-conditioned world model. The search proceeds in a coarse-to-fine manner. First, the agent performs global action optimization by reasoning over imagined world-model rollouts to identify potential failures and refine the proposed action plan. It then performs local action search, comparing the imagined future outcomes of neighboring candidates to select the best action for execution. Across compositional long-horizon tasks, novel object layouts, and real-robot planning on novel tasks without expert demonstrations, World Action Planner consistently outperforms state-of-the-art end-to-end generalist policy models and VLM planners, demonstrating the effectiveness of world-model-based action search for generalizable robot decision making. Qualitative results and videos are available at https://worldactionplanner.github.io/</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>基于模仿学习的策略在训练环境中表现良好，但难以泛化到新场景、布局和任务组合，因此需要构建可泛化的机器人智能体。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>World Action Planner通过动作条件世界模型进行想象，以粗到细方式搜索和组合可执行动作计划：先进行全局动作优化，推理想象的世界模型推演以识别潜在失败并细化计划；再进行局部动作搜索，比较相邻候选的想象未来结果以选择最佳动作执行。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在组合长时程任务、新物体布局以及无专家演示的新任务真实机器人规划中，World Action Planner持续优于最先进的端到端通用策略模型和VLM规划器。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>基于世界模型的动作搜索能有效实现可泛化的机器人决策。</p></div>
+  </details>
+</article>
+  </div>
+</section>
+
+<section id="query-query-2" class="query-section" data-query-label="视频多模态理解" data-paper-count="3">
+  <header class="query-header">
+    <h2>视频多模态理解</h2>
+    <p class="query-count">3 papers</p>
+  </header>
+  <div class="query-content">
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 1</p>
+    <h3 class="paper-title">Behavior Pack Optimization for Video MLLM Post-Training</h3>
+    <p class="paper-authors">Zhaolu Kang, Shiyu Liu, Tailong Luo, Wei Zhang, Yingjie He, Lei Wei, Guansu Wang, Liang He, Siheng Wang, Guangyuan Dong, Jiaqi Su, Shuang Chen, Haoyu Ji, Qishi Zhan, Kaiyue Zhou</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-10-02</p>
+      <p class="meta-item"><span>Updated</span>2026-10-02</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>论文提出Behavior Pack Optimization（BPO），通过在一组反事实视图上联合评分行为包，替代单响应奖励，迫使视频多模态大模型依赖时序证据而非外观和语言先验，在多个基准上显著提升时序推理和弃权能力。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2610.03141v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2610.03141v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Video multimodal large language models (MLLMs) keep climbing video question answering benchmarks, yet shuffling the frames, masking the segment that supports the answer, or occluding the target object barely changes their predictions. The accuracy rests on appearance and language priors, not on the temporal evidence the question asks for. We trace this to the unit of post-training: rewards are computed on a single response to the original clip, so the model is never asked to behave consistently across views. We propose Behavior Pack Optimization (BPO), which replaces the single response with a behavior pack of outputs across counterfactual views chosen by question type, scored jointly. The pack reward asks for stability when the intervention is irrelevant, sensitivity when key evidence is removed, and abstention when no evidence remains. To keep this objective stable at small pack sizes, BPO uses an anchor-relative advantage: the response on the original view serves as a per-prompt reference instead of a group mean over mixed views. On TempCompass, MVBench, and NExT-QA, BPO improves the macro accuracy of Qwen2.5-VL-7B-Instruct by 4.7 pp, the temporal-hard subset by 7.8 pp, and abstention F1 by 20.0 pp over a budget-matched vanilla GRPO baseline from the same SFT checkpoint. The gains transfer to Video-MME, LongVideoBench, and to LLaVA-Video-7B; ablations confirm they follow the view sets, not the rollout count. We hope this pack-level perspective offers a useful starting point for the video MLLM and multimodal post-training community as the field moves toward evidence-grounded video reasoning.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有视频多模态大模型在视频问答基准上准确率虽高，但打乱帧序、遮蔽关键片段或遮挡目标物体几乎不改变预测，说明模型依赖外观和语言先验而非问题所需的时序证据。根源在于后训练以原始片段的单一响应计算奖励，模型从未被要求在不同视图下保持一致行为。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>提出Behavior Pack Optimization（BPO），将单一响应替换为按问题类型选择的反事实视图上的行为包，联合评分。包奖励要求：干预无关时保持稳定、关键证据移除时敏感、无证据时弃权。为在小包尺寸下稳定目标，采用锚点相对优势，以原始视图响应作为每提示参考，而非混合视图的组均值。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在TempCompass、MVBench和NExT-QA上，BPO使Qwen2.5-VL-7B-Instruct的宏准确率比预算匹配的vanilla GRPO基线提升4.7个百分点，时序困难子集提升7.8个百分点，弃权F1提升20.0个百分点。增益可迁移至Video-MME、LongVideoBench和LLaVA-Video-7B；消融实验证实增益源于视图集而非 rollout 数量。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>BPO从包级视角为视频多模态大模型和多模态后训练社区提供了有用起点，推动领域向证据接地的视频推理发展。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 2</p>
+    <h3 class="paper-title">GeoScaffold: Learning Compact Geometric Latents via Reconstruction for Efficient Vision-Language Navigation</h3>
+    <p class="paper-authors">Yixuan Jiang, Wentong Li, An Liu, Zihao Xin, Fulin Tang, Cong Leng, Yang Gao, Jian Cheng</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-10-02</p>
+      <p class="meta-item"><span>Updated</span>2026-10-02</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.RO</strong> · cs.CV</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>GeoScaffold通过训练时几何监督将深度、连通性和可通行性内化到Video-LLM策略中，推理时无需额外传感器或计算，在连续VLN基准上超越纯视觉导航器。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2610.02697v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2610.02697v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Recent vision-and-language navigation (VLN) systems increasingly adopt streaming Video-LLM policies that map egocentric RGB observations and instructions directly to low-level actions. Yet these policies inherit weak 3D geometric priors from 2D pretraining. Existing geometry-aware extensions charge a persistent inference-time price: depth sensors, 3D encoders, or per-step perception tool calls. We propose GeoScaffold, a geometric supervision framework that pays this price once, at training time, by internalizing geometry into the policy itself. It first learns a compact depth tokenizer on depth maps from the training trajectories and freezes it. It then fine-tunes the policy with a handful of learnable geometry query tokens, training their hidden states to reconstruct navigation-critical geometry such as depth, connectivity, and traversability. This supervision turns the query states into compact geometric latents for action decoding, and through the shared weights also internalizes geometry into the backbone&#x27;s own representations. Like a scaffold, the tokenizer, target generators, and reconstruction heads are discarded after training, leaving the backbone and action interface unchanged. Extensive experiments show that GeoScaffold consistently outperforms leading vision-only navigators on continuous VLN benchmarks, offering a practical paradigm for lightweight edge deployment of spatially aware embodied navigation models.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有流式Video-LLM导航策略从2D预训练继承的3D几何先验较弱，而现有几何感知扩展在推理时需持续付出深度传感器、3D编码器或逐步感知工具调用的代价。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>先基于训练轨迹的深度图学习紧凑深度分词器并冻结；再用少量可学习几何查询令牌微调策略，训练其隐藏状态重建导航关键几何（深度、连通性、可通行性），使查询状态成为动作解码的紧凑几何潜变量，并通过共享权重将几何内化到骨干表示；训练后丢弃分词器、目标生成器和重建头，保持骨干和动作接口不变。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>大量实验表明，GeoScaffold在连续VLN基准上持续优于领先的纯视觉导航器。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>GeoScaffold为空间感知具身导航模型的轻量边缘部署提供了一种实用范式。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 3</p>
+    <h3 class="paper-title">OneStreamer: Unifying Perception, Memory, and Proactive Response in Streaming Video Interaction</h3>
+    <p class="paper-authors">Xiangyu Zeng, Yuandong Yang, Zhiqiu Zhang, Yuhan Zhu, Xinhao Li, Qingyi Si, Dingyu Yao, Changlian Ma, Haoran Chen, Xinyu Chen, Yansong Shi, Junhao Zhou, Yifei Li, Jun Zhang, Chuanyu Qin, Chenxu Yang, Xinlei Yu, Kun Ouyang, Yuchen Shao, Qianshan Wei, Changhai Zhou, Jun Gao, Jiaqi Wang, Limin Wang</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-10-01</p>
+      <p class="meta-item"><span>Updated</span>2026-10-01</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>提出OneStreamer，通过共享主动生成过程联合学习查询无关的证据记录和任务响应，利用PHCM和PSTL实现流式视频理解，在八个基准上达到最佳，并构建了OneStreamer-1M数据集。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2610.01762v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2610.01762v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Streaming video LLMs must retain evidence before its relevance to future tasks is known and respond when sufficient evidence becomes available. The challenge is to form reusable factual memory without compromising real-time perception. We introduce OneStreamer, which jointly learns query-independent evidence recording and task response through a shared proactive generation process. Its Proactive Hierarchical Caption Memory (PHCM) produces time-grounded local-detail captions and summaries of completed events. Streaming caption targets supervise the interpretation of observed video prefixes during training. At inference, model-generated records complement a recent visual window, providing reusable factual context without revisiting historical visual features. Proactive State Transition Learning (PSTL) reduces the dominance of repeated waiting states by preserving supervision at all output anchors and selecting representative state-change and state-persistence tokens. We further develop a streaming data synthesis pipeline that aligns output content and timing with available evidence. Combining the resulting streaming captions and QA with cleaned open-source data yields OneStreamer-1M, a broad-coverage streaming video interaction dataset with over one million records spanning diverse tasks. Our 4B model achieves the best results among the compared methods across all eight evaluated streaming video understanding benchmarks. Ablations show that retaining generated captions improves historical QA without degrading real-time perception. PSTL also outperforms dense state supervision while supervising only 27.5% of annotated state tokens. Together, these results support proactive generation as a shared learning interface connecting perception, memory formation, and timely response in streaming video interaction.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>流式视频LLM需要在未知未来任务相关性时保留证据，并在足够证据出现时响应，挑战在于形成可重用的事实记忆而不损害实时感知。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>OneStreamer联合学习查询无关证据记录和任务响应，通过共享主动生成过程；其PHCM生成时间定位的局部细节描述和已完成事件的摘要，流式描述目标监督训练中对观察到的视频前缀的解释；推理时模型生成的记录补充近期视觉窗口，提供可重用事实上下文而无需重访历史视觉特征；PSTL通过保留所有输出锚点的监督并选择代表性状态变化和状态持续令牌，减少重复等待状态的主导；还开发了流式数据合成管道，对齐输出内容和时序与可用证据；结合流式描述和QA与清理的开源数据得到OneStreamer-1M数据集。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>4B模型在所有八个评估的流式视频理解基准上优于对比方法；消融实验表明保留生成的描述改善了历史QA而不降低实时感知；PSTL在仅监督27.5%标注状态令牌的情况下优于密集状态监督。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>这些结果支持主动生成作为共享学习接口，连接流式视频交互中的感知、记忆形成和及时响应。</p></div>
+  </details>
+</article>
+  </div>
+</section>
+
+<section id="query-rag" class="query-section" data-query-label="多模态检索与 RAG" data-paper-count="3">
+  <header class="query-header">
+    <h2>多模态检索与 RAG</h2>
+    <p class="query-count">3 papers</p>
+  </header>
+  <div class="query-content">
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 1</p>
+    <h3 class="paper-title">CLIMB: Confidence-Guided Complementary Evidence for Multimodal Retrieval-Augmented Generation</h3>
+    <p class="paper-authors">Hang Gao, Wujiang Xu, Zhixing Zhang, Kai Mei, Jingyi Yang, Dimitris N. Metaxas</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-10-02</p>
+      <p class="meta-item"><span>Updated</span>2026-10-02</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>提出免训练推理框架CLIMB，通过互补证据池和置信度控制细化，提升多模态RAG在知识密集型VQA中的性能。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2610.03421v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2610.03421v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Multimodal large language models (MLLMs) have shown strong visual reasoning abilities, but knowledge-intensive visual question answering often requires external textual evidence beyond the image and the model&#x27;s parametric knowledge. Existing multimodal RAG systems commonly rely on Top-$K$ retrieval or reranking, which may return redundant passages and provide limited control over whether an answer update is sufficiently supported by the retrieved evidence. We propose \textit{CLIMB}, a training-free inference-time framework for multimodal RAG. CLIMB first constructs a compact complementary evidence pool using an MMR-style objective that balances query relevance and passage-level redundancy. It then performs confidence-controlled refinement within this fixed pool: an R/E/C critic scores passages by relevance, evidence specificity, and cross-modal alignment, while an evidence-grounded confidence estimator accepts an updated answer only when the estimated confidence increases. This design provides a simple stopping criterion and reduces unnecessary refinement without modifying the underlying retriever or MLLM. Experiments on Encyclopedic-VQA and InfoSeek show that CLIMB consistently improves over retrieval-augmented multimodal baselines. Ablations further indicate that complementary pooling, critic-based scoring, and iterative confidence-controlled refinement each contribute to the final performance.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有多模态RAG系统依赖Top-K检索或重排序，可能返回冗余段落，且对答案更新是否被检索证据充分支持缺乏控制。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>CLIMB首先用MMR式目标构建紧凑互补证据池，平衡查询相关性与段落冗余；然后在固定池内进行置信度控制细化：R/E/C批评器从相关性、证据特异性和跨模态对齐评分段落，基于证据的置信度估计器仅在置信度增加时接受更新答案。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在Encyclopedic-VQA和InfoSeek上，CLIMB持续优于检索增强的多模态基线；消融实验表明互补池、批评器评分和迭代置信度控制细化各自贡献性能。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>CLIMB是一种免训练、推理时的多模态RAG框架，通过互补证据池和置信度控制细化，在不修改检索器或MLLM的情况下提升性能，并提供简单停止准则。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 2</p>
+    <h3 class="paper-title">AMBER: Multi-View Adaptive Budget Allocation for Listwise Vision-Language Reranking</h3>
+    <p class="paper-authors">Wenteng Chen, Jiachen Zhu, Rong Shan, Tianyi Xu, Yuxiang Chen, Congmin Zheng, Teng Wang, Junjie Wu, Weiwen Liu, Changwang Zhang, Weinan Zhang, Jun Wang, Jianghao Lin</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-10-02</p>
+      <p class="meta-item"><span>Updated</span>2026-10-02</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>AMBER是一个在线预算多视图重排序框架，通过动态分配VLM调用预算，利用Elo更新维护全局排序状态，并在候选视图构建和查询调度两级优化，在CIRR、CIRCO和PhotoBench上以相当预算取得最佳性能。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2610.02831v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2610.02831v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Vision-language models (VLMs) are powerful listwise rerankers for multimodal retrieval, but high inference costs restrict them to evaluating small local candidate views. Existing multi-call strategies rely on fixed schedules, wasting expensive VLM calls on uninformative candidate pairs and easy queries. To address this, we propose Adaptive Multi-view Budgeted Elo Reranking (AMBER), an online, budgeted multi-view reranking framework that dynamically optimizes global resource allocation. AMBER treats fragmented listwise VLM outputs as local tournaments, using continuous Elo updates to maintain a lightweight global ranking state. Building on this, it allocates computation at two levels: dynamically constructing candidate views with high score ambiguity, and scheduling queries to maximize expected information gain. We show that each Elo update corresponds to a stochastic gradient ascent step on the Bradley-Terry log-likelihood, and provide a submodular information-theoretic motivation for the query-level allocation strategy. Experiments on CIRR, CIRCO, and PhotoBench demonstrate that AMBER achieves the strongest overall performance among the compared multi-call VLM reranking methods under comparable VLM-call budgets, while remaining effective in lower-budget settings. Our code is publicly available at https://github.com/wnlfc/AMBER.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有视觉语言模型（VLM）作为多模态检索的列表重排序器性能强大，但推理成本高，只能评估小的局部候选视图。现有多调用策略依赖固定调度，浪费昂贵的VLM调用在无信息量的候选对和简单查询上。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>提出自适应多视图预算Elo重排序（AMBER），将碎片化的列表VLM输出视为局部锦标赛，用连续Elo更新维护轻量级全局排序状态。在两级分配计算：动态构建高分数模糊性的候选视图，并调度查询以最大化期望信息增益。理论证明每次Elo更新对应Bradley-Terry对数似然上的随机梯度上升步，并为查询级分配策略提供子模信息论动机。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在CIRR、CIRCO和PhotoBench上，AMBER在可比的VLM调用预算下，相比其他多调用VLM重排序方法取得最强的整体性能，并在更低预算设置下仍然有效。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>AMBER通过动态预算分配和Elo全局状态维护，有效提升了多视图VLM重排序的效率与效果，代码已公开。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 3</p>
+    <h3 class="paper-title">Revisiting Visual Representation Enhancement of VLMs via Kernel Canonical Correlation Analysis</h3>
+    <p class="paper-authors">Peilin Yang, Xiaoyu Liu, Jian Sun, Qinghua Tao</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-10-02</p>
+      <p class="meta-item"><span>Updated</span>2026-10-02</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.CV</strong> · cs.AI · cs.LG</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>本文指出KUEA中DINOv2对齐损失对细粒度视觉性能并非关键，提出基于KCCA的特征子空间对齐方法，并扩展为三视图3vKCCA，在ImageNet-1K上显著提升MMVP-VLM准确率且保持零样本检索性能。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2610.02718v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2610.02718v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Vision-language models such as CLIP exhibit strong semantic generalization, but remain limited in fine-grained visual perception. A recent work named KUEA presents a natural remedy by finetuning the image encoder under the supervision of the vision-centric DINOv2 to align their kernel matrices element-wisely, while regularizing the embeddings to remain close to the pretrained visual encoder for preserving image-text semantics in CLIP. However, we show that diminishing the role of the alignment loss to DINOv2 does not necessarily degrade its fine-grained visual performance, suggesting that the kernel-matrix discrepancy may be insufficient for further visual representation enhancement, motivating us to revisit the alignment formulation. In this work, we present a novel perspective to characterize representation alignment on feature subspaces through Kernel Canonical Correlation Analysis (KCCA), which maximizes the projection correlations. In optimization, we derive an efficient end-to-end training scheme upon KKT conditions, avoiding the eigenvalue problem in KCCA. Further, we extend our method into a 3-view formulation, i.e., 3vKCCA, in which the projections from the pretrained text encoder are also incorporated under a unified optimization framework for joint alignment. With CLIP ViT-L/14 on ImageNet-1K, our 3vKCCA improves the MMVP-VLM accuracy from 17.8 to 25.9, substantially outperforming the existing methods, and meanwhile maintains zero-shot image--text retrieval performance.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有视觉语言模型如CLIP语义泛化强但细粒度视觉感知弱；KUEA通过核矩阵逐元素对齐DINOv2来改善，但实验表明减弱该对齐损失不一定降低细粒度性能，说明核矩阵差异不足以进一步优化视觉表示，因此需要重新审视对齐公式。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>从特征子空间角度用核典型相关分析（KCCA）刻画表示对齐，最大化投影相关性；基于KKT条件推导高效端到端训练方案，避免求解KCCA特征值问题；进一步提出三视图3vKCCA，将预训练文本编码器的投影纳入统一优化框架进行联合对齐。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在ImageNet-1K上使用CLIP ViT-L/14，3vKCCA将MMVP-VLM准确率从17.8提升至25.9，大幅优于现有方法，同时保持零样本图像-文本检索性能。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>通过KCCA在特征子空间进行对齐，并扩展至三视图联合优化，能有效增强CLIP的细粒度视觉感知，且不损害其零样本检索能力。</p></div>
+  </details>
+</article>
+  </div>
+</section>
+    </main>
+  </div>
+
+  <script src="./assets/interactive.js"></script>
+</body>
+</html>
