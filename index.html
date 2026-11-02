@@ -21,7 +21,7 @@
         </a>
       </p>
       <h1>文献阅读简报</h1>
-      <p class="header-meta">生成时间：2026-10-27 04:00:20</p>
+      <p class="header-meta">生成时间：2026-11-03 04:00:19</p>
       <div class="report-stats">
         <p><span>3</span> 个查询主题</p>
         <p><span>9</span> 篇候选论文</p>
@@ -49,18 +49,18 @@
 <article class="paper-card" data-paper-card>
   <header class="paper-head">
     <p class="paper-index">No. 1</p>
-    <h3 class="paper-title">MiD-VLM: Detecting and Grounding Global Semantic Misinformation in Image-Caption Pairs</h3>
-    <p class="paper-authors">Tarunya Prasad, Bharatesh Chakravarthi</p>
+    <h3 class="paper-title">Think in 360°: Benchmarking and Bootstrapping Panoramic Video Reasoning</h3>
+    <p class="paper-authors">Lidong Lu, Lidong Zou, Xinyi Mao, Jiaxin Lv, Zhenquan Li, Liangrui Dong, Tong Lu, Guo Chen</p>
     <div class="paper-meta-inline">
       <p class="meta-item"><span>Source</span>arxiv</p>
-      <p class="meta-item"><span>Published</span>2026-10-23</p>
-      <p class="meta-item"><span>Updated</span>2026-10-23</p>
+      <p class="meta-item"><span>Published</span>2026-10-30</p>
+      <p class="meta-item"><span>Updated</span>2026-10-30</p>
     </div>
-    <p class="paper-tldr"><span>TLDR</span>该论文针对真实图像配误导性字幕的语义虚假信息，提出结合SigLIP与DINOv2特征并LoRA微调Qwen2-VL-7B的多模态模型，在DGM4+验证集上二分类F1达0.9679。</p>
+    <p class="paper-tldr"><span>TLDR</span>论文提出首个全景视频理解基准PanoVideoBench，并构建基于真实全景视频的推理数据集PanoVideoCoT，通过全景思维链监督微调与证据特权在线自蒸馏训练PanoVideoReasoner，在基准上达到55.7%，显著提升跨视角与时空证据整合能力。</p>
   </header>
   <div class="paper-links has-links">
-    <a class="paper-link" href="https://arxiv.org/pdf/2610.32967v1" target="_blank" rel="noopener noreferrer">PDF</a>
-    <a class="paper-link" href="https://arxiv.org/abs/2610.32967v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+    <a class="paper-link" href="https://arxiv.org/pdf/2610.42082v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2610.42082v1" target="_blank" rel="noopener noreferrer">Abstract</a>
   </div>
   <details class="paper-details" data-paper-details>
     <summary class="details-summary">
@@ -69,30 +69,29 @@
     </summary>
     <div class="detail-block">
       <h4>Abstract</h4>
-      <p>Semantic misinformation can arise when an authentic image is paired with a caption that changes or distorts its narrative. Because the image itself may contain no visible signs of manipulation, methods designed to detect pixel-level artifacts can miss these misleading image-caption pairs. We study this problem using DGM4+, a dataset designed to evaluate the detection of global scene and semantic inconsistencies. We propose a multimodal model that combines image-text representations from SigLIP with visual scene features from DINOv2 through a projection MLP, and adapts Qwen2-VL-7B using LoRA. The model jointly predicts whether an image-caption pair is authentic, identifies the manipulation type, and grounds the misleading caption tokens. On the DGM4+ validation split, the model achieves an F1 score of $0.9679$ for binary authenticity classification. These results suggest that parameter-efficient adaptation of vision-language models is promising for detecting semantic inconsistencies, while also motivating further work on precise token-level grounding.</p>
+      <p>A panoramic video captures all directions around the camera, but relevant evidence can appear in different directions and at different times. Understanding it requires models to connect observations across the viewing sphere and time. We introduce PanoVideoBench, the first manually annotated benchmark for comprehensive panoramic video understanding. Its 1,000 questions span five categories and 15 question types, with diagnostic annotations for target search and panoramic capabilities. Evaluation of 11 proprietary, open-source, and panoramic-specialized models identifies cross-view tracking and sphere-time evidence integration as their weakest capabilities. To strengthen these capabilities, we construct PanoVideoCoT, the first reasoning dataset grounded in real panoramic video, through sphere-time-grounded synthesis that converts verified panoramic observations and successful agentic explorations into 13,465 QA-CoT pairs. Starting from a general video MLLM, PanoVideoReasoner learns from this corpus through Panoramic CoT SFT and Evidence-Privileged On-Policy Self-Distillation, a panoramic instantiation of Vision-OPD&#x27;s OPSD in which the teacher uses verified perspective views to guide student-generated trajectories. It reaches 55.7% on PanoVideoBench, improving the backbone by 12.5 points and the previous SOTA by 2.6. The gains concentrate on the same spatial, cross-view, and temporal capabilities exposed by the benchmark, showing that grounded sphere-time supervision can equip a general video MLLM with panoramic reasoning.</p>
     </div>
-    <div class="detail-block"><h4>Motivation</h4><p>语义虚假信息可由真实图像与扭曲叙事的字幕配对产生，图像本身无像素级篡改痕迹，传统检测像素伪影的方法会漏检此类误导性图文对。</p></div>
-    <div class="detail-block"><h4>Method</h4><p>提出多模态模型：通过投影MLP融合SigLIP的图像-文本表示与DINOv2的视觉场景特征，并使用LoRA对Qwen2-VL-7B进行参数高效适配；模型联合预测图文对真实性、识别操纵类型并定位误导性字幕词元。</p></div>
-    <div class="detail-block"><h4>Result</h4><p>在DGM4+验证集上，二分类真实性分类的F1分数达到0.9679。</p></div>
-    <div class="detail-block"><h4>Conclusion</h4><p>视觉语言模型的参数高效适配在检测语义不一致方面具有前景，同时仍需进一步研究精确的词元级定位。</p></div>
+    <div class="detail-block"><h4>Motivation</h4><p>全景视频覆盖相机周围所有方向，相关证据可能出现在不同方向和不同时间，现有模型难以跨视角球面与时间连接观测；缺乏全面评估全景视频理解的基准，且跨视角跟踪与球面-时间证据整合是模型最弱能力。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>构建PanoVideoBench（1000题、5类15种题型、含目标搜索与全景能力诊断标注）；通过球面-时间 grounded 合成，将验证过的全景观测与成功的智能体探索转化为13,465个QA-CoT对，构建PanoVideoCoT；从通用视频MLLM出发，采用全景CoT监督微调与证据特权在线自蒸馏（Vision-OPD中OPSD的全景实例化，教师用验证过的透视视图引导学生生成轨迹）训练PanoVideoReasoner。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>PanoVideoReasoner在PanoVideoBench上达到55.7%，比骨干模型提升12.5个百分点，比此前SOTA提升2.6个百分点；增益集中在基准所暴露的空间、跨视角和时间能力上。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>基于球面-时间 grounded 的监督可使通用视频MLLM获得全景推理能力，验证了该训练范式的有效性。</p></div>
   </details>
 </article>
 <article class="paper-card" data-paper-card>
   <header class="paper-head">
     <p class="paper-index">No. 2</p>
-    <h3 class="paper-title">Beyond Discrete Tokens: Preserving Numerical Continuity in Medical Vision-Language Models</h3>
-    <p class="paper-authors">Dianye Huang, Jiamei Guo, Yue Zhou, Mingde Li, Yi Xiong, Wei Wang, Nassir Navab, Zhongliang Jiang</p>
+    <h3 class="paper-title">From Stages to States: Unified Iterative Reasoning for MLLMs</h3>
+    <p class="paper-authors">Chuang Yu, Xuefei Ma, Yuanhao Feng, Wuxiong Zeng, Bo Wang, Minghong Cai, Dongming Wu, Fei Zhou, Chen Tang, Wenwen Tong, Lewei Lu, Xiangyu Yue</p>
     <div class="paper-meta-inline">
       <p class="meta-item"><span>Source</span>arxiv</p>
-      <p class="meta-item"><span>Published</span>2026-10-23</p>
-      <p class="meta-item"><span>Updated</span>2026-10-23</p>
-      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.CV</strong> · cs.AI</p>
+      <p class="meta-item"><span>Published</span>2026-10-11</p>
+      <p class="meta-item"><span>Updated</span>2026-10-30</p>
     </div>
-    <p class="paper-tldr"><span>TLDR</span>提出HAD-VLM混合自回归-扩散框架，统一视觉语言模型实现提示条件定量超声测量，通过扩散过程预测连续测量值并后处理优化，在超声心动图、医学问答和X射线椎体测量任务上显著降低误差。</p>
+    <p class="paper-tldr"><span>TLDR</span>该论文提出ReState统一迭代推理框架，将多模态思维链从阶段驱动流程重构为状态驱动动态过程，通过统一推理状态建模和闭环推理状态学习消除推理碎片化与训练-推理状态差距，并构建VersaCoT-10K数据集，在多个基准上验证了其有效性和适应性。</p>
   </header>
   <div class="paper-links has-links">
-    <a class="paper-link" href="https://arxiv.org/pdf/2610.32948v1" target="_blank" rel="noopener noreferrer">PDF</a>
-    <a class="paper-link" href="https://arxiv.org/abs/2610.32948v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+    <a class="paper-link" href="https://arxiv.org/pdf/2610.15620v2" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2610.15620v2" target="_blank" rel="noopener noreferrer">Abstract</a>
   </div>
   <details class="paper-details" data-paper-details>
     <summary class="details-summary">
@@ -101,30 +100,30 @@
     </summary>
     <div class="detail-block">
       <h4>Abstract</h4>
-      <p>Objective: To develop a unified vision-language model for prompt-conditioned quantitative ultrasound measurement that addresses the mismatch between continuous measurement targets and discrete token-based numerical prediction. Methods: This article presents HAD-VLM, a hybrid autoregressive-diffusion framework that combines autoregressive text generation with continuous measurement prediction within a shared backbone. Visual prompt tuning adapts the vision encoder to ultrasound images. A diffusion process predicts a five-component representation comprising caliper endpoint coordinates and measurement length. A post-processing strategy combining the proposed coordinate-length consistency mechanism with ensemble prediction is introduced to refine measurement estimates. We evaluate four echocardiographic measurement tasks on EchoNet-LVH, with additional assessments of medical question answering and X-ray vertebral measurement. Results: HAD-VLM achieves mean absolute errors of 1.36, 2.77, 3.05, and 1.16 mm for IVSd, LVIDd, LVIDs, and LVPWd, respectively, reducing errors by 21.4-37.6\% relative to the Vicuna-based autoregressive baseline. It also outperforms fine-tuned Qwen3-VL and direct MLP regression across all four tasks. Medical question answering performance is preserved on the evaluated dataset. For X-ray vertebral measurement, HAD-VLM reduces mean absolute error from 11.4 to 6.7 pixels. Conclusion: Integrating autoregressive language generation with diffusion-based continuous prediction improves quantitative medical image measurement while retaining prompt-conditioned task flexibility. Significance: HAD-VLM provides a unified approach to combining language interaction with anatomically grounded numerical prediction for quantitative medical image analysis.</p>
+      <p>Multimodal Chain-of-Thought (MCoT) substantially enhances the complex reasoning capabilities of Multimodal Large Language Models (MLLMs) by explicitly modeling intermediate reasoning processes. However, most learning-based MCoT methods follow a stage-centric paradigm, where different reasoning behaviors are assigned to predefined stages and optimized separately. This results in fragmented reasoning and a training-inference reasoning-state gap. To address these limitations, we propose ReState, a unified iterative reasoning framework that reformulates multimodal reasoning from a stage-driven pipeline into a state-driven dynamic process. It comprises two complementary components: Unified Reasoning State Modeling (URSM) and Closed-Loop Reasoning-State Learning (CRSL). URSM unifies reasoning construction, correct reasoning preservation, and erroneous reasoning correction as reasoning-state transitions within a shared state space, enabling these heterogeneous reasoning behaviors to be learned jointly. CRSL further incorporates self-generated historical reasoning states during training and recursively updates the current state during inference, thereby mitigating the reasoning-state gap and enabling iterative self-refinement without requiring an additional reflection module, critic, or independent correction stage. Furthermore, we construct VersaCoT-10K, a high-quality CoT dataset spanning eight visual reasoning domains, which provides diverse supervision for multi-domain reasoning and reasoning-state refinement. Extensive experiments demonstrate that ReState exhibits strong adaptability across different MLLM backbones and achieves strong performance on multiple public reasoning benchmarks, supporting the shift from stage-centric reasoning toward state-centric reasoning. Our data and code are available at https://restate-project.github.io</p>
     </div>
-    <div class="detail-block"><h4>Motivation</h4><p>现有视觉语言模型在提示条件定量医学图像测量中，连续测量目标与离散token数值预测之间存在不匹配问题，需要统一框架同时支持语言交互和连续数值预测。</p></div>
-    <div class="detail-block"><h4>Method</h4><p>HAD-VLM在共享骨干中结合自回归文本生成与扩散连续测量预测；视觉提示调优适配超声图像；扩散过程预测包含卡尺端点坐标和测量长度的五分量表示；后处理采用坐标-长度一致性机制与集成预测精化估计。</p></div>
-    <div class="detail-block"><h4>Result</h4><p>在EchoNet-LVH上IVSd、LVIDd、LVIDs、LVPWd的平均绝对误差分别为1.36、2.77、3.05、1.16 mm，较Vicuna自回归基线降低21.4-37.6%，优于微调Qwen3-VL和直接MLP回归；医学问答性能保持；X射线椎体测量MAE从11.4降至6.7像素。</p></div>
-    <div class="detail-block"><h4>Conclusion</h4><p>将自回归语言生成与扩散连续预测相结合，可在保持提示条件任务灵活性的同时提升定量医学图像测量精度，为语言交互与解剖学数值预测的统一分析提供新途径。</p></div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有基于学习的多模态思维链方法多采用阶段中心范式，将不同推理行为分配给预定义阶段并分别优化，导致推理碎片化以及训练与推理之间的推理状态差距。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>提出ReState框架，包含统一推理状态建模（URSM）和闭环推理状态学习（CRSL）。URSM将推理构建、正确推理保持和错误推理纠正统一为共享状态空间中的状态转移，实现联合学习；CRSL在训练中引入自生成历史推理状态，推理时递归更新当前状态，实现迭代自精炼，无需额外反思模块、评论器或独立纠正阶段。同时构建VersaCoT-10K数据集，覆盖八个视觉推理领域。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>大量实验表明，ReState在不同MLLM骨干网络上具有强适应性，并在多个公开推理基准上取得强劲性能。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>ReState支持从阶段中心推理向状态中心推理的转变，有效缓解推理碎片化和训练-推理状态差距，实现无需额外模块的迭代自精炼。</p></div>
   </details>
 </article>
 <article class="paper-card" data-paper-card>
   <header class="paper-head">
     <p class="paper-index">No. 3</p>
-    <h3 class="paper-title">Semantic Anchoring for Robotic Action Representations</h3>
-    <p class="paper-authors">Yuan Xu, Youheng Shi, Chengyang Li, Wentao Zhu, Yizhou Wang</p>
+    <h3 class="paper-title">SUREON: A Benchmark and Vision-Language Model for Surgical Reasoning</h3>
+    <p class="paper-authors">Alejandra Perez, Anita Rau, Busisiwe Mlambo, Lee White, Aina Brunet, Juan Verde, Juan Caicedo, Joël L. Lavanchy, Adam Schmidt, Chinedu Nwoye, Omid Mohareri, Muhammad Abdullah Jamal</p>
     <div class="paper-meta-inline">
       <p class="meta-item"><span>Source</span>arxiv</p>
-      <p class="meta-item"><span>Published</span>2026-07-15</p>
-      <p class="meta-item"><span>Updated</span>2026-10-23</p>
-      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.RO</strong> · cs.AI · cs.CV</p>
+      <p class="meta-item"><span>Published</span>2026-03-06</p>
+      <p class="meta-item"><span>Updated</span>2026-10-30</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.CV</strong> · cs.AI</p>
     </div>
-    <p class="paper-tldr"><span>TLDR</span>该论文探究VLA模型微调中动作表征语义结构退化问题，提出将动作表征锚定到语义流形并分解为共享语义通道与私有通道的即插即用方法，在多个VLA骨干和仿真/真实基准上显著提升分布内与分布外泛化性能。</p>
+    <p class="paper-tldr"><span>TLDR</span>本文提出SUREON，一个用于评估视觉基础手术推理的视频问答数据集与基准，通过多模型精炼干扰项和对抗猜测器过滤语言捷径，发现现有模型手术视觉推理能力不足，并训练SUREON-VLM基线提升视觉基础。</p>
   </header>
   <div class="paper-links has-links">
-    <a class="paper-link" href="https://arxiv.org/pdf/2607.13597v3" target="_blank" rel="noopener noreferrer">PDF</a>
-    <a class="paper-link" href="https://arxiv.org/abs/2607.13597v3" target="_blank" rel="noopener noreferrer">Abstract</a>
+    <a class="paper-link" href="https://arxiv.org/pdf/2603.06570v2" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2603.06570v2" target="_blank" rel="noopener noreferrer">Abstract</a>
   </div>
   <details class="paper-details" data-paper-details>
     <summary class="details-summary">
@@ -133,12 +132,12 @@
     </summary>
     <div class="detail-block">
       <h4>Abstract</h4>
-      <p>Vision-Language-Action (VLA) models inherit rich semantic representations from pretrained Vision-Language Models, yet fine-tuning on limited robot demonstrations degrades this structure and undermines generalization. A fundamental question therefore arises: what constitutes a good action representation? Inspired by the mirror neuron theory&#x27;s insight that observation and execution share an intention-level encoding, we examine whether a robot&#x27;s action representations preserve the semantic structure captured by pretrained encoders. Systematic probing confirms that this structure erodes during finetuning, and that its quality synchronizes with both task success and out-of-distribution generalization. We further introduce a plug-and-play method that anchors action representations to a semantic manifold while decomposing representations into a shared semantic channel and a private channel, all discarded at inference, leaving the deployed model unchanged. Validated on different VLA backbones across simulation and real-world benchmarks, our method yields up to +18.7% on real-world in-distribution tasks and +21.5% on out-of-distribution generalization.</p>
+      <p>A capable surgical AI model should reason from visual evidence; yet, many existing surgical benchmarks can be partially solved without visual input, as models may exploit procedural priors or common anatomy-instrument interactions to infer answers from language alone. To address this, we introduce SUREON, a video question-answering (QA) dataset and benchmark designed to evaluate visually grounded surgical reasoning. Our pipeline generates QA pairs from narrated surgical academic videos, refines incorrect options using multiple models to reduce linguistic biases, and uses trained adversarial guessers to filter out questions answerable without visual evidence. The resulting dataset contains 76K training pairs covering 168 procedures and 10 specialties, alongside a benchmark of 340 questions across 10 categories verified by expert surgeons. Benchmarking leading commercial and open-source models shows that surgical visual reasoning remains largely unsolved--no model exceeds 53% accuracy and even expert surgeons reach only 64.9%. We also introduce SUREON-VLM, a baseline trained on our curated data that avoids language shortcuts, outperforms existing open-source models on SUREON, and matches larger specialist models on multiple standard surgical benchmarks. Our training ablations show that distractor refinement and blind curation strengthen visual grounding, increasing the multimodal gain from 8.7 to 29.1 percentage points while reducing the training set from 176.6K to 76K filtered samples. SUREON thus offers both a verified testbed for surgical visual reasoning and training data that strengthens visual grounding.</p>
     </div>
-    <div class="detail-block"><h4>Motivation</h4><p>VLA模型继承预训练视觉语言模型的丰富语义表征，但在有限机器人演示上微调会破坏该结构并削弱泛化能力。受镜像神经元理论中观察与执行共享意图级编码的启发，作者追问：何为好的动作表征？并检验机器人动作表征是否保留预训练编码器捕获的语义结构。</p></div>
-    <div class="detail-block"><h4>Method</h4><p>系统探测确认微调中语义结构侵蚀且其质量与任务成功和OOD泛化同步；提出即插即用方法，将动作表征锚定到语义流形，并分解为共享语义通道与私有通道，推理时全部丢弃，部署模型不变。</p></div>
-    <div class="detail-block"><h4>Result</h4><p>在不同VLA骨干、仿真与真实世界基准上验证，真实世界分布内任务最高提升+18.7%，分布外泛化最高提升+21.5%。</p></div>
-    <div class="detail-block"><h4>Conclusion</h4><p>好的动作表征应保留预训练语义结构；通过语义锚定与通道分解可在不改变部署模型的前提下显著提升VLA的分布内性能与分布外泛化能力。</p></div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有手术AI基准可部分不依赖视觉输入而通过语言先验或解剖-器械交互常识解答，无法真正评估视觉基础推理能力。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>从 narrated 手术学术视频生成QA对，用多模型精炼错误选项以减少语言偏差，训练对抗猜测器过滤无需视觉证据即可回答的问题；构建76K训练对（168种手术、10个专科）和340题专家验证基准（10类）；训练SUREON-VLM基线。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>领先商业和开源模型准确率均不超53%，专家外科医生仅64.9%；SUREON-VLM避免语言捷径，在SUREON上优于现有开源模型，在多个标准手术基准上匹配更大专科模型；消融显示干扰项精炼和盲策展将多模态增益从8.7提升至29.1个百分点，训练集从176.6K降至76K。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>SUREON提供了经验证的手术视觉推理测试平台和增强视觉基础的训练数据，表明手术视觉推理仍远未解决。</p></div>
   </details>
 </article>
   </div>
@@ -153,18 +152,19 @@
 <article class="paper-card" data-paper-card>
   <header class="paper-head">
     <p class="paper-index">No. 1</p>
-    <h3 class="paper-title">StateBridge: Phase- and Track-Grounded Reasoning for Synthetic-to-Real Traffic Video Captioning and VQA</h3>
-    <p class="paper-authors">Blessing Agyei Kyem, Richard Dzinyela, Joshua Kofi Asamoah, Eugene Denteh, Andrews Danyo, Solomon Owusu-Ansah, Dickson Gyimah Asiedu, Armstrong Aboah</p>
+    <h3 class="paper-title">Similar Scores, Opposite Failures: Human Correction as an Instrument for Video Caption Evaluation</h3>
+    <p class="paper-authors">Ankit Khedia, Astitva Jaiswal, Chaitanya Prasad, Anisha Raju, Aangeeras</p>
     <div class="paper-meta-inline">
       <p class="meta-item"><span>Source</span>arxiv</p>
-      <p class="meta-item"><span>Published</span>2026-10-22</p>
-      <p class="meta-item"><span>Updated</span>2026-10-22</p>
+      <p class="meta-item"><span>Published</span>2026-10-28</p>
+      <p class="meta-item"><span>Updated</span>2026-10-28</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.CV</strong> · cs.CL</p>
     </div>
-    <p class="paper-tldr"><span>TLDR</span>StateBridge是一个仅用合成数据训练的交通视频-语言框架，通过相位感知片段构建、轨迹摘要和结构化提示，结合事实锁定字幕融合与证据多样化VQA共识，在AI City Challenge 2026 Track 2上取得55.4679的官方S2分数。</p>
+    <p class="paper-tldr"><span>TLDR</span>该论文检验了面向单句图像描述的视频描述评估指标在密集、多窗口视频描述任务上是否能反映人类判断，发现参考重叠指标（如BLEU-4、CIDEr风格余弦）无法区分评审接受与拒绝的描述，AUC接近随机水平；评审粒度（整体概览 vs. 逐窗口）显著影响错误检测率（2.7% vs. 12.8%）；模型准确率差异在多重校正后大多不显著，且准确率与严重度排序不一致。作者主张评估应记录错误类型而非仅统计频率。</p>
   </header>
   <div class="paper-links has-links">
-    <a class="paper-link" href="https://arxiv.org/pdf/2610.31898v1" target="_blank" rel="noopener noreferrer">PDF</a>
-    <a class="paper-link" href="https://arxiv.org/abs/2610.31898v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+    <a class="paper-link" href="https://arxiv.org/pdf/2610.38511v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2610.38511v1" target="_blank" rel="noopener noreferrer">Abstract</a>
   </div>
   <details class="paper-details" data-paper-details>
     <summary class="details-summary">
@@ -173,29 +173,29 @@
     </summary>
     <div class="detail-block">
       <h4>Abstract</h4>
-      <p>Traffic safety videos provide rich evidence for understanding interactions between pedestrians and vehicles, but synthetic-to-real evaluation makes this setting challenging because models must learn from simulated scenes and generalize to real-world traffic. In this work, we present StateBridge, a traffic video-language framework designed to operate under this synthetic-only training protocol. Our approach uses phase-aware clip construction, pedestrian and vehicle track summaries, and structured prompts to ground vision-language models in stable traffic evidence rather than appearance alone. We fine-tune public vision-language models on synthetic captioning and visual question answering examples, then combine their outputs through fact-locked caption fusion and evidence-diverse VQA consensus to improve consistency across actor roles, behavioral phases, and question types. StateBridge achieves an official S2 score of 55.4679 on AI City Challenge 2026 Track 2 using only synthetic training data. These results demonstrate the effectiveness of structured evidence transfer for traffic safety captioning and visual question answering.</p>
+      <p>Video captioning models are increasingly evaluated with metrics designed for single-sentence image captions. We test whether those metrics recover human judgement on dense, multi-window video description, and find that they do not. Six frontier models captioned 196 short clips. Trained annotators post-edited every caption against a failure taxonomy fixed before annotation, once as a whole-clip overview and once window by window, and a quality-control reviewer checked each annotation, yielding 1,144 overview verdicts and 4,672 window verdicts. Reference-overlap metrics do not separate the captions reviewers accepted from those they rejected: BLEU-4 reaches an AUC of 0.510 and a CIDEr-style tf-idf cosine 0.528, and restricting references to reviewer corrections leaves BLEU-4 at 0.479 (95% CI 0.431-0.529), indistinguishable from chance. Review granularity changes what is detected. The same annotators record camera and shot errors on 2.7% of captions when reading the overview and on 12.8% when reading window by window, a 4.7x gap that holds across every robustness check we ran, on the mode most likely to need a near-total rewrite. Correct-overview rates span 54.1-72.7%, but only 4 of 15 pairwise gaps survive Bonferroni correction (5 after adjusting for reviewer and clip effects), and accuracy and derived severity order the models differently. Models with statistically indistinguishable accuracy have sharply different failure profiles, which no single scalar shows. We argue that caption evaluation should record what was wrong rather than only how often, and we report the taxonomy, the per-model profiles, the corpus properties that predict difficulty, and the code that regenerates every number in the paper.</p>
     </div>
-    <div class="detail-block"><h4>Motivation</h4><p>交通视频为理解行人与车辆交互提供丰富证据，但合成到真实的评估设置具有挑战性，模型必须从模拟场景学习并泛化到真实交通。现有方法可能过度依赖外观而非稳定交通证据。</p></div>
-    <div class="detail-block"><h4>Method</h4><p>采用相位感知片段构建、行人和车辆轨迹摘要及结构化提示，使视觉-语言模型基于稳定交通证据而非仅外观；在合成字幕和视觉问答样本上微调公开视觉-语言模型；通过事实锁定字幕融合和证据多样化VQA共识组合输出，提升跨行为角色、行为阶段和问题类型的一致性。</p></div>
-    <div class="detail-block"><h4>Result</h4><p>仅使用合成训练数据，在AI City Challenge 2026 Track 2上获得官方S2分数55.4679。</p></div>
-    <div class="detail-block"><h4>Conclusion</h4><p>结果表明结构化证据迁移对于交通安全字幕和视觉问答是有效的。</p></div>
+    <div class="detail-block"><h4>Motivation</h4><p>视频描述模型越来越多地使用为单句图像描述设计的指标进行评估，但这些指标是否适用于密集、多窗口视频描述任务、能否反映人类判断尚不清楚。论文旨在检验现有指标在视频描述评估中的有效性，并揭示其局限性。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>六种前沿模型为196个短视频片段生成描述。训练有素的标注者依据预先固定的失败分类法对每个描述进行后编辑，分别以整体片段概览和逐窗口两种粒度进行标注，并由质量控制审核员检查每份标注，最终获得1,144条概览判定和4,672条窗口判定。通过计算BLEU-4、CIDEr风格tf-idf余弦等参考重叠指标的AUC，比较评审接受与拒绝的描述，并分析评审粒度对错误检测的影响，以及模型间准确率差异的统计显著性（Bonferroni校正）。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>参考重叠指标无法区分评审接受与拒绝的描述：BLEU-4的AUC为0.510，CIDEr风格tf-idf余弦为0.528；仅使用评审修正作为参考时BLEU-4为0.479（95% CI 0.431-0.529），与随机无异。评审粒度影响检测结果：同一批标注者在整体概览下记录相机和镜头错误的比例为2.7%，逐窗口下为12.8%，相差4.7倍，且在所有稳健性检验中均成立。正确概览率在54.1%-72.7%之间，但15对模型比较中仅4对（调整评审和片段效应后5对）通过Bonferroni校正；准确率与派生严重度对模型的排序不同。统计上准确率无显著差异的模型具有截然不同的失败特征，单一标量无法体现。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>视频描述评估不应仅依赖为单句图像描述设计的参考重叠指标，而应记录错误类型（what was wrong）而非仅统计错误频率（how often）。论文发布了失败分类法、各模型失败特征、预测难度的语料属性以及可复现所有数字的代码。</p></div>
   </details>
 </article>
 <article class="paper-card" data-paper-card>
   <header class="paper-head">
     <p class="paper-index">No. 2</p>
-    <h3 class="paper-title">Retrieval-Augmented Online Textual Memory for Episodic Memory Video Question Answering</h3>
-    <p class="paper-authors">Raffaele Cali, Giuseppe Lando, Rosario Forte, Antonino Furnari</p>
+    <h3 class="paper-title">CodeCap-Bench: Can Code Serve as a Good Video Caption?</h3>
+    <p class="paper-authors">Jiafu Tang, Yifan Xu, Eric Tang, Junjie Zhao, Shipeng Luo, Te Sun, Haoxuan Hu, Yiyan Ji, Xinlong Chen, Zihao Wang, Yang Shi, Yuanxing Zhang, Pengfei Wan, Jiaheng Liu</p>
     <div class="paper-meta-inline">
       <p class="meta-item"><span>Source</span>arxiv</p>
-      <p class="meta-item"><span>Published</span>2026-10-22</p>
-      <p class="meta-item"><span>Updated</span>2026-10-22</p>
+      <p class="meta-item"><span>Published</span>2026-10-27</p>
+      <p class="meta-item"><span>Updated</span>2026-10-27</p>
     </div>
-    <p class="paper-tldr"><span>TLDR</span>本文系统研究了检索在基于在线文本记忆的第一人称视频问答中的作用，发现最佳配置Parent在仅暴露少量文本记忆时达到56.4%准确率，但增加检索预算虽提升召回却可能因干扰项降低准确率，表明检索增强记忆应优化证据可靠性而非仅召回。</p>
+    <p class="paper-tldr"><span>TLDR</span>该论文提出以可执行代码作为视频字幕的补充表示，通过图形基元、布局规则和时间函数来保留视觉信息，并在下游问答和视频重建任务中与自然语言字幕对比，同时构建CodeCap-Bench基准评估多模态大模型的代码字幕生成能力。</p>
   </header>
   <div class="paper-links has-links">
-    <a class="paper-link" href="https://arxiv.org/pdf/2610.31284v1" target="_blank" rel="noopener noreferrer">PDF</a>
-    <a class="paper-link" href="https://arxiv.org/abs/2610.31284v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+    <a class="paper-link" href="https://arxiv.org/pdf/2610.37341v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2610.37341v1" target="_blank" rel="noopener noreferrer">Abstract</a>
   </div>
   <details class="paper-details" data-paper-details>
     <summary class="details-summary">
@@ -204,31 +204,30 @@
     </summary>
     <div class="detail-block">
       <h4>Abstract</h4>
-      <p>Long egocentric videos pose a central challenge for multimodal language models: the visual stream must be compressed into a memory representation that can be searched efficiently while still preserving the evidence needed for question answering. Building on an online textual-memory framework in which first-person videos are converted into temporally grounded captions, this work systematically studies the role of retrieval in episodic-memory video question answering. We evaluate how different retrieval units, query formulations, context budgets, and reranking strategies affect multiple-choice answering on QAEgo4D-Closed, isolating retrieval as the main variable while keeping the underlying generated memory fixed.
-  Our best configuration, Parent, matches fine-grained caption subchunks, then provides their full parent captions to the reasoner. It achieves 56.4 % accuracy, matching strong full-memory and retrieval baselines while exposing only a small fraction of the textual memory at question time. More importantly, our analysis shows that better temporal coverage does not necessarily translate into better answers: increasing the retrieval budget improves temporal Hit@K and Recall@K, but can reduce accuracy by introducing visually plausible distractors and uncertain caption evidence. These findings suggest that retrieval-augmented egocentric memory should not be optimized only for evidence recall, but also for the reliability, specificity, and answer-discriminative value of the retrieved context. The study motivates more structured episodic memories that move beyond raw caption retrieval toward evidence-aware representations for long-form egocentric reasoning.</p>
+      <p>Video captioning aims to preserve visual information through compact descriptions, predominantly using natural language. However, precisely expressing fine-grained spatial structures and temporal dynamics in natural language often leads to lengthy and potentially ambiguous descriptions. In this work, we explore Code as Video Caption, a paradigm where executable programs serve as a complementary representation of visual content through graphical primitives, layout rules, and functions of time. To examine whether code captions effectively preserve video information, we compare them with natural language captions on downstream question answering and video reconstruction tasks. Our results show that code captions achieve superior reasoning accuracy and reconstruction fidelity. Despite these advantages, realizing the potential of code captioning depends on whether current multimodal large language models (MLLMs) can generate faithful code captions. To systematically assess this capability, we introduce CodeCap-Bench, which comprises 323 videos spanning five categories of structured 2D content, along with fine-grained annotations and a multi-level evaluation framework. Extensive experiments reveal that while leading proprietary MLLMs demonstrate promising code captioning capabilities, they still struggle to faithfully capture complex temporal dynamics, with open-source models lagging substantially behind.</p>
     </div>
-    <div class="detail-block"><h4>Motivation</h4><p>长第一人称视频对多模态语言模型构成挑战：视觉流需压缩为可高效搜索的记忆表示，同时保留问答所需证据。现有在线文本记忆框架将视频转为时序字幕，但检索在情景记忆视频问答中的作用尚未被系统研究。</p></div>
-    <div class="detail-block"><h4>Method</h4><p>基于在线文本记忆框架，将第一人称视频转换为时序字幕，固定底层生成记忆，系统评估不同检索单元、查询形式、上下文预算和重排序策略对QAEgo4D-Closed多选题回答的影响，隔离检索作为主要变量。最佳配置Parent先匹配细粒度字幕子块，再向推理器提供其完整父字幕。</p></div>
-    <div class="detail-block"><h4>Result</h4><p>最佳配置Parent达到56.4%准确率，匹配强全记忆和检索基线，同时仅暴露小部分文本记忆。分析表明，增加检索预算提升时间Hit@K和Recall@K，但可能因引入视觉上合理的干扰项和不确定字幕证据而降低准确率。</p></div>
-    <div class="detail-block"><h4>Conclusion</h4><p>检索增强的第一人称记忆不应仅优化证据召回，还应考虑检索上下文的可靠性、具体性和答案区分价值。研究推动超越原始字幕检索，转向证据感知表示的结构化情景记忆，以支持长时第一人称推理。</p></div>
+    <div class="detail-block"><h4>Motivation</h4><p>自然语言在精确表达视频中的细粒度空间结构和时间动态时往往导致描述冗长且可能产生歧义，因此需要一种更紧凑、无歧义的互补表示来保留视觉信息。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>提出“代码作为视频字幕”范式，用可执行程序（图形基元、布局规则、时间函数）表示视频内容；在问答和视频重建任务上与自然语言字幕对比；构建CodeCap-Bench基准（323个视频、五类结构化2D内容、细粒度标注和多级评估框架）系统评估MLLMs生成忠实代码字幕的能力。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>代码字幕在推理准确性和重建保真度上优于自然语言字幕；领先的专有MLLMs展现出有前景的代码字幕能力，但仍难以忠实捕捉复杂时间动态，开源模型显著落后。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>代码字幕能更有效地保留视频信息，但其潜力取决于MLLMs能否生成忠实的代码字幕；当前模型在复杂时间动态建模上仍有明显不足，需进一步研究提升。</p></div>
   </details>
 </article>
 <article class="paper-card" data-paper-card>
   <header class="paper-head">
     <p class="paper-index">No. 3</p>
-    <h3 class="paper-title">OACap: Caption-Guided Active Observation for Detailed Video Captioning</h3>
-    <p class="paper-authors">Hao Shi, Hong Yan, Xiaoyang Zhang, Chao Huang, Qing Cui, Jun Zhou</p>
+    <h3 class="paper-title">MarineLife-16K: An Attribute-Rich Video-Text Dataset for Motion-Aware Marine Video Understanding</h3>
+    <p class="paper-authors">Quang-Trung Truong, Thanh-Nghia Nguyen, Phu-Phong Vo, Jaeyeon Kim, Cheng Chen, Jie Zhang, Binh-Son Hua, Duc Thanh Nguyen, Ivor Tsang, Sai-Kit Yeung</p>
     <div class="paper-meta-inline">
       <p class="meta-item"><span>Source</span>arxiv</p>
-      <p class="meta-item"><span>Published</span>2026-10-21</p>
-      <p class="meta-item"><span>Updated</span>2026-10-23</p>
-      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.CV</strong> · cs.CL · cs.MA · cs.MM</p>
+      <p class="meta-item"><span>Published</span>2026-10-24</p>
+      <p class="meta-item"><span>Updated</span>2026-10-29</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.CV</strong> · cs.AI</p>
     </div>
-    <p class="paper-tldr"><span>TLDR</span>提出以字幕为中心的智能体OACap，通过自适应观察请求和时空工具获取证据并迭代修正字幕，同时引入FSCap-Bench基准，用CSFS和CSRS分别评估事实性与语义保真度。</p>
+    <p class="paper-tldr"><span>TLDR</span>该论文构建了一个大规模海洋视频-文本数据集，包含2000个视频-文本对和13种属性标注，生成16080个视频问答对，并基准测试了专有和开源视频LLM，发现专有模型表现更优，但模型在复杂相机运动和静态相机推理上存在不足。</p>
   </header>
   <div class="paper-links has-links">
-    <a class="paper-link" href="https://arxiv.org/pdf/2610.29327v3" target="_blank" rel="noopener noreferrer">PDF</a>
-    <a class="paper-link" href="https://arxiv.org/abs/2610.29327v3" target="_blank" rel="noopener noreferrer">Abstract</a>
+    <a class="paper-link" href="https://arxiv.org/pdf/2610.33478v2" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2610.33478v2" target="_blank" rel="noopener noreferrer">Abstract</a>
   </div>
   <details class="paper-details" data-paper-details>
     <summary class="details-summary">
@@ -237,12 +236,12 @@
     </summary>
     <div class="detail-block">
       <h4>Abstract</h4>
-      <p>Unlike question answering, where a query specifies a perceptual target, open-ended detailed captioning must determine what evidence to acquire and how to integrate it into a coherent global description. We propose Observation-Adaptive Video Captioner (OACap), a caption-centered agent that turns unsupported or missing information into targeted observation requests, uses spatiotemporal tools to acquire evidence, and iteratively verifies and revises the caption. OACap captions consistently improve performance across general video-understanding benchmarks using a fixed text-only reader. To better diagnose the information they preserve, we introduce Factual-Semantic Captioning Bench (FSCap-Bench). Its Core-Support Factuality Score (CSFS) combines claim precision with importance-aware fact coverage and responds as expected to four controlled perturbation types on 93.0-98.3% of valid caption pairs. Its Cross-Modal Semantic Round-Trip Score (CSRS) measures semantic preservation through a video-caption-video-caption round trip by matching atomic facts from source and recovered captions. Together, they connect downstream textual-memory utility with factual and semantic preservation.</p>
+      <p>Marine video understanding is crucial for a wide range of real-world applications. However, existing marine video datasets suffer from limitations, including the limited number of data samples, fine-grained text descriptions, and detailed visual attributes. To address these limitations, we introduce a large-scale, video-text dataset featuring rich, in-the-wild visual attributes tailored for complex marine environments. Our dataset comprises 2,000 video-text pairs annotated with 13 attributes covering up to four objects per scene, object visual/geometric properties, behaviors, environmental context, and camera motion, spanning diverse lighting conditions, times of day, and 7 countries. From these annotations, we generate 16,080 video-question pairs (12,080 multiple-choice, 4,000 open-ended). Furthermore, we benchmark both proprietary and open-source video-LLM models on video question answering and video captioning tasks. We find that (i) proprietary models often achieves superior performances; (ii) VLMs handle object motion well but struggle with complex camera motion; (iii) closed-source models struggle to perceive camera motion; and (iv) VLMs struggle to reason in static cameras.</p>
     </div>
-    <div class="detail-block"><h4>Motivation</h4><p>开放式详细视频字幕与问答不同，查询未指定感知目标，模型需自主决定获取哪些证据及如何整合为连贯的全局描述；现有方法缺乏对缺失或不支持信息的主动获取与验证机制。</p></div>
-    <div class="detail-block"><h4>Method</h4><p>OACap将不支持或缺失的信息转化为定向观察请求，利用时空工具获取证据，并迭代验证与修订字幕；提出FSCap-Bench，其CSFS结合声明精确率与重要性感知事实覆盖率，CSRS通过视频-字幕-视频-字幕往返匹配原子事实衡量语义保持。</p></div>
-    <div class="detail-block"><h4>Result</h4><p>OACap在固定纯文本阅读器下于通用视频理解基准上持续提升性能；CSFS在93.0-98.3%的有效字幕对上按预期响应四类受控扰动。</p></div>
-    <div class="detail-block"><h4>Conclusion</h4><p>OACap与FSCap-Bench将下游文本记忆效用与事实性和语义保持性相连接，为诊断字幕所保留的信息提供了有效评估手段。</p></div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有海洋视频数据集存在数据样本有限、细粒度文本描述不足和视觉属性细节缺乏等局限，难以满足复杂海洋环境下的视频理解应用需求。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>构建大规模、野外视频-文本数据集，包含2000个视频-文本对，标注13种属性（覆盖每场景最多四个对象、对象视觉/几何属性、行为、环境上下文和相机运动），涵盖多样光照、时段和7个国家；基于标注生成16080个视频-问题对（12080个多选、4000个开放）；并在视频问答和视频描述任务上基准测试专有和开源视频LLM。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>专有模型通常表现更优；VLM擅长处理对象运动但难以处理复杂相机运动；闭源模型难以感知相机运动；VLM在静态相机下推理困难。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>该数据集和基准揭示了当前视频LLM在海洋视频理解中的优势与局限，为未来复杂海洋环境下的视频理解研究提供了数据基础和评估方向。</p></div>
   </details>
 </article>
   </div>
@@ -257,19 +256,18 @@
 <article class="paper-card" data-paper-card>
   <header class="paper-head">
     <p class="paper-index">No. 1</p>
-    <h3 class="paper-title">Closing the Modality Gap via Simplex-Constrained Representations</h3>
-    <p class="paper-authors">Shubham Gupta, Siva Reddy, Perouz Taslakian, Valentina Zantedeschi, Cem Subakan</p>
+    <h3 class="paper-title">Pix2Evidence: A Multimodal RAG System for Text and Visual Evidence</h3>
+    <p class="paper-authors">Ziniu Liu, Xiaoyang Chen, Dezhi Ye, Jie Liu, Jin Ma, Hao Deng</p>
     <div class="paper-meta-inline">
       <p class="meta-item"><span>Source</span>arxiv</p>
-      <p class="meta-item"><span>Published</span>2026-10-23</p>
-      <p class="meta-item"><span>Updated</span>2026-10-23</p>
-      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.AI</strong> · cs.CV</p>
+      <p class="meta-item"><span>Published</span>2026-10-30</p>
+      <p class="meta-item"><span>Updated</span>2026-10-30</p>
     </div>
-    <p class="paper-tldr"><span>TLDR</span>该论文提出将多模态对比模型的嵌入空间从单位球面改为概率单纯形，通过几何结构先验和总变差相似度来消除模态间隙，在五个检索基准上将质心ℓ2间隙降低97–99%，并保持或超越标准模型的检索性能。</p>
+    <p class="paper-tldr"><span>TLDR</span>Pix2Evidence 是一种多模态 RAG 系统，通过将截图瓦片与其转录文本融合编码，并利用视觉语言教师模型指导证据选择，在多个 Wikipedia QA 基准上优于现有方法。</p>
   </header>
   <div class="paper-links has-links">
-    <a class="paper-link" href="https://arxiv.org/pdf/2610.32890v1" target="_blank" rel="noopener noreferrer">PDF</a>
-    <a class="paper-link" href="https://arxiv.org/abs/2610.32890v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+    <a class="paper-link" href="https://arxiv.org/pdf/2610.41335v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2610.41335v1" target="_blank" rel="noopener noreferrer">Abstract</a>
   </div>
   <details class="paper-details" data-paper-details>
     <summary class="details-summary">
@@ -278,31 +276,29 @@
     </summary>
     <div class="detail-block">
       <h4>Abstract</h4>
-      <p>While multimodal contrastive models like CLIP and CLAP successfully learn shared representations, their embeddings typically exhibit a persistent \emph{modality gap}. We propose addressing this separation through a purely geometric approach: changing the embedding domain from the unit sphere, $S^{d-1}$, to the probability simplex, $Δ^{d-1}$. Although both manifolds share the same intrinsic dimension, the simplex acts as a structural prior; its nonnegative, unit-mass constraints serve as a cross-modal calibration that forces both modalities to ground themselves in the same coordinate system. By attaching lightweight softmax adapters and using Total Variation similarity, we reduce the centroid $\ell_2$ gap by 97--99\% across five multimodal retrieval benchmarks. This confirms that simplicial geometry induces genuine semantic alignment, matching or exceeding the retrieval performance of standard unconstrained models.</p>
+      <p>Retrieval-augmented generation (RAG) over visually rich documents must find both relevant content and the evidence that supports an answer. Screenshot retrieval preserves images and page structure, but written facts within screenshots also need to be searchable. Moreover, topical relevance alone does not identify which retrieved tile contains evidence for the answer. We introduce Pix2Evidence, a multimodal RAG system that encodes each screenshot tile together with its available transcription into a single fused image--text representation, so that layout and readable text are considered jointly during retrieval. To guide evidence selection, a vision-language teacher describes the visible content that supports each training question. We use these descriptions to adapt the retriever, then rerank the retrieved candidates before answer generation. Extensive experiments demonstrate that Pix2Evidence outperforms state-of-the-art methods. Across five widely-used Wikipedia QA benchmarks, the non-reranked Pix2Evidence leads the main comparison in answer accuracy on four. On MMSearch, it reaches 26.0\%, 4.4 percentage points above PixelRAG. We will release the code and share derived data where licensing and privacy reviews permit.</p>
     </div>
-    <div class="detail-block"><h4>Motivation</h4><p>CLIP、CLAP等多模态对比模型虽能学习共享表示，但其嵌入存在持续的模态间隙，即不同模态的表示在嵌入空间中彼此分离，影响跨模态对齐。</p></div>
-    <div class="detail-block"><h4>Method</h4><p>将嵌入域从单位球面S^{d-1}改为概率单纯形Δ^{d-1}，利用其非负、单位质量约束作为跨模态校准的结构先验；附加轻量级softmax适配器，并采用总变差相似度进行对齐。</p></div>
-    <div class="detail-block"><h4>Result</h4><p>在五个多模态检索基准上，质心ℓ2间隙降低97–99%，检索性能匹配或超过标准无约束模型。</p></div>
-    <div class="detail-block"><h4>Conclusion</h4><p>单纯形几何能诱导真正的语义对齐，验证了通过改变嵌入流形结构来消除模态间隙的几何方法的有效性。</p></div>
+    <div class="detail-block"><h4>Motivation</h4><p>在视觉丰富文档上的 RAG 需要同时找到相关内容和支持答案的证据；截图检索保留图像和页面结构，但截图中的文字事实也需可搜索；仅靠主题相关性无法确定哪个检索瓦片包含答案证据。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>将每个截图瓦片与其可用转录编码为单一融合的图像-文本表示，使布局和可读文本在检索中联合考虑；使用视觉语言教师模型描述支持每个训练问题的可见内容，用这些描述适配检索器，然后对检索候选重排序，再进行答案生成。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在五个广泛使用的 Wikipedia QA 基准上，未重排序的 Pix2Evidence 在四个基准的答案准确率上领先主要对比；在 MMSearch 上达到 26.0%，比 PixelRAG 高 4.4 个百分点。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>Pix2Evidence 通过融合图像-文本表示和证据引导的检索适配与重排序，有效提升了视觉丰富文档上的多模态 RAG 性能，并将发布代码和共享衍生数据（在许可和隐私审查允许的情况下）。</p></div>
   </details>
 </article>
 <article class="paper-card" data-paper-card>
   <header class="paper-head">
     <p class="paper-index">No. 2</p>
-    <h3 class="paper-title">GeoLEON-CLIP: Graph-Anchored Multimodal Contrastive Learning for Geographic Region Representation</h3>
-    <p class="paper-authors">Radoslaw Malek, Szymon Soltysiak, Aleksandra Kawala-Sterniuk, Piotr Szymanski</p>
+    <h3 class="paper-title">Knowledge-structured and evidence-aware semantic self-distillation for glomerular pathology foundation model</h3>
+    <p class="paper-authors">Qiming He, Jing Li, Zihan Wang, Tian Guan, Yifei Ma, Zimo Zhao, Yanxia Wang, Hongjing Chen, Yexing Zhang, Yizhi Wang, Xinrui Chen, Xitong Ling, Minxi Ouyang, Yujie Xie, Lianghui Zhu, Yiqing Liu, Qingxia Hou, Shuyan Zhao, Xiaoqin Wang, Lili Ma, Qiang Huang, Zhiyuan Shen, Junru Cheng, Siqi Zeng, Chao He, Yonghong He, Zhe Wang</p>
     <div class="paper-meta-inline">
       <p class="meta-item"><span>Source</span>arxiv</p>
-      <p class="meta-item"><span>Published</span>2026-10-23</p>
-      <p class="meta-item"><span>Updated</span>2026-10-23</p>
-      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.CV</strong> · cs.LG</p>
+      <p class="meta-item"><span>Published</span>2026-10-28</p>
+      <p class="meta-item"><span>Updated</span>2026-10-30</p>
     </div>
-    <p class="paper-tldr"><span>TLDR</span>提出GeoLEON-CLIP图锚定三模态对比框架，对齐H3区域OSM图嵌入、卫星图像与文本，图锚定链式检索显著优于直接图文检索。</p>
+    <p class="paper-tldr"><span>TLDR</span>GloSAGE是一个语义自蒸馏框架，利用预训练视觉教师模型预测的病变轮廓构建结构化病理描述，通过可靠性引导选择图文锚点，并结合知识结构化文本合成与证据引导负样本构建，实现无需昂贵图文对的视觉-语言对齐，在肾小球病变识别、分级及病例级分类等任务上优于源视觉模型。</p>
   </header>
   <div class="paper-links has-links">
-    <a class="paper-link" href="https://arxiv.org/pdf/2610.32311v1" target="_blank" rel="noopener noreferrer">PDF</a>
-    <a class="paper-link" href="https://arxiv.org/abs/2610.32311v1" target="_blank" rel="noopener noreferrer">Abstract</a>
-    <a class="paper-link" href="https://doi.org/10.1145/3849726.3856091" target="_blank" rel="noopener noreferrer">DOI</a>
+    <a class="paper-link" href="https://arxiv.org/pdf/2610.38346v2" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2610.38346v2" target="_blank" rel="noopener noreferrer">Abstract</a>
   </div>
   <details class="paper-details" data-paper-details>
     <summary class="details-summary">
@@ -311,29 +307,29 @@
     </summary>
     <div class="detail-block">
       <h4>Abstract</h4>
-      <p>Geographic regions are multimodal: satellite imagery captures visual morphology, text conveys human-interpretable semantics, and map structures describe urban context. Existing geospatial contrastive methods typically align image-text or image-location pairs, underusing structured map data. We introduce GeoLEON-CLIP, a graph-anchored contrastive framework that aligns three views of each H3-indexed region: an OpenStreetMap-derived graph embedding, a satellite image crop, and a textual description. Frozen pretrained LEON graph embeddings provide a semantic anchor between vision and language. Frozen graph, image, and text encoders are connected by trainable residual projection heads and trained with a symmetric tri-modal contrastive objective. Experiments show strong graph-image and graph-text alignment; graph-image retrieval achieves the best cross-modal performance in a mixed-resolution pool. To evaluate the anchoring hypothesis, we propose chained cross-modal recall $\mathrm{R}@A@B$, which routes retrieval through the graph modality and compares it with direct retrieval under a matched candidate budget. At $\mathrm{R}@1@1$, image$\rightarrow$graph$\rightarrow$text and text$\rightarrow$graph$\rightarrow$image outperform direct image-text retrieval by 4.8 and 4.4 points, respectively, despite using a single intermediate cell. Downstream probes show task-dependent gains, with the largest improvements on Airbnb and Beijing housing. These results indicate that OpenStreetMap graph structure can anchor multimodal representations combining maps, imagery, and language.</p>
+      <p>Visual foundation models learn rich pathological morphology but lack explicit concept-level supervision. Vision--language pretraining can provide this supervision but requires costly image--text pairs. Here, we introduce GloSAGE, a semantic self-distillation framework that uses lesion profiles predicted by a pretrained visual teacher to construct structured pathology descriptions. Reliability-guided selection identifies image--text anchors, while Knowledge-Structured Pathology Text Synthesis and Evidence-Guided Negative-pair Construction account for partially observed lesions. Image--text alignment trains projection layers while retaining the frozen visual encoder; an intermediate Semantic Transfer Layer supplies features for downstream tasks. Developed on GloMillion and evaluated across seven glomerulus- and case-level cohorts, GloSAGE supported zero-shot lesion recognition, image--text retrieval, hard-negative discrimination and concept-intervention analyses. It outperformed its source visual model in most lesion-recognition tasks and improved lesion grading, while supporting competitive case-level disease classification, injury grading and baseline renal function estimation. Ablations supported the combined contributions of knowledge-structured text and evidence-guided negatives, and the intermediate transfer layer improved mean lesion-recognition ROC-AUC relative to the complete projection output. A frozen language model conditioned on GloSAGE features generated glomerular descriptions. These findings suggest that teacher-derived lesion profiles can provide annotation-efficient semantic supervision for extending a glomerular visual foundation model.</p>
     </div>
-    <div class="detail-block"><h4>Motivation</h4><p>地理区域本质多模态（卫星影像视觉形态、文本语义、地图结构城市上下文），现有地理空间对比方法多对齐图文或图-位置对，未充分利用结构化地图数据。</p></div>
-    <div class="detail-block"><h4>Method</h4><p>以冻结LEON图嵌入为语义锚，连接冻结图、图像、文本编码器与可训练残差投影头，采用对称三模态对比目标训练；并提出链式跨模态召回R@A@B，经图模态路由检索并与匹配候选预算下直接检索比较。</p></div>
-    <div class="detail-block"><h4>Result</h4><p>图-图像与图-文本对齐强，图-图像检索在混合分辨率池中跨模态性能最佳；R@1@1下图像→图→文本和文本→图→图像分别比直接图文检索高4.8和4.4点；下游探测增益任务相关，Airbnb与北京住房提升最大。</p></div>
-    <div class="detail-block"><h4>Conclusion</h4><p>OpenStreetMap图结构可作为锚定地图、影像与语言多模态表示的有效语义桥梁。</p></div>
+    <div class="detail-block"><h4>Motivation</h4><p>视觉基础模型能学习丰富的病理形态但缺乏显式概念级监督，视觉-语言预训练可提供此类监督却依赖昂贵的图文对，因此需要一种标注高效的语义监督方法。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>提出GloSAGE语义自蒸馏框架：用预训练视觉教师预测的病变轮廓构建结构化病理描述；通过可靠性引导选择图文锚点；采用知识结构化病理文本合成和证据引导负样本构建处理部分观测病变；训练时冻结视觉编码器仅训练投影层，并引入中间语义迁移层为下游任务提供特征。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在GloMillion上开发并在七个肾小球级和病例级队列评估，支持零样本病变识别、图文检索、难负样本判别和概念干预分析；在多数病变识别任务上优于源视觉模型并改善病变分级，病例级疾病分类、损伤分级和基线肾功能估计具竞争力；消融验证知识结构化文本与证据引导负样本的联合贡献，中间迁移层较完整投影输出提升平均病变识别ROC-AUC；冻结语言模型基于GloSAGE特征生成肾小球描述。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>教师模型衍生的病变轮廓可为扩展肾小球视觉基础模型提供标注高效的语义监督。</p></div>
   </details>
 </article>
 <article class="paper-card" data-paper-card>
   <header class="paper-head">
     <p class="paper-index">No. 3</p>
-    <h3 class="paper-title">Separating Angular Alignment from Radial Ordering in Hyperbolic Vision-Language Models</h3>
-    <p class="paper-authors">Mingyang Gao, Yuwei Wu, Shiyu Luo, Wei Wu, Xiaomeng Fan, Qihao Lv, Haoyu Zhang, Rui Gao, Bingzhen Liu, Zhi Gao, Che Sun</p>
+    <h3 class="paper-title">Efficient Remote Sensing Image-Text Retrieval via Interaction-Free Recall and Text-Guided Reranking</h3>
+    <p class="paper-authors">Xi Chen, Xu Chen, Xiamgyang Jia, Wei Wang, Xu Zhang, Zhenyuan Shun</p>
     <div class="paper-meta-inline">
       <p class="meta-item"><span>Source</span>arxiv</p>
-      <p class="meta-item"><span>Published</span>2026-10-23</p>
-      <p class="meta-item"><span>Updated</span>2026-10-23</p>
+      <p class="meta-item"><span>Published</span>2026-10-27</p>
+      <p class="meta-item"><span>Updated</span>2026-10-27</p>
     </div>
-    <p class="paper-tldr"><span>TLDR</span>本文提出AURORA框架，通过角度对齐和径向-角度序锥（RAOC）解耦双曲视觉-语言模型中的语义对齐与蕴含建模，在多个任务上超越欧氏和双曲基线。</p>
+    <p class="paper-tldr"><span>TLDR</span>该论文提出一种先快后精（FTF）的遥感图像-文本检索框架，通过无交互多粒度召回和参数无关的文本引导重排序，在保证检索精度的同时显著提升效率。</p>
   </header>
   <div class="paper-links has-links">
-    <a class="paper-link" href="https://arxiv.org/pdf/2610.32146v1" target="_blank" rel="noopener noreferrer">PDF</a>
-    <a class="paper-link" href="https://arxiv.org/abs/2610.32146v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+    <a class="paper-link" href="https://arxiv.org/pdf/2610.36756v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2610.36756v1" target="_blank" rel="noopener noreferrer">Abstract</a>
   </div>
   <details class="paper-details" data-paper-details>
     <summary class="details-summary">
@@ -342,12 +338,12 @@
     </summary>
     <div class="detail-block">
       <h4>Abstract</h4>
-      <p>Hyperbolic vision-language models are well suited to modeling the hierarchical structure of multimodal data, because hyperbolic volume grows exponentially with radius, enabling low-distortion representations of tree-like taxonomies from general to specific concepts. However, existing pretraining objectives for hyperbolic vision-language models entangle semantic alignment with entailment modeling, forcing radial coordinates to simultaneously encode semantic matching and hierarchical structure, leading to conflicting geometric constraints. In this paper, we introduce AURORA, a hyperbolic vision-language framework that decouples the objectives through angular alignment and a novel Radial-Angular Order Cone (RAOC) for entailment modeling. Angular alignment captures semantic similarity while preserving the radial structure for representing hierarchies. Unlike conventional entailment cones, RAOC determines angular allowance from relative parent-child radial gaps. It is incorporated into hierarchical entailment contrastive training to capture partial-order relations. We further introduce a norm regularization term that prevents undesirable radial degeneration for stable training. We train models on millions of image-text pairs and evaluate them across zero-shot classification, image-text retrieval, hierarchical reasoning, and compositional understanding. Our model consistently outperforms strong Euclidean and hyperbolic vision-language baselines, demonstrating the effectiveness of decoupling semantic alignment from hierarchical entailment modeling.</p>
+      <p>Remote sensing (RS) image-text retrieval plays a critical role in understanding massive RS imagery. However, the dense multi-object distribution and complex backgrounds in RS imagery make it difficult to simultaneously achieve fine-grained cross-modal alignment and efficient retrieval. Existing methods either rely on complex cross-modal interactions that lead to low retrieval efficiency, or depend on large-scale vision-language adaptation, which requires massive data and computational resources. To address these issues, we develop a fast-then-fine (FTF) retrieval framework centered on interaction-free multi-granular recall and parameter-free text-guided cross-modal reranking with the Balanced Text-guided Interaction Block (BTIB). Specifically, interaction-free multi-granular recall pre-computes gallery embeddings and matches them with the corresponding query embedding without full-gallery token-level text-image interaction, while text-guided cross-modal reranking with BTIB refines local semantic correspondence within the top-K candidate set. Furthermore, an inter- and intra-modal loss is designed to jointly optimize cross-modal alignment across multi-granular representations. Extensive experiments on public benchmarks demonstrate that the FTF achieves competitive retrieval accuracy while significantly improving retrieval efficiency compared with existing methods.</p>
     </div>
-    <div class="detail-block"><h4>Motivation</h4><p>现有双曲视觉-语言预训练目标将语义对齐与蕴含建模纠缠，迫使径向坐标同时编码语义匹配和层次结构，导致几何约束冲突。</p></div>
-    <div class="detail-block"><h4>Method</h4><p>AURORA框架：角度对齐捕捉语义相似性并保留径向结构表示层次；提出RAOC，根据父子径向差距确定角度允许范围，并融入层次蕴含对比训练以捕捉偏序关系；引入范数正则项防止径向退化。</p></div>
-    <div class="detail-block"><h4>Result</h4><p>在数百万图像-文本对上训练，零样本分类、图像-文本检索、层次推理和组合理解任务上一致优于强欧氏和双曲视觉-语言基线。</p></div>
-    <div class="detail-block"><h4>Conclusion</h4><p>解耦语义对齐与层次蕴含建模是有效的，AURORA框架验证了该方法的优越性。</p></div>
+    <div class="detail-block"><h4>Motivation</h4><p>遥感图像中密集的多目标分布和复杂背景使得细粒度跨模态对齐与高效检索难以兼得；现有方法要么因复杂跨模态交互导致检索效率低，要么依赖大规模视觉-语言适配，需要海量数据和计算资源。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>提出FTF框架，核心包括：无交互多粒度召回（预计算图库嵌入并与查询嵌入匹配，避免全图库token级文本-图像交互）和基于平衡文本引导交互块（BTIB）的参数无关文本引导跨模态重排序（在Top-K候选集内细化局部语义对应）；并设计模态间与模态内损失联合优化多粒度表示的跨模态对齐。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在公开基准上的大量实验表明，FTF在取得有竞争力的检索精度的同时，相比现有方法显著提升了检索效率。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>FTF框架通过无交互多粒度召回与参数无关文本引导重排序的结合，有效平衡了遥感图像-文本检索的细粒度对齐与检索效率，为大规模遥感图像理解提供了高效可行的方案。</p></div>
   </details>
 </article>
   </div>
