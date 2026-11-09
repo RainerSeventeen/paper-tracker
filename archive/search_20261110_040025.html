@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paper Tracker Daily Reading</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Crimson+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body class="theme-light">
+  <a class="skip-link" href="#main-content">跳转到正文</a>
+
+  <header class="page-header">
+    <div class="header-main">
+      <p class="header-topline">
+        POWER BY
+        <a class="powered-by-link" href="https://github.com/RainerSeventeen/paper-tracker" target="_blank" rel="noopener noreferrer">
+          RainerSeventeen/paper-tracker
+        </a>
+      </p>
+      <h1>文献阅读简报</h1>
+      <p class="header-meta">生成时间：2026-11-10 04:00:25</p>
+      <div class="report-stats">
+        <p><span>3</span> 个查询主题</p>
+        <p><span>9</span> 篇候选论文</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="expand-all" type="button" aria-label="展开所有论文详情">展开全部</button>
+      <button id="collapse-all" type="button" aria-label="折叠所有论文详情">折叠全部</button>
+      <button id="theme-toggle" type="button" aria-label="切换暗色模式">切换暗色模式</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" aria-label="查询导航">
+      <p class="sidebar-title">文献目录</p>
+      <p class="sidebar-note">按查询主题快速定位</p>
+    </aside>
+    <main id="main-content" class="content">
+      <section id="query-query" class="query-section" data-query-label="多模态大模型" data-paper-count="3">
+  <header class="query-header">
+    <h2>多模态大模型</h2>
+    <p class="query-count">3 papers</p>
+  </header>
+  <div class="query-content">
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 1</p>
+    <h3 class="paper-title">BEV3SR: Evidence-Aware 3D Spatial Reasoning from Video</h3>
+    <p class="paper-authors">Fan Zhu, Rui Yu</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-11-06</p>
+      <p class="meta-item"><span>Updated</span>2026-11-06</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>BEV3SR是一个无需训练且与骨干模型无关的框架，将RGB-D视频观测转化为可查询的度量鸟瞰图（BEV）场景记忆，并根据查询所需证据类型（几何或视觉）选择确定性计算或视觉证据对齐，从而提升视觉语言模型在视频3D空间推理任务上的表现。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2611.09816v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2611.09816v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>3D spatial reasoning from video remains challenging for VLMs because videos provide sequential, view-local observations rather than persistent metric scene records. Many questions must be answered in a query-specified perspective rather than the observed camera viewpoint, and prompting with a fixed set of RGB views may miss sparse or occluded visual cues. To address these gaps, we introduce BEV3SR, a training-free and backbone-agnostic framework for RGB-D videos with camera parameters. BEV3SR turns video observations into queryable metric bird&#x27;s-eye-view (BEV) scene memory and formalizes each query into an evidence-aware spatial task. The Spatial Task Formalizer specifies the query&#x27;s reference frame, spatial constraints, objective, and evidence requirement. The evidence requirement determines the appropriate reasoning pathway. A query treated as requiring geometric evidence is handled by the Geometric Reasoner, which deterministically computes the answer using the metric BEV records in the query-specified reference frame. Otherwise, a query treated as requiring visual evidence is passed to the Visual Evidence Aligner, which uses BEV-indexed object records and their associated supporting views to retrieve object-consistent and scene-context RGB frames for VLM grounding. Within a standard 16-frame budget, BEV3SR consistently improves different VLM backbones across multiple 3D scene QA benchmarks, delivering large gains on spatially intensive questions and significant improvements on open-ended scene QA. These results demonstrate that BEV3SR offers an effective, efficient, and interpretable framework for explicit 3D spatial reasoning from video.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>视频为视觉语言模型提供的是顺序的、视角局部的观测，而非持久的度量场景记录，导致3D空间推理困难；许多问题需在查询指定的视角而非观测相机视角下回答，且固定RGB视图提示可能遗漏稀疏或被遮挡的视觉线索。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>BEV3SR将视频观测转化为可查询的度量BEV场景记忆，并通过空间任务形式化器为每个查询指定参考系、空间约束、目标和证据需求；证据需求决定推理路径：需要几何证据的查询由几何推理器在查询指定参考系下利用度量BEV记录确定性计算答案，否则由视觉证据对齐器利用BEV索引的对象记录及其关联支持视图检索对象一致且含场景上下文的RGB帧供VLM grounding。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在标准16帧预算下，BEV3SR在多个3D场景问答基准上一致提升不同VLM骨干模型，在空间密集型问题上取得大幅增益，在开放式场景问答上也有显著改进。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>BEV3SR为从视频进行显式3D空间推理提供了一个有效、高效且可解释的框架。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 2</p>
+    <h3 class="paper-title">Seeing What Matters: Benchmarking Task-Conditioned Actionable Spatial Belief for Manipulation</h3>
+    <p class="paper-authors">Yina Jian, Mingkun Xu</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-11-06</p>
+      <p class="meta-item"><span>Updated</span>2026-11-06</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.RO</strong> · cs.CV</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>论文提出Seeing What Matters基准，用于评估任务条件下的可操作空间信念，即机器人是否能为当前指令获取必要证据；参考管线达98.8%闭环和98.9%功能OOD成功率，而七个视觉语言模型仅26-43%，表明应基于证据获取而非场景完整性评估空间信念。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2611.09794v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2611.09794v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>When should a robot look at the cup, and when at the portafilter? Spatial-reasoning benchmarks evaluate whether a model can describe a scene, but manipulation needs something more specific: the ability to acquire the particular evidence that makes the current command executable. A view that is informative for one task can be useless for another, even at the same workstation. We introduce Seeing What Matters, a benchmark for task-conditioned actionable spatial belief in simulated tabletop manipulation. Across three domains--coffee workstation, drawer/cabinet, and microwave/appliance--the benchmark provides 860 frozen evaluation cases; expanding across methods, budgets, and inference repeats yields more than 115,000 evaluator episodes under two protocols: closed-loop actionability and same-object functional out-of-distribution generalization. Each case pairs a set of candidate RGB views with a manipulation command, shared scripted skills, and hidden postconditions, so the benchmark directly measures whether a view-selection policy acquires the observations its command actually needs. We also provide a diagnostic reference pipeline that maintains a spatial-functional belief state and ranks views by missing evidence. At primary budget settings, this pipeline reaches 98.8% closed-loop and 98.9% functional-OOD success; ablating the functional or command-binding components collapses performance to near zero. Seven vision-language models, evaluated on the same cases, reach only 26-43%. Replacing the reference pipeline&#x27;s coverage metadata with frozen RGB-derived scores preserves 98.5%/98.9% success; shuffling the visual scores collapses it to 15%/11%, confirming that the result depends on image content. These gaps suggest that spatial belief for manipulation should be evaluated not by scene-level completeness, but by whether it acquires the evidence the current command requires.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有空间推理基准仅评估模型描述场景的能力，但操作任务需要模型获取使当前指令可执行的特定证据；同一工作台下，对某任务有信息的视角对另一任务可能无用，因此需要任务条件化的可操作空间信念评估。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>构建模拟桌面操作基准，覆盖咖啡工作站、抽屉/柜子、微波炉/电器三个域，提供860个冻结评估案例，扩展后超115,000个评估器回合，采用闭环可操作性和同物体功能OOD泛化两种协议；每个案例配对候选RGB视角、操作指令、共享脚本技能和隐藏后置条件，直接测量视角选择策略是否获取指令所需观察；并提供维护空间-功能信念状态、按缺失证据排序视角的诊断参考管线。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>参考管线在主预算设置下达98.8%闭环和98.9%功能OOD成功率；消融功能或指令绑定组件后性能降至近零；七个视觉语言模型仅26-43%；用冻结RGB衍生分数替换覆盖元数据保持98.5%/98.9%成功率，打乱视觉分数则降至15%/11%，确认结果依赖图像内容。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>操作任务的空间信念不应以场景级完整性评估，而应评估其是否获取当前指令所需的证据；现有视觉语言模型在此任务条件下证据获取能力上存在显著差距。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 3</p>
+    <h3 class="paper-title">ManiTaskGen: A Comprehensive Task Generator for Benchmarking and Improving Vision-Language Agents on Embodied Decision-Making</h3>
+    <p class="paper-authors">Liu Dai, Haina Wang, Weikang Wan, Hao Su</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2025-05-27</p>
+      <p class="meta-item"><span>Updated</span>2026-11-06</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>提出ManiTaskGen系统，可自动为任意场景生成全面、多样、可行的移动操作任务，用于构建基准并提升基于VLM的具身决策智能体。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2505.20726v3" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2505.20726v3" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Building embodied agents capable of accomplishing arbitrary tasks is a core objective towards achieving embodied artificial general intelligence (E-AGI). While recent work has advanced such general robot policies, their training and evaluation are often limited to tasks within specific scenes, involving restricted instructions and scenarios. Existing benchmarks also typically rely on manual annotation of limited tasks in a few scenes. We argue that exploring the full spectrum of feasible tasks within any given scene is crucial, as they provide both extensive benchmarks for evaluation and valuable resources for agent improvement. Towards this end, we introduce ManiTaskGen, a novel system that automatically generates comprehensive, diverse, feasible mobile manipulation tasks for any given scene. The generated tasks encompass both process-based, specific instructions (e.g., &quot;move object from X to Y&quot;) and outcome-based, abstract instructions (e.g., &quot;clear the table&quot;). We apply ManiTaskGen to both simulated and real-world scenes, demonstrating the validity and diversity of the generated tasks. We then leverage these tasks to automatically construct benchmarks, evaluating high-level embodied decision-making through a grounded skill interface for agents built upon existing vision-language models (VLMs). Furthermore, we propose a simple yet effective method that utilizes ManiTaskGen tasks to enhance embodied decision-making. Overall, this work presents a cross-scene task generation framework facilitating both benchmarking and improvement of embodied decision-making agents. Our code is available at https://manitaskgen.github.io.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有通用机器人策略的训练与评估局限于特定场景和有限指令，现有基准依赖人工标注且任务有限；作者认为探索任意场景中所有可行任务对评估和智能体改进至关重要。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>ManiTaskGen自动生成两类任务：过程型具体指令（如“将物体从X移到Y”）和结果型抽象指令（如“清理桌子”）；在仿真和真实场景中应用，并基于生成任务自动构建基准，通过接地技能接口评估高层具身决策；还提出利用生成任务增强具身决策的简单有效方法。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在仿真和真实场景中验证了生成任务的有效性和多样性；构建的基准可评估基于现有VLM的智能体高层决策；所提增强方法有效提升了具身决策性能。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>ManiTaskGen是一个跨场景任务生成框架，同时促进具身决策智能体的基准评估与性能提升。</p></div>
+  </details>
+</article>
+  </div>
+</section>
+
+<section id="query-query-2" class="query-section" data-query-label="视频多模态理解" data-paper-count="3">
+  <header class="query-header">
+    <h2>视频多模态理解</h2>
+    <p class="query-count">3 papers</p>
+  </header>
+  <div class="query-content">
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 1</p>
+    <h3 class="paper-title">AdaAlloc: Adaptive Visual Token Allocation for Long-Video Question Answering</h3>
+    <p class="paper-authors">Joungbin An, Kristen Grauman</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-11-06</p>
+      <p class="meta-item"><span>Updated</span>2026-11-06</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.CV</strong> · cs.AI</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>论文将长视频问答视为视觉token分配问题，提出免训练推理框架AdaAlloc，在全局概览与局部高分辨率证据间自适应分配视觉token，在多个长视频基准上显著优于预算匹配的均匀采样。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2611.09092v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2611.09092v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Long-video question answering forces multimodal large language models to reason under strict visual-token budgets, creating a tradeoff between broad temporal coverage and fine-grained spatial detail. Uniform sampling preserves coverage but often obscures decisive local cues, while caption-based or frame-similarity retrieval operates over lossy proxies that can miss motion, state changes, and before-after relations. We recast long-video reasoning as a visual-token allocation problem: given a fixed budget, decide how much to spend on global context versus high-resolution local evidence, and where in the video to draw that local evidence from. We introduce AdaAlloc, a training-free inference framework that adaptively allocates visual tokens between a global video overview and localized visual detail. AdaAlloc first plans a global/local allocation policy, then uses temporal grounding to locate candidate evidence segments and refines them into a compact temporal memory. The selected policy controls both frame sampling density and resolution, combining sparse, lower-resolution global frames with denser, higher-resolution local frames drawn from the refined memory. The final answerer reasons over the allocated global context and refined local evidence. Across LVBench, MLVU, VideoMME, and LongVideoBench, AdaAlloc improves over budget-matched uniform sampling by up to 10.5 percentage points and outperforms the compared frame-selection and agentic methods on their reported benchmarks.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>长视频问答中多模态大模型受严格视觉token预算限制，需在广泛时间覆盖与细粒度空间细节间权衡；均匀采样保留覆盖但常掩盖关键局部线索，基于字幕或帧相似度的检索依赖有损代理，易遗漏运动、状态变化及前后关系。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>提出AdaAlloc免训练推理框架：先规划全局/局部token分配策略，再通过时间定位定位候选证据片段并精炼为紧凑时间记忆；所选策略同时控制帧采样密度与分辨率，结合稀疏低分辨率全局帧与来自精炼记忆的密集高分辨率局部帧，最终答案器基于分配的全局上下文与精炼局部证据推理。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在LVBench、MLVU、VideoMME和LongVideoBench上，AdaAlloc较预算匹配的均匀采样最高提升10.5个百分点，并在所报告基准上优于对比的帧选择与智能体方法。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>将长视频推理重构为视觉token分配问题并采用自适应全局/局部分配策略，可在固定预算下有效提升长视频问答性能，且无需额外训练。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 2</p>
+    <h3 class="paper-title">TraCE: Trajectory-Aware Concepts for Explainable Video Understanding</h3>
+    <p class="paper-authors">Wooil Lee, Junpyo Hong, Jongseo Lee, Tuomas Oikarinen, Tsui-Wei Weng, Jinwoo Choi</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-11-04</p>
+      <p class="meta-item"><span>Updated</span>2026-11-06</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>论文提出TraCE框架，通过聚类光流轨迹发现来源灵活的运动概念，解决视频可解释性中运动来源不明确的问题，在动作识别和VQA任务上保持竞争性性能并提供决策忠实性证据。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2611.07009v2" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2611.07009v2" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Video understanding models often rely on motion, yet their explanations can obscure which motion sources support a prediction. We identify motion-source under-specification as a limitation of existing video XAI: region-centric explanations can be source-ambiguous, while motion vocabularies restricted to single-person pose sequences are source-incomplete. We propose TraCE (Trajectory-Aware Concepts for Explainable Video Understanding), a concept-based framework that discovers source-flexible motion concepts by clustering optical-flow trajectories from training videos. These concepts represent dynamic evidence from people, objects, and interactions, while object and scene concepts account for static context. The resulting typed trajectory/object/scene interface supports class prediction for action recognition and question-conditioned concept matching for video question answering (VQA). We evaluate TraCE across five random seeds on six benchmarks: NTU RGB+D Mutual, Chiral SSv2, UCF-101, KTH, TOMATO, and STAR. Relative to non-interpretable baselines, TraCE maintains competitive task performance, with an average accuracy drop of 1.0 points for action recognition and a nominal gain of 0.4 points for VQA. Motion perturbation and concept-removal tests provide complementary evidence of directional semantic alignment and decision faithfulness, while sample-level interventions illustrate targeted model debugging. Our project page is available at https://leewooil.github.io/TraCE_project_page/.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有视频可解释性方法存在运动来源欠指定问题：基于区域的解释可能来源模糊，而仅限单人姿态序列的运动词汇表则来源不完整，无法全面反映支持预测的运动证据来源。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>TraCE是一种基于概念的框架，从训练视频中聚类光流轨迹以发现来源灵活的运动概念，这些概念表示来自人、物体和交互的动态证据；同时用物体和场景概念表示静态上下文。形成的类型化轨迹/物体/场景接口支持动作识别的类别预测和视频问答的问题条件概念匹配。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在六个基准（NTU RGB+D Mutual、Chiral SSv2、UCF-101、KTH、TOMATO、STAR）上以五个随机种子评估，TraCE相对不可解释基线保持竞争性性能：动作识别平均准确率下降1.0分，VQA名义上提升0.4分。运动扰动和概念移除测试提供了方向性语义对齐和决策忠实性的补充证据，样本级干预展示了有针对性的模型调试。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>TraCE通过来源灵活的运动概念有效缓解了视频XAI中的运动来源欠指定问题，在保持任务性能的同时提供了可解释性和决策忠实性证据，支持模型调试。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 3</p>
+    <h3 class="paper-title">MEDR: Query-Independent Frame Selection via Multi-Signal Event Modeling and Dynamic Rescoring</h3>
+    <p class="paper-authors">Xinlei Pu, Weijie Shi, Wen Yang, Yi Cao, Yao Zhao, Hao Chen, Yuanjun Liu, Wenwei Ding, Jia Zhu, Jiajie Xu</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-08-15</p>
+      <p class="meta-item"><span>Updated</span>2026-11-06</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>提出免训练、查询无关的帧选择方法MEDR，通过多信号事件建模与动态重评分构建可复用的固定帧集，在有限帧预算下提升长视频理解性能。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2608.15058v2" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2608.15058v2" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Frame selection is a fundamental component of multimodal large language models, enabling long videos to be processed under limited visual-token and computational budgets. Uniform sampling preserves temporal coverage but may miss informative content that appears only briefly. To alleviate this limitation, query-dependent methods can retrieve question-relevant frames. However, because the selected frames depend on the current question, the same visual input cannot be directly shared across different questions, and frame selection must be repeated in multi-turn video dialogue. This motivates us to seek a query-independent frame selection method that preserves the reusability of a fixed visual input while improving the coverage of informative events beyond uniform sampling. We propose Multi-Signal Event Modeling and Dynamic Rescoring (MEDR), a training-free and query-independent frame selection method. Multi-Signal Event Modeling organizes complementary visual, motion, and text signals into signal-specific temporal events. Dynamic Rescoring then iteratively reevaluates each candidate relative to the current selected set, updating its score according to frame-level signal strength, additional event coverage, and balanced temporal coverage. The resulting fixed frame set is constructed without observing the query and can be reused across different questions. Experiments on Video-MME and LongVideoBench demonstrate that MEDR achieves competitive performance across two video MLLMs. Under the 64-frame budget, MEDR improves Video-MME accuracy over the strongest evaluated query-independent baseline by 1.33-1.78 percentage points. We further evaluate the reuse of a fixed frame set in multi-question video dialogue.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>均匀采样可能遗漏短暂出现的重要信息；查询相关方法虽能检索问题相关帧，但所选帧依赖当前问题，无法在不同问题间共享视觉输入，多轮视频对话中需重复选帧。因此需要一种查询无关的帧选择方法，在保持固定视觉输入可复用性的同时提升对信息事件的覆盖。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>MEDR包含两部分：多信号事件建模将互补的视觉、运动、文本信号组织为信号特定的时间事件；动态重评分迭代地相对于当前已选集合重新评估每个候选帧，依据帧级信号强度、额外事件覆盖和均衡时间覆盖更新得分。最终在不观察查询的情况下构建固定帧集，可跨不同问题复用。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在Video-MME和LongVideoBench上，MEDR在两个视频MLLM上取得有竞争力的性能。在64帧预算下，Video-MME准确率比最强查询无关基线提升1.33-1.78个百分点；并进一步评估了固定帧集在多问题视频对话中的复用效果。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>MEDR作为一种免训练、查询无关的帧选择方法，能够在有限视觉token和计算预算下构建可复用的固定帧集，在提升信息事件覆盖的同时保持跨问题复用性，并在长视频基准上验证了有效性。</p></div>
+  </details>
+</article>
+  </div>
+</section>
+
+<section id="query-rag" class="query-section" data-query-label="多模态检索与 RAG" data-paper-count="3">
+  <header class="query-header">
+    <h2>多模态检索与 RAG</h2>
+    <p class="query-count">3 papers</p>
+  </header>
+  <div class="query-content">
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 1</p>
+    <h3 class="paper-title">PTQ4SAM3: Semantics-Preserving Post-Training Quantization for Segment Anything Model 3</h3>
+    <p class="paper-authors">Xi Xiao, Yunbei Zhang, Lin Zhao, Janet Wang, Xinru Jiang, Yanshu Li, Chenrui Ma, Pan Wang, Tianyang Wang, Xiao Wang</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-11-04</p>
+      <p class="meta-item"><span>Updated</span>2026-11-04</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>针对SAM 3量化后出现的提示对齐漂移问题，提出语义保持量化SPQ，通过概念敏感参数加权校准、残差特征保留和视频记忆均值误差校正，在W4A8下显著提升文本提示分割与跟踪性能。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2611.06143v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2611.06143v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Segment Anything Model 3 (SAM 3) can segment objects from text prompts and track them across video, but its memory and computation costs make deployment difficult. Post-training quantization (PTQ) reduces these costs by using fewer bits. However, a quantized model can select the wrong object or lose track of its target across frames. We call this prompt-alignment drift. Controlled tests show that perturbing low-variance feature directions strongly affects target selection. We propose Semantics-Preserving Quantization (SPQ), which gives more calibration weight to concept-sensitive parameters, preserves residual features, and corrects the mean error in video memory. Fixed text concepts guide calibration without task annotations. All three components operate offline and add no inference operators. With a W4A8 image encoder, SPQ improves RefCOCO Pr@0.5 from 42.1 to 72.5 over PTQ4SAM while retaining 54.8 COCO mask AP. Experiments on LVIS, RefCOCO variants, and SA-V show consistent gains. A CLIP study also shows improved image-text retrieval.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>SAM 3支持文本提示分割与视频跟踪，但内存和计算开销大；训练后量化虽能降低成本，却会导致模型选错目标或跨帧丢失目标，即提示对齐漂移。受控实验表明扰动低方差特征方向会强烈影响目标选择。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>提出语义保持量化SPQ，包含三部分：给概念敏感参数更高校准权重；保留残差特征；校正视频记忆中的均值误差。使用固定文本概念指导校准，无需任务标注，三部分均离线运行且不增加推理算子。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>W4A8图像编码器下，SPQ将RefCOCO Pr@0.5从PTQ4SAM的42.1提升至72.5，同时保持54.8 COCO mask AP；在LVIS、RefCOCO变体和SA-V上取得一致增益；CLIP研究显示图像-文本检索也有提升。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>SPQ能有效缓解量化引起的提示对齐漂移，在显著降低SAM 3部署成本的同时保持分割与跟踪性能，且不引入额外推理开销。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 2</p>
+    <h3 class="paper-title">Whispers from the Neighbors: Rethinking Caption Consensus as Inference-Time Evidence for Vision-Language Retrieval</h3>
+    <p class="paper-authors">Khang Nhat Hoang Vo, Belal Shoer, Abhirama Subramanyam Penamakuri</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-10-24</p>
+      <p class="meta-item"><span>Updated</span>2026-11-06</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.CV</strong> · cs.CL</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>该论文研究在推理时利用图像的多条邻近描述（而非仅单对图文）来提升冻结双编码器的文本到图像检索性能，并分析其增益来源与局限。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2610.33798v2" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2610.33798v2" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>An image is rarely described only once. Retrieval benchmarks and many collections attach several captions to each picture, yet dual encoders still judge every image-caption pair in isolation. We ask what these neighboring captions contribute when a frozen encoder consults them at inference time. Fusing image similarity with similarity to an image&#x27;s own captions improves text-to-image R@1 by 3.4 to 16.8 points across nine frozen encoders when the captions come from the same annotators as the queries. The gain falls to 1.9 to 7.2 points when an off-the-shelf captioner writes them, and to at most one point when they come from a different annotation source; a paraphrase-trained text encoder strengthens the text side further. A natural refinement, scoring the part of the image that the captions leave unexplained, appears to add much more under a leave-one-out evaluation. We show that this advantage arises because the correct candidate&#x27;s supports are built differently from those of the negative candidates, with set size and query removal each contributing about half, and that under a fixed support index the residual reduces to a reweighting of what the captions already provide. On compositional benchmarks, the captions help by matching candidates to human descriptions of the image, without improving image-text grounding. The code is available at: https://github.com/nhatkhangcs/clip_consensus</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有检索基准和许多数据集为每张图像附有多条描述，但双编码器仍孤立地评估每个图文对，忽略了邻近描述可能提供的补充信息。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>在推理时，将图像与查询的相似度同图像与其自身多条描述的相似度进行融合；并探索对描述未解释的图像部分进行评分（残差评分），以及使用释义训练文本编码器增强文本侧。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>当描述与查询来自同一标注者时，融合使九个冻结编码器的文本到图像R@1提升3.4至16.8点；使用现成描述生成器时提升1.9至7.2点；来自不同标注源时提升至多1点。残差评分在留一法评估下看似增益更大，但该优势源于正确候选与负候选的支持集构建方式不同（集合大小和查询移除各贡献约一半），固定支持索引后残差退化为对已有描述信息的重加权。在组合性基准上，描述通过将候选与人类描述匹配来提供帮助，但未改善图文 grounding。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>邻近描述在推理时能显著提升冻结双编码器的检索性能，但增益高度依赖描述来源的一致性；残差评分的表面优势主要来自评估偏差而非真正的补充信息，且描述帮助的是候选匹配而非图文 grounding 本身。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 3</p>
+    <h3 class="paper-title">Multimodal Graph RAG for Long-range Visually Rich Document Understanding</h3>
+    <p class="paper-authors">Yi-Cheng Wang, Chu-Song Chen</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-06-27</p>
+      <p class="meta-item"><span>Updated</span>2026-11-05</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.IR</strong> · cs.CV</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>该论文提出一种多模态图基RAG方法，通过构建视觉丰富文档的多模态知识图谱来支持全局理解，并发布DLVQA基准以评估文档级VQA，实验表明其优于现有MMRAG和KG方法。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2606.28780v2" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2606.28780v2" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Multimodal large language models (MLLMs) are widely applied to visual document understanding. However, comprehending long documents remains an issue by the limited context window. Though recent multimodal retrieval-augmented generation (MMRAG) can address this challenge by retrieving relevant pages. It still struggles with the visual question answering (VQA) requiring holistic comprehension of a document. To cope with this, knowledge graph (KG) that summarizes global knowledge of a document can provide an effective solution. However, most existing LLM-based KG construction methods handle only the language modality, leaving the automatic creation of multimodal KGs (MMKGs) for visually rich documents largely unexplored. In this paper, we introduce a multimodal graph-based RAG approach to tackle this problem. Existing LLM-based KG methods evaluate the QA performance relying on indirect evidence such as comprehensiveness, diversity, empowerment, and so on. The lack of annotated datasets for comprehensive document-level VQA poses a significant challenge to effective model evaluation. To overcome this limitation, we also introduce a new benchmark, DLVQA (document-level VQA), which provides reference summaries and corresponding supporting facts for global document-level questions. Experimental results show that our approach outperforms existing MMRAG or KG-based approaches on multi-hop QA/VQA benchmarks and DLVQA.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有MLLM受限于上下文窗口难以理解长文档；MMRAG虽能检索相关页面，但难以应对需要整体理解的VQA；现有LLM-based KG构建多仅处理语言模态，缺乏面向视觉丰富文档的多模态KG自动构建方法；且缺少用于全面文档级VQA的标注数据集，导致评估困难。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>提出多模态图基RAG方法，自动构建视觉丰富文档的多模态知识图谱（MMKG）以总结全局知识，并用于检索增强生成；同时构建DLVQA基准，提供参考摘要及对应支持事实以评估全局文档级问题。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在多跳QA/VQA基准和DLVQA上，该方法优于现有MMRAG或基于KG的方法。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>多模态图基RAG结合MMKG可有效提升长文档全局理解与文档级VQA性能，DLVQA为全面文档级VQA评估提供了新基准。</p></div>
+  </details>
+</article>
+  </div>
+</section>
+    </main>
+  </div>
+
+  <script src="./assets/interactive.js"></script>
+</body>
+</html>
