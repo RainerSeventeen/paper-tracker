@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paper Tracker Daily Reading</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Crimson+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body class="theme-light">
+  <a class="skip-link" href="#main-content">跳转到正文</a>
+
+  <header class="page-header">
+    <div class="header-main">
+      <p class="header-topline">
+        POWER BY
+        <a class="powered-by-link" href="https://github.com/RainerSeventeen/paper-tracker" target="_blank" rel="noopener noreferrer">
+          RainerSeventeen/paper-tracker
+        </a>
+      </p>
+      <h1>文献阅读简报</h1>
+      <p class="header-meta">生成时间：2026-11-24 04:00:20</p>
+      <div class="report-stats">
+        <p><span>3</span> 个查询主题</p>
+        <p><span>9</span> 篇候选论文</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="expand-all" type="button" aria-label="展开所有论文详情">展开全部</button>
+      <button id="collapse-all" type="button" aria-label="折叠所有论文详情">折叠全部</button>
+      <button id="theme-toggle" type="button" aria-label="切换暗色模式">切换暗色模式</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" aria-label="查询导航">
+      <p class="sidebar-title">文献目录</p>
+      <p class="sidebar-note">按查询主题快速定位</p>
+    </aside>
+    <main id="main-content" class="content">
+      <section id="query-query" class="query-section" data-query-label="多模态大模型" data-paper-count="3">
+  <header class="query-header">
+    <h2>多模态大模型</h2>
+    <p class="query-count">3 papers</p>
+  </header>
+  <div class="query-content">
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 1</p>
+    <h3 class="paper-title">StereoVLM: Binocular Vision-Language Models for Metric 3D Spatial Reasoning</h3>
+    <p class="paper-authors">Chi Yan, Guoyang Zhao, Wentao Yuan, Yixiao Ge, Yanning Zhou, Dan Xu</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-11-20</p>
+      <p class="meta-item"><span>Updated</span>2026-11-20</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.CV</strong> · cs.AI · cs.RO</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>本文提出StereoVLM，首个基于标定双目视觉的几何感知视觉语言模型，通过从跨视角对应、视差估计到标定条件度量深度和语义空间推理的分层学习范式，实现可迁移的度量3D空间推理，并引入Stereo3D-Bench基准进行评估。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2611.27915v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2611.27915v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Vision-language models (VLMs) exhibit strong semantic understanding but remain limited in their ability to reason about metric 3D space in the physical world. Existing VLMs typically infer 3D scene structure from one or more images without known camera calibration or cross-view geometric constraints. This makes metric 3D inference inherently ambiguous and leaves it unclear whether their spatial predictions are grounded in visual evidence or driven primarily by semantic priors. In contrast, calibrated stereo provides explicit cross-view geometry that resolves this ambiguity and offers a more reliable foundation for metric 3D perception and geometric generalization. We investigate how VLMs can learn transferable 3D representations directly from calibrated binocular observations. To this end, we introduce StereoVLM, the first geometry-aware binocular VLM for metric 3D spatial reasoning. StereoVLM follows a hierarchical learning paradigm spanning from cross-view correspondence and disparity estimation to calibration-conditioned metric depth perception and semantic spatial reasoning. We further find that disparity supervision generalizes substantially better than direct binocular depth supervision on unseen environments. To evaluate these capabilities, we introduce Stereo3D-Bench, a comprehensive benchmark across three levels, from point-level geometry to object-level spatial reasoning. StereoVLM-8B achieves 95.17% depth accuracy ($δ_1$) and a 66.98 average object-level score on Stereo3D-Bench. Intervention results further indicate that the model&#x27;s performance on Stereo3D-Bench benefits from valid cross-view geometry and cannot be explained solely by additional visual tokens or semantic priors. Hierarchical geometric supervision also yields average gains of 3.54 points across five spatial benchmarks and 4.3 percentage points in RoboCasa manipulation success.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有视觉语言模型虽具备强语义理解，但缺乏对物理世界度量3D空间的推理能力；仅从单/多图像推断3D结构且无相机标定与跨视角几何约束，导致度量3D推断本质歧义，难以判断空间预测基于视觉证据还是语义先验。标定双目提供显式跨视角几何，可消除歧义，为度量3D感知与几何泛化提供可靠基础。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>提出StereoVLM，采用分层学习范式：跨视角对应与视差估计→标定条件度量深度感知→语义空间推理；发现视差监督在未见环境上比直接双目深度监督泛化更好；构建Stereo3D-Bench三级基准（点级几何到对象级空间推理）。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>StereoVLM-8B在Stereo3D-Bench上达到95.17%深度准确率（δ1）和66.98对象级平均分；干预实验表明性能受益于有效跨视角几何，不能仅由额外视觉token或语义先验解释；分层几何监督在五个空间基准上平均提升3.54分，在RoboCasa操作任务成功率提升4.3个百分点。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>标定双目几何为VLM提供可靠度量3D感知基础；视差监督优于直接深度监督；分层几何监督可有效提升空间推理与下游操作性能，且模型空间预测确实基于跨视角几何证据而非仅语义先验。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 2</p>
+    <h3 class="paper-title">Jeveration: System One Models Now Generate</h3>
+    <p class="paper-authors">Yuhe Liu, Qi Li, Shihua Zhang, Xinchao Wang</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-11-18</p>
+      <p class="meta-item"><span>Updated</span>2026-11-20</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>本文提出Jeveration，利用冻结的视觉语言模型，通过共享随机状态协调并行预测，实现单次前向传播的高质量图像生成，并统一了文本到图像、图像到图像和密集预测任务，512x512图像生成仅需78ms。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2611.24738v2" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2611.24738v2" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>System One models such as Jev return decisions through fast, parallel prediction. In this paper, we introduce Jeveration, showing that the same decision paradigm can also generate high-quality images in a single forward pass. Jeveration builds on a frozen vision-language model, repurposing its visual-semantic knowledge for holistic image generation. The key challenge is to maintain global consistency. A single prompt admits many valid images, yet parallel predictions must converge on a coherent whole. We therefore condition all positions on a shared random state to coordinate parallel predictions, so that each draw yields a different but coherent image. Since the model tends to ignore this state under direct image supervision, we first learn a distribution over discrete image codes to guide single-pass generation. Beyond text-to-image generation, we further unify image-to-image generation and dense prediction within the same architecture, so that one checkpoint supports all three tasks, each in one forward pass. Experiments show that Jeveration generates a 512x512 image in 78 ms, up to 122x faster than existing unified models, while maintaining competitive image quality and dense prediction performance.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>System One模型（如Jev）通过快速并行预测返回决策，作者希望将同样的决策范式扩展到图像生成，在单次前向传播中生成高质量图像，并解决并行预测中全局一致性的挑战。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>Jeveration基于冻结的视觉语言模型，重用其视觉语义知识进行整体图像生成；将所有位置条件于共享随机状态以协调并行预测，保证每次生成不同但连贯的图像；由于模型在直接图像监督下易忽略该状态，先学习离散图像码的分布来引导单次生成；并统一图像到图像生成和密集预测于同一架构，一个检查点支持三种任务。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>Jeveration生成512x512图像仅需78ms，比现有统一模型快至122倍，同时保持有竞争力的图像质量和密集预测性能。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>Jeveration表明System One决策范式可有效用于单次前向传播的高质量图像生成，通过共享随机状态和离散码分布学习实现全局一致性，并成功统一多种视觉任务，显著提升生成速度。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 3</p>
+    <h3 class="paper-title">ScopeAct: Scoping Decision Models for Reliable Multi-Step Execution in Mobile GUI Agents</h3>
+    <p class="paper-authors">Linghua Zhang</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-09-24</p>
+      <p class="meta-item"><span>Updated</span>2026-11-20</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.AI</strong> · cs.SE</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>提出免训练移动GUI智能体框架ScopeAct，通过委托契约和候选动作构建器，将频繁动作选择交给轻量决策模型，稀疏调用VLM进行任务级规划与验证，在AndroidWorld上实现更快执行、更低API成本和更高成功率。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2609.30186v2" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2609.30186v2" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Vision-language models (VLMs) enable mobile GUI agents to execute complex tasks, but frequent VLM invocations incur substantial latency and API costs. Prior work mitigates this overhead by delegating low-level action selection to lightweight decision models that choose among executable candidates. However, candidate selection alone lacks the task-level control needed to prevent premature termination and recover from failures, while candidates derived from accessibility trees (AXTrees) may not cover all actions required for task completion. To address these challenges, we introduce ScopeAct. This training-free mobile GUI agent framework combines frequent action selection with sparse VLM reasoning through the Delegation Contract and the Candidate Actions Builder. For task-level control, the Delegation Contract enables the VLM to plan subgoals with explicit completion criteria, recover from failures, and verify task completion. The decision model repeatedly selects actions to execute each subgoal without per-step VLM intervention, returning control to the VLM when execution stalls or final verification is required. For broader action coverage, the Candidate Actions Builder supplements AXTree-derived and system actions with VLM-provided text bindings for task-specific text entry and coordinates for widget-free interactions. Experiments on AndroidWorld demonstrate that ScopeAct achieves 1.7-4.8$\times$ faster execution and 3.7-8.3$\times$ lower API costs than six API-based baselines. ScopeAct requires only 5.3 and 4.6 VLM calls per task under the extended and official evaluation settings, respectively. Under the same settings, it attains 96.3% and 81.0% task success rates, surpassing the strongest baselines by 3.4 and 1.7 percentage points, respectively.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有方法将低层动作选择委托给轻量决策模型以减少VLM调用开销，但仅靠候选选择缺乏任务级控制，无法防止过早终止和从失败中恢复；且基于可访问性树（AXTree）的候选动作可能无法覆盖任务完成所需的全部动作。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>ScopeAct是免训练框架，结合频繁动作选择与稀疏VLM推理。委托契约使VLM规划带明确完成标准的子目标、从失败中恢复并验证任务完成；决策模型重复选择动作执行每个子目标，无需逐步VLM干预，在执行停滞或需最终验证时将控制权交还VLM。候选动作构建器在AXTree派生动作和系统动作基础上，补充VLM提供的文本绑定（用于任务特定文本输入）和坐标（用于无控件交互），以扩大动作覆盖范围。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在AndroidWorld上，ScopeAct比六个基于API的基线执行速度快1.7-4.8倍，API成本低3.7-8.3倍。在扩展和官方评估设置下，每任务仅需5.3和4.6次VLM调用，任务成功率分别达96.3%和81.0%，分别超过最强基线3.4和1.7个百分点。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>ScopeAct通过结合稀疏VLM推理与频繁轻量动作选择，并借助委托契约实现任务级控制、候选动作构建器扩大动作覆盖，有效降低了移动GUI智能体的延迟和API成本，同时提升了任务成功率。</p></div>
+  </details>
+</article>
+  </div>
+</section>
+
+<section id="query-query-2" class="query-section" data-query-label="视频多模态理解" data-paper-count="3">
+  <header class="query-header">
+    <h2>视频多模态理解</h2>
+    <p class="query-count">3 papers</p>
+  </header>
+  <div class="query-content">
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 1</p>
+    <h3 class="paper-title">VMSA: Video Memory Skill Agent for Long Video Understanding</h3>
+    <p class="paper-authors">Changin Choi, Jungwon Park, Jungmin Ko, Jimyeong Kim, Wonjong Rhee</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-11-20</p>
+      <p class="meta-item"><span>Updated</span>2026-11-20</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.CV</strong> · cs.AI</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>提出VMSA框架，联合设计结构化视频记忆与记忆技能，以提升长视频问答中的证据检索与推理能力，在多个基准上取得最优或竞争性结果。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2611.27381v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2611.27381v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Long-video question answering requires retrieving and integrating relevant evidence from videos spanning hours or even days. Recent agentic approaches organize video information into external memories and iteratively retrieve evidence to answer questions. However, effective retrieval and reasoning remain challenging, as agents must determine what information to search for, which memory sources to access, and how to connect evidence across distant temporal intervals. To address these challenges, we propose Video Memory Skill Agent (VMSA), a framework that jointly designs structured video memories and memory skills for long-video understanding. VMSA constructs three complementary memory components. Segment Caption Memory and Entity Event Memory serve as searchable evidence sources, while Entity-Aware Episode Memory provides broad yet detailed video context to guide evidence retrieval and reasoning. To further support effective memory utilization, VMSA induces memory skills from successful agent trajectories, incrementally refining or extending a compact skill library to guide iterative evidence retrieval, reasoning, and verification. Across seven long-video question-answering benchmarks, VMSA achieves the highest accuracy on all three week-long egocentric benchmarks, outperforming the strongest baseline by up to 9.4% on Ego-R1 Bench, and the best or competitive performance on four additional benchmarks. Ablation studies further demonstrate the contributions of all three memory components and memory skills, with memory skills also improving temporal evidence localization.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>长视频问答需从数小时甚至数天的视频中检索并整合证据；现有智能体方法依赖外部记忆迭代检索，但智能体难以确定搜索内容、访问的记忆源以及跨远距离时间区间连接证据。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>VMSA构建三种互补记忆组件：片段描述记忆与实体事件记忆作为可搜索证据源，实体感知片段记忆提供广泛而详细的视频上下文以指导检索与推理；并从成功智能体轨迹中归纳记忆技能，增量精炼或扩展紧凑技能库，以指导迭代证据检索、推理与验证。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在七个长视频问答基准上，VMSA在三个周级自我中心基准上均取得最高准确率，在Ego-R1 Bench上超越最强基线最多9.4%，在另外四个基准上取得最佳或竞争性性能；消融实验验证了三种记忆组件与记忆技能的贡献，记忆技能还提升了时间证据定位。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>联合设计结构化视频记忆与记忆技能可有效应对长视频问答中的检索与推理挑战，VMSA在多个基准上表现优异，且各记忆组件与技能均具必要性。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 2</p>
+    <h3 class="paper-title">Tokenize Moments, Not Frames: Tokenizer-Aware Budget Allocation for Training-Free Video LLM Acceleration</h3>
+    <p class="paper-authors">Zirui Zhao, Kai Liu, Linghe Kong</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-11-20</p>
+      <p class="meta-item"><span>Updated</span>2026-11-20</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.CV</strong> · cs.AI</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>论文发现长视频在token预算下帧采样间隔超过约2秒的相似窗口，导致Qwen-VL等双帧3D patch将无关场景混合成双重曝光，且发生在剪枝/合并之前；提出免训练方法ESSENCE，按相似帧组成的“时刻”而非帧进行token化，并用闭式规则设定token网格数与降维维度，在多个模型上以匹配TTFT取得更高准确率。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2611.26933v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2611.26933v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Video large language models (LLMs) represent each video with thousands of visual tokens, and training-free accelerators that prune or merge these tokens lose accuracy on long videos. Analyzing frame similarity and the vision tokenizers of 16 open models, we trace this loss to a step before token selection. Under a token budget, the frames of a long video are sampled farther apart than the roughly 2 s over which frames remain similar. The two-frame 3D patches of models such as Qwen-VL then blend two unrelated scenes into each visual token, a double exposure that arises before any pruning or merging. Fixed-size tokenizers such as InternVL&#x27;s avoid this blend but respond differently to the same reduction. We propose ESSENCE, a training-free method that tokenizes moments, segments within which frames remain similar, rather than frames. Before encoding, a closed-form rule uses the sampling interval and the tokenizer class to set the number of token grids and the dimension to reduce; visual tokens are then released from later LLM layers. Against five recent accelerators on Qwen3-VL, Qwen2.5-VL and InternVL3.5, ESSENCE achieves higher accuracy in 58 of 60 comparisons at matched mean time to first token (TTFT). With 80% of the tokens, it matches the average accuracy of the full Qwen models at $1.6\times$ faster TTFT; on GLM-4.1V, it exceeds the full model by up to 3.4 points. Code is available at: https://github.com/zhkandsrz/ESSENCE.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>视频LLM用数千视觉token表示视频，免训练加速器通过剪枝或合并token来减少计算，但在长视频上损失准确率。作者分析帧相似性和16个开源模型的视觉tokenizer，发现损失源于token选择之前：在token预算下长视频帧采样间隔大于帧间相似持续约2秒的窗口，导致双帧3D patch混合两个无关场景，形成双重曝光。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>提出ESSENCE，一种免训练方法：将视频划分为帧间保持相似的“时刻”片段，对时刻而非帧进行token化；在编码前，用基于采样间隔和tokenizer类别的闭式规则确定token网格数量和降维维度；随后从后续LLM层释放视觉token。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在Qwen3-VL、Qwen2.5-VL和InternVL3.5上与五种近期加速器对比，在匹配平均首token时间（TTFT）下，ESSENCE在60次比较中58次取得更高准确率；使用80%的token时，平均准确率与完整Qwen模型持平且TTFT快1.6倍；在GLM-4.1V上最高超过完整模型3.4个点。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>长视频token化损失的关键在于采样间隔超过帧相似窗口导致的双重曝光，而非剪枝或合并本身；按时刻token化并配合闭式规则分配token网格，可在免训练条件下实现更优的准确率-效率权衡。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 3</p>
+    <h3 class="paper-title">Moment-Video: Diagnosing Temporal Fidelity of Video MLLMs on Momentary Visual Events</h3>
+    <p class="paper-authors">Xiaolin Liu, Yilun Zhu, Xiangyu Zhao, Xuehui Wang, Yan Li, Xin Li, Kai Wang, Haoyu Cao, Shaofeng Zhang, Xu Yang, Zhihang Zhong, Xue Yang</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-06-01</p>
+      <p class="meta-item"><span>Updated</span>2026-11-20</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.CV</strong> · cs.AI</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>论文提出 Moment-Video 基准，用于评估视频多模态大模型对短暂但决定答案的视觉事件的时序理解能力；测试34个模型，最佳仅39.6%准确率，多数开源模型低于25%。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2606.02522v3" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2606.02522v3" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Video multimodal large language models (MLLMs) have made rapid progress in general and long-form video understanding, yet their ability to capture and use brief, answer-critical visual evidence remains underexplored. Momentary actions or state transitions may determine an answer while occupying only a small fraction of the video. Performance on broad video understanding tasks alone does not establish whether models can reliably identify and use this temporally localized evidence. We introduce Moment-Video, a benchmark for evaluating temporal fidelity through momentary visual event understanding. Questions are constructed around visually observable events or event sequences, requiring models to notice, count, describe, or reason about transient evidence. The benchmark contains 1,000 human-verified video-QA pairs across seven domains and 25 subcategories, covering four tasks: Temporal Occurrence, Temporal Counting, Action Description, and Temporal Reasoning. We evaluate 34 proprietary and open-source MLLMs. Under the main evaluation settings, the best-performing model, Seed-2.0-Pro, achieves 39.6% overall accuracy, while most open-source models remain below 25%. Diagnostic analyses show that denser frame sampling improves some models, but substantial errors persist in an audited subset even when human review judges the sampled visual evidence sufficient to answer. Performance also declines on longer videos, suggesting additional temporal-localization challenges. By exposing these limitations, Moment-Video provides a diagnostic benchmark to guide the evaluation and development of video MLLMs that more reliably understand brief, answer-critical visual events.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>现有视频MLLM在通用和长视频理解上进展迅速，但其捕捉和利用短暂、答案关键的视觉证据的能力尚未被充分探索；仅凭广泛视频理解任务的表现无法确定模型能否可靠识别和使用这种时间局部化证据。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>构建 Moment-Video 基准，包含1,000个人工验证的视频问答对，覆盖7个领域、25个子类别和四类任务：时序发生、时序计数、动作描述、时序推理；问题围绕可观察事件或事件序列设计，要求模型注意、计数、描述或推理短暂证据；评估34个专有和开源MLLM。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>主评估设置下最佳模型 Seed-2.0-Pro 总体准确率39.6%，多数开源模型低于25%；诊断分析显示更密集帧采样可提升部分模型，但经人工审核确认采样视觉证据充足的子集中仍存在大量错误；视频越长性能越下降。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>Moment-Video 揭示了视频MLLM在短暂关键视觉事件理解上的显著局限，为更可靠理解短暂、答案关键视觉事件的模型评估与开发提供了诊断性基准。</p></div>
+  </details>
+</article>
+  </div>
+</section>
+
+<section id="query-rag" class="query-section" data-query-label="多模态检索与 RAG" data-paper-count="3">
+  <header class="query-header">
+    <h2>多模态检索与 RAG</h2>
+    <p class="query-count">3 papers</p>
+  </header>
+  <div class="query-content">
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 1</p>
+    <h3 class="paper-title">Depth-Linked Residual Tokens for Multimodal Retrieval and Generation</h3>
+    <p class="paper-authors">Jiangfan Zhang, Wentao Bao, Xian Wu, Xiangjun Fan, Jianpeng Cheng, Jun Xiao</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-11-19</p>
+      <p class="meta-item"><span>Updated</span>2026-11-19</p>
+      <p class="meta-item taxonomy-item"><span>Class</span><strong class="primary-tag">cs.LG</strong> · cs.AI</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>DepThink通过单次前向传播中耦合的K个可学习残差令牌，以轻量级残差递归实现顺序细化，兼顾并行效率与迭代架构的推理能力，在多模态检索与生成任务上超越可学习令牌基线并匹配或超过循环架构，同时大幅加速训练与推理。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2611.26752v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2611.26752v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Iterative architectures such as looped language models improve parameter efficiency and reasoning capacity of transformers, yet their sequential backbone iterations introduce substantial computational latency. Conversely, parallelizable learnable special tokens (such as the register tokens in Vision Transformer) enable efficient single-pass inference, but often suffer from the absence of sequential refinement and exhibit redundant representations across tokens. To address these challenges, we introduce Depth-Linked Residual Tokens (DepThink), an efficient framework designed for multimodal retrieval and generation. Operating within a single pre-filling forward pass, DepThink appends a sequence of K learnable residual tokens whose hidden states are coupled through a lightweight, learnable residual recurrence. This mechanism enables each residual token to progressively capture complementary information missed by preceding tokens. Theoretically, we prove that DepThink provides strictly expanded geometric directional reachability over standard learnable tokens and guarantees a provable one-step descent advantage. We evaluate DepThink across multimodal retrieval and generation tasks. DepThink consistently outperforms learnable-token baselines and matches or exceeds looped architectures across dense (2B, 8B) and sparse mixture-of-experts (30B-A3B) backbones under both LoRA and full-parameter fine-tuning, while accelerating training by up to 11.9 and inference by 4.3 over looped architectures.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>循环架构（如looped语言模型）提升参数效率与推理能力，但顺序骨干迭代导致高计算延迟；并行可学习特殊令牌（如ViT寄存器令牌）支持高效单次推理，但缺乏顺序细化且令牌表示冗余。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>提出深度链接残差令牌（DepThink）框架：在单次预填充前向传播中追加K个可学习残差令牌，其隐藏状态通过轻量级可学习残差递归耦合，使每个残差令牌逐步捕获前序令牌遗漏的互补信息；理论证明其几何方向可达性严格扩展并保证一步下降优势。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在多模态检索与生成任务上，DepThink持续优于可学习令牌基线，并在密集（2B、8B）与稀疏混合专家（30B-A3B）骨干、LoRA与全参数微调下匹配或超过循环架构，训练加速最高11.9倍、推理加速4.3倍。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>DepThink有效结合了并行可学习令牌的效率与循环架构的顺序细化能力，在多种骨干与微调设置下实现性能与效率的优越平衡。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 2</p>
+    <h3 class="paper-title">Better Retrieval, Not Better Binding: Pretraining Exposure in Egocentric Video Retrieval</h3>
+    <p class="paper-authors">Yuqi Guo, Michael Wray</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-11-19</p>
+      <p class="meta-item"><span>Updated</span>2026-11-19</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>本文提出Ego-ExBind诊断协议，用于分析第一人称视频-文本检索中预训练暴露与动名词绑定，发现零样本检索与配对暴露正相关，但暴露重加权可提升检索而不增强组合理解。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2611.26120v1" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2611.26120v1" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Video-language models (VLMs) achieve strong performance on video-text retrieval and are increasingly used for egocentric video understanding. Yet, despite gains in zero-shot retrieval, they have shown limitations in compositional understanding, and it remains unclear whether they understand compositional relationships between verbs and nouns. In this work, we introduce Ego-ExBind, a compositional diagnostic protocol for analyzing pretraining exposure and verb-noun binding in egocentric video-text retrieval. Ego-ExBind consists of an Exposure Ledger built from the EgoClip pretraining corpus used by EgoVLPv2, which defines Seen Composition, Unseen Composition, and Unseen Atom splits for EPIC-KITCHENS-100 multi-instance retrieval (MIR). We further probe noun and verb binding channels through controlled noun-swap and verb-swap negatives. We find that zero-shot retrieval is positively associated with pair exposure within seen compositions, even after controlling for the marginal frequencies of verbs and nouns. However, higher pair exposure is associated with larger noun-swap margins and slightly smaller verb-swap margins. This asymmetry motivates us to test whether exposure reweighting can improve retrieval with little change in the measured swap margins. To isolate the effect of exposure input, we keep the trained checkpoint fixed and replace only the exposure input at inference. We demonstrate that this exposure reweighting can improve video-text retrieval without stronger verb-noun compositional understanding, and that the gain depends on the correct sample-level exposure correspondence. By separating exposure-driven retrieval gains from verb-noun binding, Ego-ExBind provides a diagnostic framework for evaluating whether future improvements in egocentric MIR reflect compositional understanding rather than pretraining familiarity.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>视频-语言模型在零样本检索上表现强，但组合理解有限，尚不清楚其是否理解动词与名词的组合关系，且需区分检索提升源于预训练熟悉度还是组合理解。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>构建Ego-ExBind协议，包含基于EgoVLPv2预训练语料EgoClip的暴露账本，定义已见组合、未见组合和未见原子划分，并通过名词替换和动词替换负样本探测绑定通道；在固定检查点下仅替换推理时的暴露输入进行重加权实验。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>零样本检索与已见组合内的配对暴露正相关（控制边际频率后仍成立）；更高配对暴露关联更大的名词替换边际和略小的动词替换边际；暴露重加权可提升检索性能，但未增强动名词组合理解，且增益依赖正确的样本级暴露对应。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>Ego-ExBind将暴露驱动的检索增益与动名词绑定分离，为评估未来第一人称多实例检索改进是否反映组合理解而非预训练熟悉度提供诊断框架。</p></div>
+  </details>
+</article>
+<article class="paper-card" data-paper-card>
+  <header class="paper-head">
+    <p class="paper-index">No. 3</p>
+    <h3 class="paper-title">Differentially Private Contrastive Learning via Bounding Group-level Contribution</h3>
+    <p class="paper-authors">Kecen Li, Chen Gong, Zinan Lin, Tianhao Wang, Xiaokui Xiao</p>
+    <div class="paper-meta-inline">
+      <p class="meta-item"><span>Source</span>arxiv</p>
+      <p class="meta-item"><span>Published</span>2026-04-29</p>
+      <p class="meta-item"><span>Updated</span>2026-11-20</p>
+    </div>
+    <p class="paper-tldr"><span>TLDR</span>提出DP-GCL框架，通过分组局部化对比依赖并对组级梯度裁剪，在差分隐私下提升对比学习表示质量，分类与检索任务平均提升5.6和20.0个百分点。</p>
+  </header>
+  <div class="paper-links has-links">
+    <a class="paper-link" href="https://arxiv.org/pdf/2604.26467v2" target="_blank" rel="noopener noreferrer">PDF</a>
+    <a class="paper-link" href="https://arxiv.org/abs/2604.26467v2" target="_blank" rel="noopener noreferrer">Abstract</a>
+  </div>
+  <details class="paper-details" data-paper-details>
+    <summary class="details-summary">
+      <span>阅读摘要与笔记</span>
+      <span class="summary-hint">点击展开</span>
+    </summary>
+    <div class="detail-block">
+      <h4>Abstract</h4>
+      <p>Differentially private (DP) contrastive learning aims to learn general-purpose representations from sensitive data, alleviating privacy leakage concerns associated with embedding models trained on private user content. However, standard contrastive objectives compare each sample with all other samples in the batch, so a single record affects the gradient of every sample in the batch. These inter-sample dependencies make it difficult to bound each record&#x27;s influence while retaining useful training signals under DP.
+  We propose DP-GCL, a DP contrastive learning framework that jointly localizes contrastive dependencies and bounds the resulting gradients. Its core module, Bounding Group-level Contribution (BGC), partitions each batch into disjoint groups, restricts comparisons to within-group samples, and clips each group&#x27;s gradient separately before aggregation. This design confines each record&#x27;s influence to one group while allowing signals from multiple groups to accumulate under a sensitivity bound independent of the number of groups. Because grouping reduces the available negatives, we further introduce intra-group sample augmentation to enrich local negative views without additional privacy cost.
+  Across eight datasets, DP-GCL improves image classification and image-text retrieval accuracy over the strongest baseline by an average of 5.6 and 20.0 percentage points, respectively. Further ablation studies indicate that these improvements arise primarily from the joint design of group-local contrastive objectives and group-level gradient clipping. Moreover, DP-GCL exhibits favorable batch-size scaling and remains compatible with diverse network architectures and parameter-efficient fine-tuning strategies such as LoRA.</p>
+    </div>
+    <div class="detail-block"><h4>Motivation</h4><p>标准对比目标中每个样本与批次内所有样本比较，导致单条记录影响所有样本梯度，样本间依赖使差分隐私下难以界定单记录影响并保留有效训练信号。</p></div>
+    <div class="detail-block"><h4>Method</h4><p>核心模块BGC将批次划分为不相交组，限制组内比较并分别裁剪各组梯度后聚合，将单记录影响限制在一组内且敏感度界与组数无关；引入组内样本增强丰富局部负样本视图而不增加隐私成本。</p></div>
+    <div class="detail-block"><h4>Result</h4><p>在八个数据集上，图像分类和图文检索准确率较最强基线平均提升5.6和20.0个百分点；消融表明提升主要来自组局部对比目标与组级梯度裁剪的联合设计；方法具有良好批次大小扩展性，兼容多种网络架构及LoRA等参数高效微调策略。</p></div>
+    <div class="detail-block"><h4>Conclusion</h4><p>DP-GCL通过联合局部化对比依赖与梯度裁剪，有效解决差分隐私对比学习中的样本间依赖问题，在隐私保护下显著提升表示学习性能，并具备良好的扩展性与架构兼容性。</p></div>
+  </details>
+</article>
+  </div>
+</section>
+    </main>
+  </div>
+
+  <script src="./assets/interactive.js"></script>
+</body>
+</html>
